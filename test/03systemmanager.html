@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>VolcanoJS UIComponent Test</title>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+    <script src="../core/Core.js"></script>
+    <script src="../core/VolcanoSprite.js"></script>
+    <script src="../managers/SystemManager.js"></script>
+    <script src="../managers/LayoutManager.js"></script>
+    <script src="../utils/ColorUtil.js"></script>
+    <script>
+
+
+        function onLoadHandler() {
+            volcano.VolcanoSprite.randomColorMode = true;
+            var sysMgr = new volcano.SystemManager();
+
+            sysMgr.addEventListener("resize", function(){console.log(volcano.LayoutManager.systemManager);})
+        }
+
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()">
+<div id="console"/>
+</body>
+</html>

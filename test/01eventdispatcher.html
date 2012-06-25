@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>VolcanoJS UIComponent Test</title>
+    <script src="http://underscorejs.org/underscore-min.js" ></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="../core/Core.js"></script>
+    <script src="../events/EventDispatcher.js"></script>
+    <script>
+
+        var evt;
+
+        function onLoadHandler() {
+            evt = new volcano.EventDispatcher();
+            evt.addEventListener("test",onTestHandler);
+        }
+
+        function fireEvent() {
+            evt.dispatchEvent("test");
+        }
+
+        function onTestHandler() {
+            document.getElementById("console").innerHTML = "Event Fired..";
+        }
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()">
+<div id="console" />
+<button onclick="fireEvent()">이벤트 송신</button>
+</body>
+</html>

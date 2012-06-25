@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>VolcanoJS UIComponent Test</title>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+    <script src="../core/Core.js"></script>
+    <script src="../core/VolcanoSprite.js"></script>
+    <script src="../utils/ColorUtil.js"></script>
+    <script>
+
+        var sprite,
+                runTest = false,
+                testcase = {};
+
+        function onLoadHandler() {
+            volcano.VolcanoSprite.randomColorMode = true;
+
+            sprite = new volcano.VolcanoSprite();
+            sprite.setWidth(window.screen.width).setHeight(window.screen.width);
+
+            for (var i = 0; i < 50; i++) {
+                sprite.addElement(new volcano.VolcanoSprite().setWidth(100).setHeight(100).setX(i * 10).setY(i * 10));
+            }
+
+            sprite.addEventListener("mousedown", onMouseDownHandler);
+            document.body.appendChild(sprite._wrapperDiv);
+
+//            Ticker.setFPS(30);
+//            Ticker.addListener(window);
+        }
+        var regX, regY, target;
+
+        function onMouseDownHandler(event) {
+            sprite.removeEventListener("mousedown", onMouseDownHandler);
+            sprite.addEventListener("mousemove", onMouseMoveHandler);
+            sprite.addEventListener("mouseup", onMouseUpHandler);
+
+            target = event.volcanoTarget;
+            regX = event.pageX - target.getX();
+            regY = event.pageY - target.getY();
+            sprite.setElementIndex(event.volcanoTarget, sprite.getNumElements() - 1);
+        }
+
+        function onMouseMoveHandler(event) {
+            var pageX = event.pageX,
+                pageY = event.pageY;
+
+            var targetX = pageX - regX;
+            var targetY = pageY - regY;
+
+//            console.log(targetX + " : " + targetY);
+            target.setX(targetX).setY(targetY);
+        }
+
+        function onMouseUpHandler(event) {
+            sprite.addEventListener("mousedown", onMouseDownHandler);
+            sprite.removeEventListener("mousemove", onMouseMoveHandler);
+            sprite.removeEventListener("mouseup", onMouseUpHandler);
+        }
+
+        function tick() {
+        }
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()">
+<div id="console"/>
+</body>
+</html>

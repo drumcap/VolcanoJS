@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>VolcanoJS UIComponent Test</title>
+    <script src="http://underscorejs.org/underscore-min.js" ></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+    <script src="../core/Core.js"></script>
+    <script src="../core/VolcanoSprite.js"></script>
+    <script src="../utils/ColorUtil.js"></script>
+    <script>
+
+        var sprite,
+                runTest = false,
+                testcase = {};
+
+        function onLoadHandler() {
+            volcano.VolcanoSprite.randomColorMode = true;
+
+            sprite = new volcano.VolcanoSprite();
+
+            for (var i=0; i<50; i++) {
+                sprite.addElement(new volcano.VolcanoSprite().setWidth(100).setHeight(100).setX(i*10).setY(i*10));
+            }
+
+            var onClickHandler = function(event) {
+                console.log(event instanceof MouseEvent);
+                console.log(event instanceof Event);
+                console.log(event instanceof CustomEvent);
+                console.log(event.volcanoCurrentTarget._wrapperDiv);
+                console.log(event.volcanoTarget._wrapperDiv);
+            }
+
+            sprite.addEventListener("click",onClickHandler)
+            document.body.appendChild(sprite._wrapperDiv);
+
+            testcase.case1 = function() {
+                var numElements = sprite.getNumElements();
+                if (sprite.getNumElements() > 0) {
+                    sprite.removeElementAt(0);
+                }
+            }
+
+            testcase.case2 = function() {
+                var numElements = sprite.getNumElements();
+                if (sprite.getNumElements() > 0) {
+                    sprite.setElementIndex(sprite.getElementAt(0),numElements-1);
+                }
+            }
+
+
+//            setInterval(TestCase1,100);
+//            setInterval(TestCase2,100);
+
+            Ticker.setFPS(30);
+            Ticker.addListener(window);
+        }
+
+        function tick() {
+            //testcase.case1();
+            testcase.case2();
+        }
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()">
+<div id="console" />
+</body>
+</html>
