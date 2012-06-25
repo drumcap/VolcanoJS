@@ -249,10 +249,13 @@
 
     };
 
+    p._listeningForRender = false;
     p._callLaterDispatcher = function() {
         UIComponent._callLaterDispatcherCount++;
         //todo EnterFrame 이벤트에 _callLaterDispatcher 제거;
-        //this.systemManager.removeEventListener("enterFrame", this._callLaterDispatcher);
+        if (this._listeningForRender) {
+            this.systemManager.removeEnterFrameListener(this._callLaterDispatcher);
+        }
 
         // methodQue 지우고..
         var queue = this._methodQueue;
@@ -274,8 +277,10 @@
         this._methodQueue.push(new MethodQueElement(callback, args));
 
         //todo EnterFrame 이벤트에 _callLaterDispatcher 호출;
-        this.systemManager.addEventListener("enterFrame", this._callLaterDispatcher);
-
+        if (!this._listeningForRender) {
+            this.systemManager.addEnterFrameListener(this._callLaterDispatcher);
+            this._listeningForRender = true
+        }
     };
 
 // protected Method
