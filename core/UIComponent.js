@@ -29,7 +29,7 @@
     p.VolcanoSprite_initialize = p.initialize;
 
     p.initialize = function() {
-        p.VolcanoSprite_initialize(); //super
+        this.VolcanoSprite_initialize(); //super
 
         // ie 인지 체크하고...
         var isExplorer = /msie [\w.]+/;

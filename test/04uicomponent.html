@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>VolcanoJS UIComponent Test</title>
+    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+    <script src="../core/Core.js"></script>
+    <script src="../core/VolcanoSprite.js"></script>
+    <script src="../managers/SystemManager.js"></script>
+    <script src="../managers/LayoutManager.js"></script>
+    <script src="../core/UIComponent.js"></script>
+    <script src="../utils/ColorUtil.js"></script>
+    <script>
+
+
+        function onLoadHandler() {
+            volcano.VolcanoSprite.randomColorMode = true;
+            var sysMgr = new volcano.SystemManager();
+
+            var sp1 = new volcano.VolcanoSprite();
+            var sp2 = new volcano.VolcanoSprite();
+
+            var ui1 = new volcano.UIComponent();
+            var ui2 = new volcano.UIComponent();
+
+            console.log("sprite : "+(sp1._wrapperDiv === sp2._wrapperDiv));
+            console.log("uicom : "+(ui1._wrapperDiv === ui2._wrapperDiv));
+        }
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()">
+<div id="console"/>
+</body>
+</html>

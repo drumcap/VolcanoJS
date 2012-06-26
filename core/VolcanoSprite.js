@@ -29,32 +29,51 @@
 
     p.Core_initialize = p.initialize;
     p.initialize = function () {
-        p.Core_initialize(); //call super
+        this.Core_initialize(); //call super
 
         var createContainer;
 
         // wrapper 컨테이너를 생성
-        createContainer = function (x, y, w, h, bgColor) {
-            var con = document.createElement('div');
-            con.style.left = x + "px";
-            con.style.top = y + "px";
-            con.style.width = w + "px";
-            con.style.height = h + "px";
-            if (bgColor != undefined) {
-                con.style.backgroundColor = bgColor;
-            }
-            if (VolcanoSprite.randomColorMode) {
-                con.style.backgroundColor = volcano.ColorUtil.getRandomColor();
-                //con.innerHTML = volcano.ColorUtil.getRandomColor();;
-                //con.style.opacity = 0.3;
-            }
+//        createContainer = function (x, y, w, h, bgColor) {
+//            var con = document.createElement('div');
+//            con.style.left = x + "px";
+//            con.style.top = y + "px";
+//            con.style.width = w + "px";
+//            con.style.height = h + "px";
+//            if (bgColor != undefined) {
+//                con.style.backgroundColor = bgColor;
+//            }
+//            if (VolcanoSprite.randomColorMode) {
+//                con.style.backgroundColor = volcano.ColorUtil.getRandomColor();
+//                //con.innerHTML = volcano.ColorUtil.getRandomColor();;
+//                //con.style.opacity = 0.3;
+//            }
+//
+//            con.style.position = "absolute";
+//            return con;
+//        };
 
-            con.style.position = "absolute";
-            return con;
-        };
-
-        this._wrapperDiv = createContainer(0, 0, this._width, this._height);
+        this._wrapperDiv = this.createContainer(0, 0, this._width, this._height);
         this._wrapperDiv.volcanoObj = this; //FIXME 향후 메모리 문제가 생길 소지 있으니 개선해야함.
+    };
+
+    p.createContainer = function (x, y, w, h, bgColor) {
+        var con = document.createElement('div');
+        con.style.left = x + "px";
+        con.style.top = y + "px";
+        con.style.width = w + "px";
+        con.style.height = h + "px";
+        if (bgColor != undefined) {
+            con.style.backgroundColor = bgColor;
+        }
+        if (VolcanoSprite.randomColorMode) {
+            con.style.backgroundColor = volcano.ColorUtil.getRandomColor();
+            //con.innerHTML = volcano.ColorUtil.getRandomColor();;
+            //con.style.opacity = 0.3;
+        }
+
+        con.style.position = "absolute";
+        return con;
     };
 
     p.eventCallback = {};

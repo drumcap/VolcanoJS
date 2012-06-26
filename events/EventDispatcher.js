@@ -20,7 +20,7 @@
     p.Core_initialize = p.initialize;
 
     p.initialize = function() {
-        p.Core_initialize(); //call super
+        this.Core_initialize(); //call super
     };
 
     p.addEventListener = function(events, callback, context) {
