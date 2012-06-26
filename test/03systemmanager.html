@@ -26,10 +26,10 @@
                 console.log(aa++);
                 if (aa > 5)
                     sysMgr.removeEnterFrameListener(efCallback);
-            }
+            };
             var efCallback2 = function () {
                 console.log("callback2!!!");
-            }
+            };
             sysMgr.addEnterFrameListener(efCallback);
             sysMgr.addEnterFrameListener(efCallback2);
         }

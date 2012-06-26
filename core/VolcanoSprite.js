@@ -5,6 +5,7 @@
      * DOM Event 처리와, 차일드 관리 기능을 포함하고 있다.
      * @class VolcanoSprite
      * @constructor
+     * @author david yun
      **/
     var VolcanoSprite = function () {
         this.initialize();

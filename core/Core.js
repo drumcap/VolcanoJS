@@ -30,6 +30,7 @@
     *
     * @class Core
     * @constructor
+    * @author david yun
     **/
     var Core = function() {
       this.initialize();

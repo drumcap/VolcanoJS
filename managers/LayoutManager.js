@@ -4,12 +4,13 @@
     * Flex의 생명주기와 동일하게 가져가기 위해서 interface를 동일하게 구성했다.
     *
     * @class LayoutManager
+    * @author david yun
     **/
     var LayoutManager = function() {
         throw "LayoutManager cannot be initialized.";
     }
 
-    LayoutManager.systemManager = null;
+    LayoutManager.systemManager = null;  // systemManager를 생성하면 여기에 자동으로 잡힌다.
 
     LayoutManager._updateCompleteQue = {};
     LayoutManager._invalidatePropertiesQueue = {};

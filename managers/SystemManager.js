@@ -3,6 +3,7 @@
     * Volcano의 전체 System Start Point
     *
     * @class SystemManager
+    * @author david yun
     **/
     var SystemManager = function() {
         this.initialize();

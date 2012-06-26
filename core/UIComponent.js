@@ -2,7 +2,7 @@
     /**
     * UIComponent 는 표현의 기초가 되는 컴포넌트 이며 객체 생명주기를 제공한다.
     * 생명주기는 Flex의 생명주기와 동일하게 제공하고 있으며 invalidate,validate 방식의 디스플레이 리스트 모델을 따른다.
-    * @class DisplayObject
+    * @class UIComponent
     * @constructor
     * @author david yun
     **/
@@ -27,6 +27,7 @@
     p._skinCanvas = null;
 
     p.VolcanoSprite_initialize = p.initialize;
+
     p.initialize = function() {
         p.VolcanoSprite_initialize(); //super
 
@@ -86,6 +87,28 @@
             var ui = this.getElementAt(i);
             if (ui) {
                 ui.setNestLevel(value);
+            }
+        }
+    };
+
+    p._updateCallbacks = function() {
+        if (this._invalidateDisplayListFlag) {
+            LayoutManager.invalidateDisplayList(this);
+        }
+
+        if (this._invalidateSizeFlag) {
+            LayoutManager.invalidateSize(this);
+        }
+
+        if (this._invalidatePropertiesFlag) {
+            LayoutManager.invalidateProperties(this);
+        }
+
+
+        if (this.systemManager) {
+            if (this._methodQueue.length > 0 && !this._listeningForRender) {
+                this.systemManager.addEnterFrameListener(this._callLaterDispatcher);
+                this._listeningForRender = true;
             }
         }
     };
@@ -245,14 +268,10 @@
         }
     };
 
-    p._updateCallbacks = function() {
-
-    };
-
     p._listeningForRender = false;
     p._callLaterDispatcher = function() {
         UIComponent._callLaterDispatcherCount++;
-        //todo EnterFrame 이벤트에 _callLaterDispatcher 제거;
+        //EnterFrame 이벤트에 _callLaterDispatcher 제거;
         if (this._listeningForRender) {
             this.systemManager.removeEnterFrameListener(this._callLaterDispatcher);
         }
@@ -276,18 +295,98 @@
     p.callLater = function(callback, args) {
         this._methodQueue.push(new MethodQueElement(callback, args));
 
-        //todo EnterFrame 이벤트에 _callLaterDispatcher 호출;
+        //EnterFrame 이벤트에 _callLaterDispatcher 호출;
         if (!this._listeningForRender) {
             this.systemManager.addEnterFrameListener(this._callLaterDispatcher);
             this._listeningForRender = true
         }
     };
 
+    p.VolcanoSprite__elementAdded = p._elementAdded;
+    p._elementAdded = function (element, index, notifyListeners) {
+        p.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
+
+        element.setNestLevel(this._nestLevel+1); // nest level 추가
+        //todo 스타일 캐시 재생성 element.regenerateStyleCache(true);
+        //todo 스타일 변경 알림  element.styleChanged(null);
+        //todo 차일드에게 스타일 변경 알림 element.notifyStyleChangeInChildren(null, true);
+        //todo 테마 컬러 초기화 element.initThemeColor();
+        //todo 스타일 초기화 element.stylesInitialized();
+        if (element.getInitialized()) {
+            element.initComponent();
+        }
+    };
+
+
+
+    p._initialized = false;
+    p.getInitialized = function() {
+        return this._initialized;
+    };
+
+    p.setInitialized = function(value) {
+        this._initialized = value;
+
+        if (value) {
+            this.dispatchEvent("creationComplete");
+        }
+    };
+
+    p.initComponent = function() {
+        if (this._initialized) {
+            return;
+        }
+
+        this.dispatchEvent("preinitialize");
+
+        this.createChildren();
+        this.childrenCreated();
+
+        this.initializationComplete();
+    };
+
 // protected Method
+    /**
+     * 객체 생성및 초기화를 위한 override 메소드
+     * @protected
+     */
     p.createChildren = function() {};
+
+    /**
+     * 객체 생성이 완료 되었을 때의 메소드
+     * @protected
+     */
+    p.childrenCreated = function() {
+        this.invalidateProperties();
+        this.invalidateSize();
+        this.invalidateDisplayList();
+    };
+    /**
+     * 속성 변경을 하기위한 override용 메소드
+     * @protected
+     */
     p.commitProperties = function() {};
+
+    /**
+     * 크기조절을 위한 override용 메소드
+     * @protected
+     */
     p.measure = function() {};
+    /**
+     * 좌표 조절을 위한 override용 메소드
+     * @param w
+     * @param h
+     * @protected
+     */
     p.updateDisplayList = function(w,h) {};
+
+    /**
+     * 초기화 완료 메소드
+     * @protected
+     */
+    p.initializationComplete = function() {
+        this.dispatchEvent("initialize");
+    };
 
 // private Method
     p._setOwner = function(o) {};
