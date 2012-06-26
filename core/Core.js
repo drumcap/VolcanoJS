@@ -34,7 +34,7 @@
     **/
     var Core = function() {
       this.initialize();
-    }
+    };
 
     var p = Core.prototype;
     p.initialize = function() {
