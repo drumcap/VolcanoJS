@@ -16,7 +16,7 @@
     p.nestLevel = 0;
 
     p.initialize = function() {
-        p.VolcanoSprite_initialize();
+        this.VolcanoSprite_initialize();
 
         Ticker.setFPS(this._fps);
         Ticker.addListener(this);
