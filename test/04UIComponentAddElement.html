@@ -17,12 +17,12 @@
 
     <script>
 
-        var uiCom, spr;
+        var uiCom, spr,sysMgr;
         var ui;
         function onLoadHandler() {
-            var sysMgr = new volcano.SystemManager();
-                sysMgr.addEventListener("resize", function () {
-                console.log(volcano.LayoutManager.systemManager);
+            sysMgr = new volcano.SystemManager();
+            sysMgr.setName("systemManager");
+            sysMgr.addEventListener("resize", function () {
             });
             var aa = 0;
             var efCallback = function () {
@@ -37,43 +37,39 @@
 //            sysMgr.addEnterFrameListener(efCallback2);
 
 
-            volcano.VolcanoSprite.randomColorMode = true;
-//            volcano.UIComponent.randomColorMode = true;
+            volcano.UIComponent.randomColorMode = true;
+            application = new volcano.UIComponent().setName("application");
+
+            sysMgr.addElement(application);
+            application.setNestLevel(2);
+
             uiCom = new volcano.UIComponent();
 
-//            uiCom = new volcano.VolcanoSprite();
-            uiCom.setWidth(window.screen.width).setHeight(window.screen.width);
-//            spr.setWidth(window.screen.width).setHeight(window.screen.width);
+            uiCom.setWidth(window.screen.width).setHeight(window.screen.width).setName("uiCom");
 
-            sysMgr.addElement(uiCom);
+            application.addElement(uiCom);
 
-//            ui = new volcano.UIComponent();
-//            document.body.appendChild(uiCom._wrapperDiv);
+//            sysMgr.addElement(uiCom);
+
             childUi = new volcano.UIComponent();
-            childUi.setWidth(window.screen.width).setHeight(window.screen.width);
+            childUi.setWidth(window.screen.width).setHeight(window.screen.width).setName("childUi");
 
 
-            var aa = new volcano.UIComponent();
-            var bb = new volcano.UIComponent();
 
-            console.log(aa._wrapperDiv === bb._wrapperDiv);
-//            uiCom.addElement(childUi);
+            uiCom.addElement(childUi);
 
-//            document.body.appendChild(uiCom._wrapperDiv);
-//            document.body.appendChild(spr._wrapperDiv);
-
-        }
-
-        function btnclick(){
+            console.log("systemManager :  " + sysMgr.getNestLevel());
+            console.log("application :  " + application.getNestLevel());
+            console.log("uiCom :  " + uiCom.getNestLevel());
+            console.log("childUI :  " + childUi.getNestLevel());
 
         }
-
 
     </script>
 
 </head>
 <body onload="onLoadHandler()">
 <div id="console"></div>
-<button onclick="btnclick()"/>
+
 </body>
 </html>

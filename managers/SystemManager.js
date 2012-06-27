@@ -13,9 +13,16 @@
     p.VolcanoSprite_initialize = p.initialize;
 
     p.instance = null;
-    p.nestLevel = 0;
+    p._nestLevel = 0;
+    p._body = null;
+    p._onEnterFrameItems = null;
 
     p.initialize = function() {
+        // 변수 초기화
+        this.instance = {};
+        this._body = {};
+        this._onEnterFrameItems = [];
+
         this.VolcanoSprite_initialize();
 
         Ticker.setFPS(this._fps);
@@ -24,7 +31,7 @@
         this.setWidth(window.innerWidth).setHeight(window.innerHeight);
         this._body = document.body;
         this._body.appendChild(this._wrapperDiv);
-        this.nestLevel = 1; // systemManager는 언제나 nestLevel 1
+        this._nestLevel = 1; // systemManager는 언제나 nestLevel 1
 
         volcano.LayoutManager.systemManager = this;
         var that = this.instance = this; //아래의 핸들러에서 this가 window 객체로 덮어쓰기 되기 때문에 클로저로 유지
@@ -36,6 +43,10 @@
         window.addEventListener("resize", resizeHandler);
     };
 
+    p.getNestLevel = function(){
+        return this._nestLevel;
+    }
+
     p._fps = 24;
     p.setFrameRate = function (fps) {
         this._fps = fps;
@@ -46,9 +57,7 @@
         return this._fps;
     };
 
-    p._body = null;
     p.enterFrameEventMode = false;
-    p._onEnterFrameItems = [];
 
     /**
      * 엔터프레임 이벤트를 구현한 이벤트 루프 핸들러이며 Override 하면 안됩니다.

@@ -18,17 +18,27 @@
     };
 
     UIComponent._callLaterDispatcherCount = 0;
-    p._methodQueue = [];
-    p.systemManager = {}; //todo systemManager 클래스 만들면 인스턴스 생성
-    p.skin = {}; //todo skin architecture 완성되면 코드삽입
-    p.states = []; //todo state mechanism 완성되면 코드삽입
-
+    p._methodQueue = null;
+    p.systemManager = null; //todo systemManager 클래스 만들면 인스턴스 생성
+    p.skin = null; //todo skin architecture 완성되면 코드삽입
+    p.states = null; //todo state mechanism 완성되면 코드삽입
+    p._deferredSetStyles = null;
     p._wrapperDiv = null;
     p._skinCanvas = null;
 
     p.VolcanoSprite_initialize = p.initialize;
 
     p.initialize = function() {
+        // 변수 초기화
+        this._methodQueue = [];
+        this.systemManager = {}; //todo systemManager 클래스 만들면 인스턴스 생성
+        this.skin = {}; //todo skin architecture 완성되면 코드삽입
+        this.states = []; //todo state mechanism 완성되면 코드삽입
+        this._deferredSetStyles = {};
+
+        this._wrapperDiv = {};
+        this._skinCanvas = {};
+
         this.VolcanoSprite_initialize(); //super
 
         // ie 인지 체크하고...
@@ -113,7 +123,6 @@
         }
     };
 
-    p._deferredSetStyles = {};
     /**
    	 * 컴포넌트의 스타일을 가져옴
    	 * @method getStyle
@@ -304,9 +313,10 @@
 
     p.VolcanoSprite__elementAdded = p._elementAdded;
     p._elementAdded = function (element, index, notifyListeners) {
-        p.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
+        this.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
 
-        element.setNestLevel(this._nestLevel+1); // nest level 추가
+        console.log(this.getNestLevel());
+        element.setNestLevel(this.getNestLevel()+1); // nest level 추가
         //todo 스타일 캐시 재생성 element.regenerateStyleCache(true);
         //todo 스타일 변경 알림  element.styleChanged(null);
         //todo 차일드에게 스타일 변경 알림 element.notifyStyleChangeInChildren(null, true);

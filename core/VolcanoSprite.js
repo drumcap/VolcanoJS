@@ -26,57 +26,57 @@
      * @private
      */
     p._wrapperDiv = null;
+    /**
+     * 요소의 객체를 담아 두는 저장 공간
+     * @type {Array}
+     * @private
+     */
+    p._elementsContent = null;
+    p.eventCallback = null;
+    /**
+     * parent 정보
+     * @property parent
+     * @final
+     * @type VolcanoSprite
+     * @default null
+     */
+    p.parent = null;
 
     p.Core_initialize = p.initialize;
     p.initialize = function () {
+        // 변수 초기화
+        this._wrapperDiv = {};
+        this._elementsContent = [];
+        this.eventCallback = {};
+        this.parent = {};
+
         this.Core_initialize(); //call super
 
         var createContainer;
 
         // wrapper 컨테이너를 생성
-//        createContainer = function (x, y, w, h, bgColor) {
-//            var con = document.createElement('div');
-//            con.style.left = x + "px";
-//            con.style.top = y + "px";
-//            con.style.width = w + "px";
-//            con.style.height = h + "px";
-//            if (bgColor != undefined) {
-//                con.style.backgroundColor = bgColor;
-//            }
-//            if (VolcanoSprite.randomColorMode) {
-//                con.style.backgroundColor = volcano.ColorUtil.getRandomColor();
-//                //con.innerHTML = volcano.ColorUtil.getRandomColor();;
-//                //con.style.opacity = 0.3;
-//            }
-//
-//            con.style.position = "absolute";
-//            return con;
-//        };
+        createContainer = function (x, y, w, h, bgColor) {
+            var con = document.createElement('div');
+            con.style.left = x + "px";
+            con.style.top = y + "px";
+            con.style.width = w + "px";
+            con.style.height = h + "px";
+            if (bgColor != undefined) {
+                con.style.backgroundColor = bgColor;
+            }
+            if (VolcanoSprite.randomColorMode) {
+                con.style.backgroundColor = volcano.ColorUtil.getRandomColor();
+                //con.innerHTML = volcano.ColorUtil.getRandomColor();;
+                //con.style.opacity = 0.3;
+            }
 
-        this._wrapperDiv = this.createContainer(0, 0, this._width, this._height);
+            con.style.position = "absolute";
+            return con;
+        };
+
+        this._wrapperDiv = createContainer(0, 0, this._width, this._height);
         this._wrapperDiv.volcanoObj = this; //FIXME 향후 메모리 문제가 생길 소지 있으니 개선해야함.
     };
-
-    p.createContainer = function (x, y, w, h, bgColor) {
-        var con = document.createElement('div');
-        con.style.left = x + "px";
-        con.style.top = y + "px";
-        con.style.width = w + "px";
-        con.style.height = h + "px";
-        if (bgColor != undefined) {
-            con.style.backgroundColor = bgColor;
-        }
-        if (VolcanoSprite.randomColorMode) {
-            con.style.backgroundColor = volcano.ColorUtil.getRandomColor();
-            //con.innerHTML = volcano.ColorUtil.getRandomColor();;
-            //con.style.opacity = 0.3;
-        }
-
-        con.style.position = "absolute";
-        return con;
-    };
-
-    p.eventCallback = {};
 
     /**
      * 이벤트 리스닝을 하는 함수로 Wrapper Div에 이벤트 리스너를 달아주는 Delegator 함수
@@ -164,15 +164,6 @@
         return this;
     };
 
-    /**
-     * parent 정보
-     * @property parent
-     * @final
-     * @type VolcanoSprite
-     * @default null
-     */
-    p.parent = null;
-
     p._width = 0;
     /**
      * width를 가져오는 Getter
@@ -230,14 +221,14 @@
         return this;
     };
 
-
-
-    /**
-     * 요소의 객체를 담아 두는 저장 공간
-     * @type {Array}
-     * @private
-     */
-    p._elementsContent = [];
+    p._name = "";
+    p.getName = function() {
+        return this._name;
+    };
+    p.setName = function(name) {
+        this._name = name;
+        return this;
+    };
 
     /**
      * Displaylist 의 범위계산 에러체크
@@ -267,9 +258,14 @@
         var host = this._wrapperDiv,
             elementDiv = element._wrapperDiv;
 
-        if (host.children.length === index) {
+        // fixme 향후 Canvas 가 아닌 다른 Element 가 올 수 있으므로, 그 때 수정해야 함.
+        var canvasNum = 0;
+        if(host.children.length > 0) canvasNum = host.children[0].localName === "canvas" ? 1 : 0;
+
+        if ((host.children.length - canvasNum) === index) {
             host.appendChild(elementDiv);
         } else {
+            console.log(this.getElementAt(index)._wrapperDiv);
             host.insertBefore(elementDiv, this.getElementAt(index)._wrapperDiv);
         }
 
