@@ -18,6 +18,7 @@
     };
 
     UIComponent._callLaterDispatcherCount = 0;
+    UIComponent._catchCallLaterExceptions = false;
     p._methodQueue = null;
     p.systemManager = null; //todo systemManager 클래스 만들면 인스턴스 생성
     p.skin = null; //todo skin architecture 완성되면 코드삽입
@@ -25,6 +26,7 @@
     p._deferredSetStyles = null;
     p._wrapperDiv = null;
     p._skinCanvas = null;
+    p._updateCompletePendingFlag = false;
 
     p.VolcanoSprite_initialize = p.initialize;
 
@@ -286,6 +288,7 @@
         //EnterFrame 이벤트에 _callLaterDispatcher 제거;
         if (this._listeningForRender) {
             this.systemManager.removeEnterFrameListener(this._callLaterDispatcher);
+            this._listeningForRender = false;
         }
 
         // methodQue 지우고..
@@ -337,6 +340,14 @@
 
         this.VolcanoSprite__elementRemoved(element, index, notifyListeners); //super
     };
+
+    p.getUpdateCompletePendingFlag = function(){
+        return this._updateCompletePendingFlag;
+    };
+
+    p.setUpdateCompletePendingFlag = function(value){
+        this._updateCompletePendingFlag = value;
+    }
 
     var parentChangedFlag = false;
     p.parentChanged = function(p){
