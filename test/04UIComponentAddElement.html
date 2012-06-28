@@ -41,7 +41,6 @@
             application = new volcano.UIComponent().setName("application");
 
             sysMgr.addElement(application);
-            application.setNestLevel(2);
 
             uiCom = new volcano.UIComponent();
 
@@ -49,19 +48,33 @@
 
             application.addElement(uiCom);
 
-//            sysMgr.addElement(uiCom);
-
             childUi = new volcano.UIComponent();
             childUi.setWidth(window.screen.width).setHeight(window.screen.width).setName("childUi");
 
-
+            var te = new volcano.UIComponent();
 
             uiCom.addElement(childUi);
+
+            childUi.addElement(te);
 
             console.log("systemManager :  " + sysMgr.getNestLevel());
             console.log("application :  " + application.getNestLevel());
             console.log("uiCom :  " + uiCom.getNestLevel());
             console.log("childUI :  " + childUi.getNestLevel());
+            console.log("te :  " + te.getNestLevel());
+            console.log("------------------------------------------------");
+
+//            uiCom.removeElement(childUi);
+//            console.log("childUI :  " + childUi.getNestLevel());
+//            application.addElement(childUi);
+//            application.removeElement(uiCom)
+            uiCom.addElement(te);
+
+            console.log("systemManager :  " + sysMgr.getNestLevel());
+            console.log("application :  " + application.getNestLevel());
+            console.log("uiCom :  " + uiCom.getNestLevel());
+            console.log("childUI :  " + childUi.getNestLevel());
+            console.log("te :  " + te.getNestLevel());
 
         }
 

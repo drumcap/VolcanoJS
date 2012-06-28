@@ -78,7 +78,10 @@
    	 * @param value
    	 **/
     p.setNestLevel = function(value) {
-        if (this._nestLevel !== value || value === 1) {
+//        if (this._nestLevel !== value || value === 1) {
+//            return;
+//        }
+        if (value === 1) {
             return;
         }
 
@@ -103,15 +106,15 @@
 
     p._updateCallbacks = function() {
         if (this._invalidateDisplayListFlag) {
-            LayoutManager.invalidateDisplayList(this);
+            volcano.LayoutManager.invalidateDisplayList(this);
         }
 
         if (this._invalidateSizeFlag) {
-            LayoutManager.invalidateSize(this);
+            volcano.LayoutManager.invalidateSize(this);
         }
 
         if (this._invalidatePropertiesFlag) {
-            LayoutManager.invalidateProperties(this);
+            volcano.LayoutManager.invalidateProperties(this);
         }
 
 
@@ -315,7 +318,7 @@
     p._elementAdded = function (element, index, notifyListeners) {
         this.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
 
-        console.log(this.getNestLevel());
+        element.parentChanged(this);
         element.setNestLevel(this.getNestLevel()+1); // nest level 추가
         //todo 스타일 캐시 재생성 element.regenerateStyleCache(true);
         //todo 스타일 변경 알림  element.styleChanged(null);
@@ -325,6 +328,30 @@
         if (element.getInitialized()) {
             element.initComponent();
         }
+    };
+
+    p.VolcanoSprite__elementRemoved = p._elementRemoved;
+    p._elementRemoved = function(element, index, notifyListeners){
+
+        element.parentChanged(null);
+
+        this.VolcanoSprite__elementRemoved(element, index, notifyListeners); //super
+    };
+
+    var parentChangedFlag = false;
+    p.parentChanged = function(p){
+        if(!p){
+            this.parent = null;
+            this.setNestLevel(0);
+        }else if(p.name === "systemManager"){
+            this.parent = p;
+        }else if(p._skinCanvas && p._skinCanvas.localName === "canvas"){
+            this.parent = p;
+        }else{
+            this.parent = p.parent;
+        }
+
+        parentChangedFlag = true;
     };
 
 

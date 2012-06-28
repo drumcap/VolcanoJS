@@ -57,6 +57,21 @@
         return this._fps;
     };
 
+    p.VolcanoSprite__elementAdded = p._elementAdded;
+    p._elementAdded = function (element, index, notifyListeners) {
+        this.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
+
+        element.setNestLevel(this.getNestLevel()+1); // nest level 추가
+        //todo 스타일 캐시 재생성 element.regenerateStyleCache(true);
+        //todo 스타일 변경 알림  element.styleChanged(null);
+        //todo 차일드에게 스타일 변경 알림 element.notifyStyleChangeInChildren(null, true);
+        //todo 테마 컬러 초기화 element.initThemeColor();
+        //todo 스타일 초기화 element.stylesInitialized();
+        if (element.getInitialized()) {
+            element.initComponent();
+        }
+    };
+
     p.enterFrameEventMode = false;
 
     /**
