@@ -17,8 +17,8 @@
 
     <script>
 
-        var uiCom, spr,sysMgr;
-        var ui;
+        var a, spr,sysMgr;
+        var b, c;
         function onLoadHandler() {
             sysMgr = new volcano.SystemManager();
             sysMgr.setName("systemManager");
@@ -42,40 +42,46 @@
 
             sysMgr.addElement(application);
 
-            uiCom = new volcano.UIComponent();
+            a = new volcano.UIComponent();
+            a.setWidth(window.screen.width).setHeight(window.screen.width).setName("a");
+            b = new volcano.UIComponent();
 
-            uiCom.setWidth(window.screen.width).setHeight(window.screen.width).setName("uiCom");
+            b.setWidth(window.screen.width).setHeight(window.screen.width).setName("b");
+            c = new volcano.UIComponent();
 
-            application.addElement(uiCom);
+            c.setWidth(window.screen.width).setHeight(window.screen.width).setName("c");
 
-            childUi = new volcano.UIComponent();
-            childUi.setWidth(window.screen.width).setHeight(window.screen.width).setName("childUi");
+            application.addElement(a);
+            a.addElement(b);
+            b.addElement(c);
 
-            var te = new volcano.UIComponent();
-
-            uiCom.addElement(childUi);
-
-            childUi.addElement(te);
-
-            console.log("systemManager :  " + sysMgr.getNestLevel());
-            console.log("application :  " + application.getNestLevel());
-            console.log("uiCom :  " + uiCom.getNestLevel());
-            console.log("childUI :  " + childUi.getNestLevel());
-            console.log("te :  " + te.getNestLevel());
+//            console.log("systemManager :  " + sysMgr.getNestLevel());
+//            console.log("application :  " + application.getNestLevel());
+//            console.log("uiCom :  " + uiCom.getNestLevel());
+//            console.log("childUI :  " + childUi.getNestLevel());
+//            console.log("te :  " + te.getNestLevel());
             console.log("------------------------------------------------");
+            setInterval(testFun, 3000);
+//            uiCom.invalidateProperties();
 
 //            uiCom.removeElement(childUi);
 //            console.log("childUI :  " + childUi.getNestLevel());
 //            application.addElement(childUi);
 //            application.removeElement(uiCom)
-            uiCom.addElement(te);
+//            uiCom.addElement(te);
 
-            console.log("systemManager :  " + sysMgr.getNestLevel());
-            console.log("application :  " + application.getNestLevel());
-            console.log("uiCom :  " + uiCom.getNestLevel());
-            console.log("childUI :  " + childUi.getNestLevel());
-            console.log("te :  " + te.getNestLevel());
+//            console.log("systemManager :  " + sysMgr.getNestLevel());
+//            console.log("application :  " + application.getNestLevel());
+//            console.log("uiCom :  " + uiCom.getNestLevel());
+//            console.log("childUI :  " + childUi.getNestLevel());
+//            console.log("te :  " + te.getNestLevel());
 
+        }
+
+        function testFun(){
+            a.invalidateProperties();
+            a.invalidateDisplayList();
+            a.invalidateSize();
         }
 
     </script>

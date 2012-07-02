@@ -27,6 +27,7 @@
     p._wrapperDiv = null;
     p._skinCanvas = null;
     p._updateCompletePendingFlag = false;
+    p._processedDescriptiors = false;
 
     p.VolcanoSprite_initialize = p.initialize;
 
@@ -106,6 +107,14 @@
         }
     };
 
+    p.setProcessedDescriptors = function(value){
+        this._processedDescriptors = value;
+    };
+
+    p.getProcessedDescriptors = function(){
+        return this._processedDescriptors;
+    }
+
     p._updateCallbacks = function() {
         if (this._invalidateDisplayListFlag) {
             volcano.LayoutManager.invalidateDisplayList(this);
@@ -127,6 +136,10 @@
             }
         }
     };
+
+    p.validateNow = function(){
+        volcano.LayoutManager.validateClient(this);
+    }
 
     /**
    	 * 컴포넌트의 스타일을 가져옴
@@ -244,6 +257,7 @@
     p._invalidateSizeFlag = false;
     p._invalidateDisplayListFlag = false;
     p.invalidateProperties = function() {
+        console.log(this.getName() + " ******** invalidateProperties " + this._invalidatePropertiesFlag)
         if (!this._invalidatePropertiesFlag) {
             this._invalidatePropertiesFlag = true;
 
@@ -251,13 +265,16 @@
             volcano.LayoutManager.invalidateProperties(this);
         }
     };
+
     p.invalidateSize = function() {
+        console.log("invalidateSize" + this.getName());
         if (!this._invalidateSizeFlag) {
             this._invalidateSizeFlag = true;
 
             volcano.LayoutManager.invalidateSize(this);
         }
     };
+
     p.invalidateDisplayList = function() {
         if (!this._invalidateDisplayListFlag) {
             this._invalidateDisplayListFlag = true;
@@ -265,20 +282,26 @@
             volcano.LayoutManager.invalidateDisplayList(this);
         }
     };
+
     p.validateProperties = function() {
         if (this._invalidatePropertiesFlag) {
             this.commitProperties();
             this._invalidatePropertiesFlag = false;
         }
     };
+
     p.validateSize = function() {
+        console.log("aaaaaaa");
         if (this._invalidateSizeFlag) {
+
             this.measure();
         }
     };
+
     p.validateDisplayList = function() {
         if (this._invalidateDisplayListFlag) {
             this.updateDisplayList(this.getMeasuredWidth(), this.getMeasuredHeight() );
+            this._invalidateDisplayListFlag = false;
         }
     };
 
@@ -328,7 +351,7 @@
         //todo 차일드에게 스타일 변경 알림 element.notifyStyleChangeInChildren(null, true);
         //todo 테마 컬러 초기화 element.initThemeColor();
         //todo 스타일 초기화 element.stylesInitialized();
-        if (element.getInitialized()) {
+        if (!element.getInitialized()) {
             element.initComponent();
         }
     };
@@ -381,7 +404,7 @@
     };
 
     p.initComponent = function() {
-        if (this._initialized) {
+        if (this.getInitialized()) {
             return;
         }
 
@@ -413,20 +436,26 @@
      * 속성 변경을 하기위한 override용 메소드
      * @protected
      */
-    p.commitProperties = function() {};
+    p.commitProperties = function() {
+        console.log(this.getName() +  "   -------------   " + "commitProperties");
+    };
 
     /**
      * 크기조절을 위한 override용 메소드
      * @protected
      */
-    p.measure = function() {};
+    p.measure = function() {
+        console.log(this.getName() +  "   -------------   " + "measure");
+    };
     /**
      * 좌표 조절을 위한 override용 메소드
      * @param w
      * @param h
      * @protected
      */
-    p.updateDisplayList = function(w,h) {};
+    p.updateDisplayList = function(w,h) {
+        console.log(this.getName() +  "   -------------   " + "updateDisplayList");
+    };
 
     /**
      * 초기화 완료 메소드
@@ -434,6 +463,7 @@
      */
     p.initializationComplete = function() {
         this.dispatchEvent("initialize");
+        this.setProcessedDescriptors(true);
     };
 
 // private Method

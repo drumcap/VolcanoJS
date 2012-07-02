@@ -36,11 +36,11 @@
             if(!bin){
                 bin = new PriorityBin();
                 _priorityBins[priority] = bin;
-                bin.items[obj] = true;
+                bin.items.push(obj);
                 bin.length++;
             }else{
-                if(bin.items[obj] === null){
-                    bin.items[obj] = true;
+                if(_.indexOf(bin.items,obj) !== 1){
+                    bin.items.push(obj);
                     bin.length++;
                 }
             }
@@ -60,10 +60,11 @@
                     bin = _priorityBins[maxPriority];
                 }
 
-                for(var key in bin.items){
-                    obj = key;
-                    this.removeChild(key, maxPriority);
-                    break;
+                for(var i = 0 ; i < bin.items.length ; i++){
+                    if(obj === bin.items[i]){
+                        this.removeChild(bin.items[i], maxPriority);
+                        break;
+                    }
                 }
 
                 while(!bin || bin.length === 0){
@@ -85,15 +86,17 @@
                 var bin = _priorityBins[max];
                 if(bin && bin.length > 0){
                     if(max === client.getNestLevel()){
-                        if(bin.items[client]){
-                            this.removeChild(client, max);
-                            return client;
+                        for(var i = 0 ; i < bin.items.length ; i++){
+                            if(client === bin.items[i]){
+                                this.removeChild(bin.items[i], max);
+                                return client;
+                            }
                         }
                     }else{
-                        for(var key in bin.items){
-                            if((key instanceof volcano.UIComponent) && contains(client, key)){
-                                this.removeChild(key, max);
-                                return key;
+                        for(var i = 0 ; i < bin.items.length ; i++){
+                            if((bin.items[i] instanceof volcano.UIComponent) && contains(client, bin.items[i])){
+                                this.removeChild(bin.items[i], max);
+                                return bin.items[i];
                             }
                         }
                     }
@@ -124,10 +127,9 @@
                     }
                     bin = _priorityBins[minPriority];
                 }
-
-                for(var key in bin.items){
-                    obj = key;
-                    this.removeChild(key, minPriority);
+                for(var i = 0 ; i < bin.items.length ; i++){
+                    obj = bin.items[i];
+                    this.removeChild(bin.items[i], minPriority);
                     break;
                 }
 
@@ -149,15 +151,18 @@
                 var bin = _priorityBins[min];
                 if(bin && bin.length > 0){
                     if(min === client.getNestLevel()){
-                        if(bin.items[client]){
-                            this.removeChild(client, min);
-                            return client;
+                        for(var i = 0 ; i < bin.items.length ; i++){
+                            if(client === bin.items[i]){
+                                this.removeChild(client, min);
+                            }
                         }
                     }else{
                         for(var key in bin.items){
-                            if((key instanceof volcano.UIComponent) && contains(client, key)){
-                                this.removeChild(key, min);
-                                return key;
+                            for(var i = 0 ; i < bin.items.length ; i++){
+                                if((bin.items[i] instanceof volcano.UIComponent) && contains(client, bin.items[i])){
+                                    this.removeChild(bin.items[i], min);
+                                    return bin.items[i];
+                                }
                             }
                         }
                     }
@@ -179,10 +184,12 @@
         this.removeChild = function(client, level){
             var pri = (level >= 0) ? level : client.getNestLevel();
             var bin = _priorityBins[pri];
-            if(bin && bin.items[client] !== null){
-                delete bin.items[client];
-                bin.length--;
-                return client;
+            for(var i = 0 ; i < bin.items.length ; i++){
+                if(bin.items[i] === client){
+                    bin.items.splice(i, 1);
+                    bin.length--;
+                    return client;
+                }
             }
             return null;
         };
@@ -199,7 +206,6 @@
 
         var contains = function(parent, child){
             // todo 타입 비교 조건 분기 문. cotnainer는 추후 제작
-
             return parent === child;
         };
 
@@ -209,7 +215,7 @@
          */
         var PriorityBin = function(){
             this.length = 0;
-            this.items = {};
+            this.items = [];
         }
     };
 
@@ -245,6 +251,7 @@
 
 
     LayoutManager.invalidateProperties = function (obj) {
+        console.log(obj.getName() + "*** LayoutManager._invalidatePropertiesFlag *** " + LayoutManager._invalidatePropertiesFlag);
         if(!LayoutManager._invalidatePropertiesFlag){
             LayoutManager._invalidatePropertiesFlag = true;
             if(!LayoutManager._listenersAttached){
@@ -252,8 +259,9 @@
             }
 
             if(LayoutManager._targetLevel <= obj.getNestLevel()){
-                LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
+                LayoutManager._invalidateClientPropertiesFlag = true;
             }
+            LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
         }
     };
 
@@ -261,7 +269,7 @@
         if(!LayoutManager._invalidateSizeFlag){
             LayoutManager._invalidateSizeFlag = true;
             if(!LayoutManager._listenersAttached){
-                LayoutManager.attachListeners(LayoutManager._systemManager);
+                LayoutManager.attachListeners(LayoutManager.systemManager);
             }
         }
 
@@ -280,7 +288,6 @@
                 LayoutManager.attachListeners(LayoutManager.systemManager);
             }
         }
-
         LayoutManager._invalidateDisplayListQueue.addObject(obj, obj.getNestLevel());
     };
 
@@ -289,16 +296,16 @@
         while(obj){
             if(obj.getNestLevel()){
                 LayoutManager._currentObject = obj;
-                obj._validateProperties();
+                obj.validateProperties();
                 if(!obj.getUpdateCompletePendingFlag()){
                     LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
                     obj.setUpdateCompletePendingFlag(true);
                 }
             }
-
             obj = LayoutManager._invalidatePropertiesQueue.removeSmallest();
         }
 
+        console.log(LayoutManager._invalidatePropertiesQueue.isEmpty());
         if(LayoutManager._invalidatePropertiesQueue.isEmpty()){
             LayoutManager._invalidatePropertiesFlag = false;
         }
@@ -310,7 +317,7 @@
         while(obj){
             if(obj.getNestLevel()){
                 LayoutManager._currentObject = obj;
-                obj._validateSize();
+                obj.validateSize();
                 if(!obj.getUpdateCompletePendingFlag()){
                     LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
                     obj.setUpdateCompletePendingFlag(true);
@@ -330,7 +337,7 @@
         while(obj){
             if(obj.getNestLevel()){
                 LayoutManager._currentObject = obj;
-                obj._validateDisplayList();
+                obj.validateDisplayList();
                 if(!obj.getUpdateCompletePendingFlag()){
                     LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
                     obj.getUpdateCompletePendingFlag(true);
@@ -346,7 +353,8 @@
     };
 
     LayoutManager._doPhasedInstantiation = function() {
-        if(LayoutManager.getUsePhasedInstantiation){
+//        console.log("_doPhasedInstantiation");
+        if(LayoutManager.getUsePhasedInstantiation()){
             if(LayoutManager._invalidatePropertiesFlag){
                 LayoutManager._validateProperties();
                 //XXX Flex API -> The Preloader listens for this event.
@@ -370,6 +378,7 @@
         }
 
         if(LayoutManager._invalidatePropertiesFlag || LayoutManager._invalidateSizeFlag || LayoutManager._invalidateDisplayListFlag){
+            console.log("ddddddddd")
             LayoutManager.attachListeners(LayoutManager.systemManager);
         }else{
             LayoutManager.setUsePhasedInstantiation(false);
@@ -377,8 +386,8 @@
 
             var obj = LayoutManager._updateCompleteQueue.removeLargest();
             while(obj){
-                if(!obj.initialized && obj.processedDescriptors){
-                    obj.initialized = true;
+                if(!obj.getInitialized() && obj.getProcessedDescriptors()){
+                    obj.setInitialized(true);
                 }
                 obj.dispatchEvent("updateComplete");
                 obj.setUpdateCompletePendingFlag(false);
@@ -418,11 +427,131 @@
         }
     };
 
-    LayoutManager.validateClient = function (target, skipDisplayList) {};
+    LayoutManager.validateClient = function (target, skipDisplayList) {
+        var lastCurrentObject = LayoutManager._currentObject;
+        var obj;
+        var i = 0;
+        var done = false;
+        var oldTargetLevel = LayoutManager._targetLevel;
+
+        if(LayoutManager._targetLevel === Number.MAX_VALUE){
+            LayoutManager._targetLevel = target.getNestLevel();
+        }
+
+        while(!done){
+            done = true;
+
+            obj = LayoutManager._invalidatePropertiesQueue.removeSmallestChild(target);
+            while(obj){
+                if(obj.getNestLevel()){
+                    LayoutManager._currentObject = obj;
+                    obj.validateProperties();
+                    if(!obj.getUpdateCompletePendingFlag()){
+                        LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
+                        obj.setUpdateCompletePendingFlag(true);
+                    }
+                }
+
+                obj = LayoutManager._invalidatePropertiesQueue.removeSmallestChild(target);
+            }
+
+            if(LayoutManager._invalidatePropertiesQueue.isEmpty()){
+                LayoutManager._invalidatePropertiesFlag = false;
+                LayoutManager._invalidateClientPropertiesFlag = false;
+            }
+
+            obj = LayoutManager._invalidateSizeQueue.removeLargestChild(target);
+
+            while(obj){
+                if(obj.getNestLevel()){
+                    LayoutManager._currentObject = obj;
+                    obj.validateSize();
+                    if(!obj.getUpdateCompletePendingFlag()){
+                        LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
+                        obj.setUpdateCompletePendingFlag(true)
+                    }
+                }
+
+                if(LayoutManager._invalidateClientPropertiesFlag){
+                    obj = LayoutManager._invalidatePropertiesQueue.removeSmallestChild(target);
+                    if(obj){
+                        LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
+                        done = false;
+                        break;
+                    }
+                }
+
+                obj = LayoutManager._invalidateSizeQueue.removeLargestChild(target);
+            }
+
+            if(LayoutManager._invalidateSizeQueue.isEmpty()){
+                LayoutManager._invalidateSizeFlag = false;
+                LayoutManager._invalidateClientSizeFlag = false;
+            }
+
+            if(!skipDisplayList){
+                obj = LayoutManager._invalidateDisplayListQueue.removeSmallestChild(target);
+                while(obj){
+                    if(obj.getNestLevel()){
+                        LayoutManager._currentObject = obj;
+                        obj.validateDisplayList();
+                        if(!obj.getUpdateCompletePendingFlag()){
+                            LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
+                            obj.setUpdateCompletePendingFlag(true);
+                        }
+                    }
+
+                    if(LayoutManager._invalidateClientPropertiesFlag){
+                        obj = LayoutManager._invalidatePropertiesQueue.removeSmallestChild(target);
+                        if(obj){
+                            LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
+                            done = false;
+                            break;
+                        }
+                    }
+
+                    if(LayoutManager._invalidateClientSizeFlag){
+                        obj = LayoutManager._invalidateSizeQueue.removeLargestChild(target);
+                        if(obj){
+                            LayoutManager._invalidateSizeQueue.addObject(obj, obj.getNestLevel());
+                            done = false;
+                            break;
+                        }
+                    }
+
+                    obj = LayoutManager._invalidateDisplayListQueue.removeSmallestChild(target);
+                }
+
+                if(LayoutManager._invalidateDisplayListQueue.isEmpty()){
+                    LayoutManager._invalidateDisplayListFlag = false;
+                }
+            }
+        }
+
+        if(oldTargetLevel === Number.MAX_VALUE){
+            LayoutManager._targetLevel = Number.MAX_VALUE;
+            if(!skipDisplayList){
+                obj = LayoutManager._updateCompleteQueue.removeLargestChild(target);
+                while(obj){
+                    if(!obj.getInitialized()){
+                        obj.setInitialized(true);
+                    }
+
+                    // XXX obj의 hasEventListener이 있어야 한다.
+
+                    obj.setUpdateCompletePendingFlag(false);
+                    obj = LayoutManager._updateCompleteQueue.removeLargestChild(target);
+                }
+            }
+        }
+
+        LayoutManager._currentObject = lastCurrentObject;
+    };
 
     LayoutManager._waitFrame = function(){
         LayoutManager.systemManager.removeEnterFrameListener(LayoutManager._waitFrame);
         LayoutManager.systemManager.addEnterFrameListener(LayoutManager._doPhasedInstantiationCallback);
+//        console.log("enterFrame WaiteFrame")
         LayoutManager._waitAFrame = true;
     };
 
