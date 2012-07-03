@@ -257,7 +257,6 @@
     p._invalidateSizeFlag = false;
     p._invalidateDisplayListFlag = false;
     p.invalidateProperties = function() {
-        console.log(this.getName() + " ******** invalidateProperties " + this._invalidatePropertiesFlag)
         if (!this._invalidatePropertiesFlag) {
             this._invalidatePropertiesFlag = true;
 
@@ -267,7 +266,6 @@
     };
 
     p.invalidateSize = function() {
-        console.log("invalidateSize" + this.getName());
         if (!this._invalidateSizeFlag) {
             this._invalidateSizeFlag = true;
 
@@ -291,9 +289,14 @@
     };
 
     p.validateSize = function() {
-        console.log("aaaaaaa");
+        var recursive = arguments[0];
+        if(recursive === true){
+            for(var i = 0 ; i < this.getNumElements ; i++){
+                var child = this.getElementAt(i);
+                child.validateSize(true);
+            }
+        }
         if (this._invalidateSizeFlag) {
-
             this.measure();
         }
     };

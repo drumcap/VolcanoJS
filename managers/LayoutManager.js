@@ -15,7 +15,7 @@
      * @constructor
      */
     var PriorityQueue = function(){
-        var _priorityBins = [];
+        this._priorityBins = [];
         var minPriority = 0;
         var maxPriority = -1;
 
@@ -31,11 +31,11 @@
                 }
             }
 
-            var bin = _priorityBins[priority];
+            var bin = this._priorityBins[priority];
 
             if(!bin){
                 bin = new PriorityBin();
-                _priorityBins[priority] = bin;
+                this._priorityBins[priority] = bin;
                 bin.items.push(obj);
                 bin.length++;
             }else{
@@ -51,20 +51,19 @@
             var obj = null;
 
             if(minPriority <= maxPriority){
-                var bin = _priorityBins[maxPriority];
+                var bin = this._priorityBins[maxPriority];
                 while(!bin || bin.length === 0){
                     maxPriority--;
                     if(maxPriority < minPriority){
                         return null;
                     }
-                    bin = _priorityBins[maxPriority];
+                    bin = this._priorityBins[maxPriority];
                 }
 
                 for(var i = 0 ; i < bin.items.length ; i++){
-                    if(obj === bin.items[i]){
-                        this.removeChild(bin.items[i], maxPriority);
-                        break;
-                    }
+                    obj = bin.items[i];
+                    this.removeChild(bin.items[i], maxPriority);
+                    break;
                 }
 
                 while(!bin || bin.length === 0){
@@ -72,7 +71,7 @@
                     if(maxPriority < minPriority){
                         break;
                     }
-                    bin = _priorityBins[maxPriority];
+                    bin = this._priorityBins[maxPriority];
                 }
             }
             return obj;
@@ -83,7 +82,7 @@
             var min = client.getNestLevel();
 
             while(min <= max){
-                var bin = _priorityBins[max];
+                var bin = this._priorityBins[max];
                 if(bin && bin.length > 0){
                     if(max === client.getNestLevel()){
                         for(var i = 0 ; i < bin.items.length ; i++){
@@ -119,13 +118,13 @@
             var obj = null;
 
             if(minPriority <= maxPriority){
-                var bin = _priorityBins[minPriority];
+                var bin = this._priorityBins[minPriority];
                 while(!bin || bin.length === 0){
                     minPriority++;
                     if(minPriority > maxPriority){
                         return null;
                     }
-                    bin = _priorityBins[minPriority];
+                    bin = this._priorityBins[minPriority];
                 }
                 for(var i = 0 ; i < bin.items.length ; i++){
                     obj = bin.items[i];
@@ -138,7 +137,7 @@
                     if(minPriority > maxPriority){
                         break;
                     }
-                    bin = _priorityBins[minPriority];
+                    bin = this._priorityBins[minPriority];
                 }
             }
             return obj;
@@ -148,7 +147,7 @@
             var min = client.getNestLevel();
 
             while(min <= maxPriority){
-                var bin = _priorityBins[min];
+                var bin = this._priorityBins[min];
                 if(bin && bin.length > 0){
                     if(min === client.getNestLevel()){
                         for(var i = 0 ; i < bin.items.length ; i++){
@@ -183,7 +182,7 @@
 
         this.removeChild = function(client, level){
             var pri = (level >= 0) ? level : client.getNestLevel();
-            var bin = _priorityBins[pri];
+            var bin = this._priorityBins[pri];
             for(var i = 0 ; i < bin.items.length ; i++){
                 if(bin.items[i] === client){
                     bin.items.splice(i, 1);
@@ -195,7 +194,7 @@
         };
 
         this.removeAll = function(){
-            _priorityBins.length = 0;
+            this._priorityBins.length = 0;
             minPriority = 0;
             maxPriority = -1;
         };
@@ -251,18 +250,17 @@
 
 
     LayoutManager.invalidateProperties = function (obj) {
-        console.log(obj.getName() + "*** LayoutManager._invalidatePropertiesFlag *** " + LayoutManager._invalidatePropertiesFlag);
         if(!LayoutManager._invalidatePropertiesFlag){
             LayoutManager._invalidatePropertiesFlag = true;
             if(!LayoutManager._listenersAttached){
                 LayoutManager.attachListeners(LayoutManager.systemManager);
             }
-
-            if(LayoutManager._targetLevel <= obj.getNestLevel()){
-                LayoutManager._invalidateClientPropertiesFlag = true;
-            }
-            LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
         }
+        if(LayoutManager._targetLevel <= obj.getNestLevel()){
+            LayoutManager._invalidateClientPropertiesFlag = true;
+        }
+        LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
+
     };
 
     LayoutManager.invalidateSize = function (obj) {
@@ -276,7 +274,6 @@
         if(LayoutManager._targetLevel <= obj.getNestLevel()){
             LayoutManager._invalidateClientSizeFlag = true;
         }
-
         LayoutManager._invalidateSizeQueue.addObject(obj, obj.getNestLevel());
     };
 
@@ -305,7 +302,6 @@
             obj = LayoutManager._invalidatePropertiesQueue.removeSmallest();
         }
 
-        console.log(LayoutManager._invalidatePropertiesQueue.isEmpty());
         if(LayoutManager._invalidatePropertiesQueue.isEmpty()){
             LayoutManager._invalidatePropertiesFlag = false;
         }
@@ -313,7 +309,6 @@
 
     LayoutManager._validateSize = function() {
         var obj = LayoutManager._invalidateSizeQueue.removeLargest();
-
         while(obj){
             if(obj.getNestLevel()){
                 LayoutManager._currentObject = obj;
@@ -328,7 +323,7 @@
         }
 
         if(LayoutManager._invalidateSizeQueue.isEmpty()){
-            LayoutManager._invalidateSizeFlag;
+            LayoutManager._invalidateSizeFlag = false;
         }
     };
 
@@ -353,7 +348,6 @@
     };
 
     LayoutManager._doPhasedInstantiation = function() {
-//        console.log("_doPhasedInstantiation");
         if(LayoutManager.getUsePhasedInstantiation()){
             if(LayoutManager._invalidatePropertiesFlag){
                 LayoutManager._validateProperties();
@@ -378,7 +372,6 @@
         }
 
         if(LayoutManager._invalidatePropertiesFlag || LayoutManager._invalidateSizeFlag || LayoutManager._invalidateDisplayListFlag){
-            console.log("ddddddddd")
             LayoutManager.attachListeners(LayoutManager.systemManager);
         }else{
             LayoutManager.setUsePhasedInstantiation(false);
@@ -551,7 +544,6 @@
     LayoutManager._waitFrame = function(){
         LayoutManager.systemManager.removeEnterFrameListener(LayoutManager._waitFrame);
         LayoutManager.systemManager.addEnterFrameListener(LayoutManager._doPhasedInstantiationCallback);
-//        console.log("enterFrame WaiteFrame")
         LayoutManager._waitAFrame = true;
     };
 
