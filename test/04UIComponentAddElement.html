@@ -51,6 +51,18 @@
 
             c.setWidth(window.screen.width).setHeight(window.screen.width).setName("c");
 
+//            a.addEventListener("creationComplete", callEvent);
+//            b.addEventListener("creationComplete", callEvent);
+//            c.addEventListener("creationComplete", callEvent);
+//
+//            a.addEventListener("preinitialize", callEventA);
+//            b.addEventListener("preinitialize", callEventA);
+//            c.addEventListener("preinitialize", callEventA);
+//
+//            a.addEventListener("initialize", callEventB);
+//            b.addEventListener("initialize", callEventB);
+//            c.addEventListener("initialize", callEventB);
+
             application.addElement(a);
             a.addElement(b);
             b.addElement(c);
@@ -77,6 +89,18 @@
 //            console.log("te :  " + te.getNestLevel());
 
         }
+
+        function callEvent(event){
+            console.log("creationComplete ---------- : " + event.volcanoCurrentTarget.getName());
+        };
+
+        function callEventA(event){
+            console.log("preinitialize ---------- : " + event.volcanoCurrentTarget.getName());
+        };
+
+        function callEventB(event){
+            console.log("initialize ---------- : " + event.volcanoCurrentTarget.getName());
+        };
 
 //        function testFun(){
 //            a.invalidateProperties();

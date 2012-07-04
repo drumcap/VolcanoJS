@@ -42,6 +42,8 @@
      */
     p.parent = null;
 
+    p._alpha = 1.0;
+
     p.Core_initialize = p.initialize;
     p.initialize = function () {
         // 변수 초기화
@@ -404,6 +406,14 @@
         this.removeElement(element);
         this.addElementAt(element, index);
     };
+
+    p.setAlpha = function(value){
+        return this;
+    };
+
+    p.getAlpha = function(){
+        return null;
+    }
 
     window.volcano.VolcanoSprite = VolcanoSprite;
 
