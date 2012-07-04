@@ -28,7 +28,6 @@
     p._skinCanvas = null;
     p._updateCompletePendingFlag = false;
     p._processedDescriptiors = false;
-    p._alpha = 1;
 
     p.VolcanoSprite_initialize = p.initialize;
 
@@ -218,10 +217,6 @@
         this.invalidateDisplayList();
         return this;
     };
-
-    p.setAlpha = function(value){};
-
-    p.getAlpha = function(){return null};
 
     p.setActualSize = function(w,h) {
         var changed = false;
