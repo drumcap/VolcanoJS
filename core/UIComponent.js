@@ -62,7 +62,7 @@
             } catch (e) {}
 
             return c;
-        }
+        };
 
         this._skinCanvas = createCanvas(this._width, this._height);
         this._wrapperDiv.appendChild(this._skinCanvas);
@@ -79,12 +79,12 @@
     p._id = "";
     p.getId = function() {
         return this._id;
-    }
+    };
 
     p.setId = function(id) {
         this._id = id;
         return this;
-    }
+    };
 
 
     p._nestLevel = 0;
@@ -135,7 +135,7 @@
 
     p.getProcessedDescriptors = function(){
         return this._processedDescriptors;
-    }
+    };
 
     p._updateCallbacks = function() {
         if (this._invalidateDisplayListFlag) {
@@ -161,7 +161,7 @@
 
     p.validateNow = function(){
         volcano.LayoutManager.validateClient(this);
-    }
+    };
 
     /**
    	 * 컴포넌트의 스타일을 가져옴
