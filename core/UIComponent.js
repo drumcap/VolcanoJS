@@ -419,6 +419,16 @@
         this.initializationComplete();
     };
 
+    // TODO Layout 적용 시 구현
+    p.getLayoutBoundsX = function(postLayoutTransform){
+
+    };
+
+    // TODO Layout 적용 시 구현
+    p.getLayoutBoundsY = function(postLayoutTransform){
+
+    }
+
 // protected Method
     /**
      * 객체 생성및 초기화를 위한 override 메소드

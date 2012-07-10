@@ -15,7 +15,7 @@
 
 // private Properties
     p._explicitAlpha = 1.0;
-    p._layout = new LayoutBase();
+    p._layout = null;
     p._layoutProperties = {};
     p._layoutInvalidateSizeFlag = false;
     p._layoutInvalidateDisplayListFlag = false;
@@ -39,6 +39,8 @@
     p.UIComponent_initialize = p.initialize();
     p.initialize = function() {
         this.UIComponent_initialize(); // super
+
+        p._layout = new LayoutBase();
     };
 
     p.UIComponent_invalidateSize = p.invalidateSize();
