@@ -20,10 +20,11 @@
     UIComponent._callLaterDispatcherCount = 0;
     UIComponent._catchCallLaterExceptions = false;
     p._methodQueue = null;
-    p.systemManager = null; //todo systemManager 클래스 만들면 인스턴스 생성
-    p.skin = null; //todo skin architecture 완성되면 코드삽입
+    p.systemManager = null;
+    p._skin = null; //todo skin architecture 완성되면 코드삽입
     p.states = null; //todo state mechanism 완성되면 코드삽입
     p._deferredSetStyles = null;
+    p._owner = null;
     p._wrapperDiv = null;
     p._skinCanvas = null;
     p._updateCompletePendingFlag = false;
@@ -32,12 +33,13 @@
     p.VolcanoSprite_initialize = p.initialize;
 
     p.initialize = function() {
-        // 변수 초기화
+        // 변수 초기화 (primitive 이외의 타입은 반드시 초기화 해야함)
         this._methodQueue = [];
-        this.systemManager = {}; //todo systemManager 클래스 만들면 인스턴스 생성
-        this.skin = {}; //todo skin architecture 완성되면 코드삽입
+        this.systemManager = volcano.LayoutManager.systemManager;
+        this._skin = {}; //todo skin architecture 완성되면 코드삽입
         this.states = []; //todo state mechanism 완성되면 코드삽입
         this._deferredSetStyles = {};
+        this._owner = {};
 
         this._wrapperDiv = {};
         this._skinCanvas = {};
@@ -54,16 +56,36 @@
             var c = document.createElement('canvas');
             c.width = w;
             c.height = h;
-            if (oldIE) // excanvas hack
-                c = window.G_vmlCanvasManager.initElement(c);
+            try {
+                if (oldIE) // excanvas hack
+                    c = window.G_vmlCanvasManager.initElement(c);
+            } catch (e) {}
+
             return c;
-        }
+        };
 
         this._skinCanvas = createCanvas(this._width, this._height);
         this._wrapperDiv.appendChild(this._skinCanvas);
     };
 
-    p.getOwner = function() {};
+    p.getOwner = function() {
+        return this._owner ? this._owner : this.parent;
+    };
+    p.setOwner = function (o) {
+        this._owner = o;
+        return this;
+    };
+
+    p._id = "";
+    p.getId = function() {
+        return this._id;
+    };
+
+    p.setId = function(id) {
+        this._id = id;
+        return this;
+    };
+
 
     p._nestLevel = 0;
     /**
@@ -113,7 +135,7 @@
 
     p.getProcessedDescriptors = function(){
         return this._processedDescriptors;
-    }
+    };
 
     p._updateCallbacks = function() {
         if (this._invalidateDisplayListFlag) {
@@ -139,7 +161,7 @@
 
     p.validateNow = function(){
         volcano.LayoutManager.validateClient(this);
-    }
+    };
 
     /**
    	 * 컴포넌트의 스타일을 가져옴
@@ -165,15 +187,35 @@
             this.invalidateProperties();
             this.invalidateDisplayList();
         }
+        return this;
+    };
+
+    p._styleName = null;
+
+    p.getStyleName = function() {
+        return this._styleName;
+    };
+
+    p.setStyleName = function(value) {
+        if (this._styleName !== value) {
+            this._styleName = value;
+
+            //XXX we have to write code related to style later
+//            this.regenateStyleCache(true);
+//            initThemeColor();
+//            styleChanged("styleName");
+//            notifyStyleChangeInChildren("styleName", true);
+        }
+        return this;
     };
 
     p.getSkin = function() {
-        return this.skin;
+        return this._skin;
     };
     p.setSkin = function(o) {
         var isSkinChange = false;
-        if (this.skin !== o) {
-            this.skin = o;
+        if (this._skin !== o) {
+            this._skin = o;
             isSkinChange = true;
         }
 
@@ -218,6 +260,17 @@
         return this;
     };
 
+    p._enabled = false;
+    p.getEnabled = function () {
+        return this._enabled;
+    };
+
+    p.setEnabled = function (value) {
+        this._enabled = value;
+        this.invalidateDisplayList();
+        //TODO dispatch enabled event
+    };
+
     p.setActualSize = function(w,h) {
         var changed = false;
         if (this._width != w) {
@@ -256,6 +309,9 @@
     p._invalidatePropertiesFlag = false;
     p._invalidateSizeFlag = false;
     p._invalidateDisplayListFlag = false;
+    /**
+     * 속성의 다음 프레임 화면에 적용을 위한 invalidate 예약 명령어
+     */
     p.invalidateProperties = function() {
         if (!this._invalidatePropertiesFlag) {
             this._invalidatePropertiesFlag = true;
@@ -265,6 +321,9 @@
         }
     };
 
+    /**
+     * 화면의 다음 프레임 크기 조절을 위한 invalidate 예약 명령어
+     */
     p.invalidateSize = function() {
         if (!this._invalidateSizeFlag) {
             this._invalidateSizeFlag = true;
@@ -273,6 +332,9 @@
         }
     };
 
+    /**
+     * 화면의 다음 프레임에 업데이트를 하기 위한 invalidate 예약 명령어
+     */
     p.invalidateDisplayList = function() {
         if (!this._invalidateDisplayListFlag) {
             this._invalidateDisplayListFlag = true;
@@ -392,7 +454,6 @@
     };
 
 
-
     p._initialized = false;
     p.getInitialized = function() {
         return this._initialized;
@@ -478,9 +539,6 @@
         this.dispatchEvent("initialize");
         this.setProcessedDescriptors(true);
     };
-
-// private Method
-    p._setOwner = function(o) {};
 
     window.volcano.UIComponent = UIComponent;
 

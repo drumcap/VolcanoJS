@@ -35,7 +35,7 @@
 
         volcano.LayoutManager.systemManager = this;
         var that = this.instance = this; //아래의 핸들러에서 this가 window 객체로 덮어쓰기 되기 때문에 클로저로 유지
-        var resizeHandler = function(e) {
+        var resizeHandler = function () {
             that.setWidth(window.innerWidth).setHeight(window.innerHeight);
             that.dispatchEvent("resize");
         };
@@ -45,7 +45,7 @@
 
     p.getNestLevel = function(){
         return this._nestLevel;
-    }
+    };
 
     p._fps = 24;
     p.setFrameRate = function (fps) {
