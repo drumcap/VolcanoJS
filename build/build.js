@@ -8,16 +8,18 @@ var SOURCE_FILES = [
 	"../src/core/Core.js",
     "../src/events/EventDispatcher.js",
     "../src/core/VolcanoSprite.js",
+    "../src/managers/SystemManager.js",
+    "../src/managers/LayoutManager.js",
     "../src/core/UIComponent.js",
     "../src/core/SkinnableComponent.js",
-    "../src/managers/LayoutManager.js",
-    "../src/managers/SystemManager.js",
     "../src/skins/SkinBase.js",
     "../src/utils/ColorUtil.js",
     "../src/utils/ObjectUtil.js"
 ];
 
 // default name for lib output:
+var JS_SRC_FILE_NAME = "volcanojs-%VERSION%.js";
+
 var JS_FILE_NAME = "volcanojs-%VERSION%.min.js";
 
 // project name:
@@ -227,10 +229,14 @@ function buildSourceTask(completeHandler)
 
 	var file_args = [];
 	var len = SOURCE_FILES.length;
+    var merged_source_data = "";
+
 	for(var i = 0; i < len; i++)
 	{
 		file_args.push("--js");
 		file_args.push(SOURCE_FILES[i]);
+
+        merged_source_data += FILE.readFileSync(SOURCE_FILES[i], "UTF-8");
 	}
 	
 	if(extraSourceFiles)
@@ -240,9 +246,14 @@ function buildSourceTask(completeHandler)
 		{
 			file_args.push("--js");
 			file_args.push(extraSourceFiles[i]);
+
+            merged_source_data += FILE.readFileSync(extraSourceFiles[i], "UTF-8");
 		}
 	}
-	
+
+    var license_data = FILE.readFileSync("license.txt", "UTF-8");
+    JS_SRC_FILE_NAME = JS_SRC_FILE_NAME.split("%VERSION%").join(version);
+    FILE.writeFileSync( PATH.join(OUTPUT_DIR_NAME, JS_SRC_FILE_NAME ), license_data+merged_source_data, "UTF-8");
 	
 	var tmp_file = PATH.join(OUTPUT_DIR_NAME,"tmp.js");
 	var final_file = PATH.join(OUTPUT_DIR_NAME, js_file_name);
@@ -255,6 +266,7 @@ function buildSourceTask(completeHandler)
 			["--js_output_file", tmp_file]
 		);
 		
+    print("closure log : \n "+cmd);
 
 	CHILD_PROCESS.exec(
 		cmd.join(" "),
@@ -279,7 +291,7 @@ function buildSourceTask(completeHandler)
 				exitWithFailure();
 		    }
 		
-			var license_data = FILE.readFileSync("license.txt", "UTF-8");
+
 			var final_data = FILE.readFileSync(tmp_file, "UTF-8");
 
 			FILE.writeFileSync(final_file, license_data + final_data, "UTF-8");

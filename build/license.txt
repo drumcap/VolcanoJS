@@ -1,8 +1,8 @@
 /*
-* EaselJS
-* Visit http://createjs.com/ for documentation, updates and examples.
+* VolcanoJS
+* Visit http://volcanojs.com/ for documentation, updates and examples.
 *
-* Copyright (c) 2011 gskinner.com, inc.
+* Copyright (c) 2012 gstech.co.kr, inc.
 * 
 * Distributed under the terms of the MIT license.
 * http://www.opensource.org/licenses/mit-license.html

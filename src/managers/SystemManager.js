@@ -5,8 +5,8 @@
     * @class SystemManager
     * @author david yun
     **/
-    var SystemManager = function() {
-        this.initialize();
+    var SystemManager = function(host) {
+        this.initialize(host);
     };
 
     var p = SystemManager.prototype = new volcano.VolcanoSprite();
@@ -17,7 +17,7 @@
     p._body = null;
     p._onEnterFrameItems = null;
 
-    p.initialize = function() {
+    p.initialize = function(host) {
         // 변수 초기화
         this.instance = {};
         this._body = {};
@@ -29,7 +29,8 @@
         Ticker.addListener(this);
 
         this.setWidth(window.innerWidth).setHeight(window.innerHeight);
-        this._body = document.body;
+
+        (host) ? this._body = host : this._body = document.body;
         this._body.appendChild(this._wrapperDiv);
         this._nestLevel = 1; // systemManager는 언제나 nestLevel 1
 
