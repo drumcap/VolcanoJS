@@ -6,13 +6,13 @@
     <script src="http://underscorejs.org/underscore-min.js"></script>
     <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
     <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
-    <!--<script src="../src/core/Core.js"></script>-->
-    <!--<script src="../src/core/VolcanoSprite.js"></script>-->
-    <!--<script src="../src/managers/SystemManager.js"></script>-->
-    <!--<script src="../src/managers/LayoutManager.js"></script>-->
-    <!--<script src="../src/core/UIComponent.js"></script>-->
-    <!--<script src="../src/utils/ColorUtil.js"></script>-->
-    <script src="../lib/volcanojs.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VolcanoSprite.js"></script>
+    <script src="../src/managers/SystemManager.js"></script>
+    <script src="../src/managers/LayoutManager.js"></script>
+    <script src="../src/core/UIComponent.js"></script>
+    <script src="../src/utils/ColorUtil.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
     <script>
 
 
@@ -26,8 +26,8 @@
             var ui1 = new volcano.UIComponent();
             var ui2 = new volcano.UIComponent();
 
-            console.log("sprite : "+(sp1._wrapperDiv === sp2._wrapperDiv));
-            console.log("uicom : "+(ui1._wrapperDiv === ui2._wrapperDiv));
+            console.log("sprite : "+(sp1._domElement === sp2._domElement));
+            console.log("uicom : "+(ui1._domElement === ui2._domElement));
         }
 
     </script>

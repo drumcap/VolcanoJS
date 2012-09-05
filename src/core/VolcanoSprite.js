@@ -25,7 +25,7 @@
      * @type {*}
      * @private
      */
-    p._wrapperDiv = null;
+    p._domElement = null;
     /**
      * 요소의 객체를 담아 두는 저장 공간
      * @type {Array}
@@ -47,7 +47,7 @@
     p.Core_initialize = p.initialize;
     p.initialize = function () {
         // 변수 초기화
-        this._wrapperDiv = {};
+        this._domElement = {};
         this._elementsContent = [];
         this.eventCallback = {};
         this.parent = {};
@@ -63,6 +63,8 @@
             con.style.top = y + "px";
             con.style.width = w + "px";
             con.style.height = h + "px";
+            con.style.webkitTransform = "translateZ(0px)";
+            con.style.webkitTransformStyle = "preserve-3d";
             if (bgColor != undefined) {
                 con.style.backgroundColor = bgColor;
             }
@@ -76,8 +78,8 @@
             return con;
         };
 
-        this._wrapperDiv = createContainer(0, 0, this._width, this._height);
-        this._wrapperDiv.volcanoObj = this; //FIXME 향후 메모리 문제가 생길 소지 있으니 개선해야함.
+        this._domElement = createContainer(0, 0, this._width, this._height);
+        this._domElement.volcanoObj = this; //FIXME 향후 메모리 문제가 생길 소지 있으니 개선해야함.
     };
 
     /**
@@ -88,17 +90,35 @@
      * @return {*}
      */
     p.addEventListener = function (events, callback) {
-        var calls, event, node, tail, list, innerCallback;
+        var calls, event, node, tail, list, innerCallback, nodeTarget, cacheTarget, proxyEvent;
         if (!(events || callback)) return this;
         events = events.split(VolcanoSprite._eventSplitter);
         calls = this._callbacks || (this._callbacks = {});
 
         innerCallback = function(event) {
             if (event) {
+
+                if (!nodeTarget || cacheTarget != event.target) {
+                    nodeTarget = cacheTarget = event.target;
+                }
+
+                if (!nodeTarget.volcanoObj) {
+                    nodeTarget = nodeTarget.parentNode;
+                    innerCallback.call(this,event);
+                    return;
+                }
+
                 event.volcanoCurrentTarget = this.volcanoObj; //핸들러에서의 this는 currentTarget을 가르킴
-                event.volcanoTarget = event.target.volcanoObj;
+                event.volcanoTarget = nodeTarget.volcanoObj;
+                event.domCurrentTarget = event.currentTarget;
+                event.domTarget = event.target;
+
+                _.extend(proxyEvent={}, event);
+                proxyEvent.currentTarget = event.volcanoCurrentTarget;
+                proxyEvent.target = event.volcanoTarget;
+                proxyEvent.constructor = event.constructor;
             }
-            callback(event);
+            callback(proxyEvent);
         };
 
         while (event = events.shift()) {
@@ -107,7 +127,7 @@
             node.next = tail = {};
             node.callback = innerCallback;
             calls[event] = {tail: tail, next: list ? list.next : node};
-            this._wrapperDiv.addEventListener(event, innerCallback);
+            this._domElement.addEventListener(event, innerCallback);
         }
         return this;
     };
@@ -132,9 +152,8 @@
             tail = node.tail;
             while ((node = node.next) !== tail) {
                 cb = node.callback;
-                this._wrapperDiv.removeEventListener(event, cb);
+                this._domElement.removeEventListener(event, cb);
             }
-
         }
         return this;
     };
@@ -158,10 +177,10 @@
 
                 localEvt = document.createEvent('CustomEvent');
                 localEvt.initCustomEvent(event, canBubble, false, {}); //4번째 파라미터는 ie9 오류방지를 위한 data
-                this._wrapperDiv.dispatchEvent(localEvt);
+                this._domElement.dispatchEvent(localEvt);
             }
         } else if (_.isObject(events)) {
-            this._wrapperDiv.dispatchEvent(events);
+            this._domElement.dispatchEvent(events);
         }
         return this;
     };
@@ -181,7 +200,7 @@
      */
     p.setWidth = function (w) {
         this._width = w;
-        this._wrapperDiv.style.width = w+"px";
+        this._domElement.style.width = w+"px";
         return this;
     };
     p._height = 0;
@@ -199,7 +218,44 @@
      */
     p.setHeight = function (h) {
         this._height = h;
-        this._wrapperDiv.style.height = h+"px";
+        this._domElement.style.height = h+"px";
+        return this;
+    };
+
+    p._percentWidth = 0;
+    /**
+     * percent width를 가져오는 Getter
+     * @return {*}
+     */
+    p.getPercentWidth = function () {
+        return this._percentWidth;
+    };
+    /**
+     * percent width를 저장하는 Setter
+     * @param {Number} w
+     * @return {*}
+     */
+    p.setPercentWidth = function (w) {
+        this._percentWidth = w;
+        this._domElement.style.width = w+"%";
+        return this;
+    };
+    p._percentHeight = 0;
+    /**
+     * percent height를 가져오는 Getter
+     * @return {*}
+     */
+    p.getPercentHeight = function () {
+        return this._percentHeight;
+    };
+    /**
+     * percent height를 저장하는 Setter
+     * @param {Number} h
+     * @return {*}
+     */
+    p.setPercentHeight = function (h) {
+        this._percentHeight = h;
+        this._domElement.style.height = h+"%";
         return this;
     };
 
@@ -209,7 +265,7 @@
     };
     p.setX = function(x) {
         this._x = x;
-        this._wrapperDiv.style.left = x+"px";
+        this._domElement.style.left = x+"px";
         return this;
     };
 
@@ -219,7 +275,7 @@
     };
     p.setY = function(y) {
         this._y = y;
-        this._wrapperDiv.style.top = y+"px";
+        this._domElement.style.top = y+"px";
         return this;
     };
 
@@ -229,6 +285,17 @@
     };
     p.setName = function(name) {
         this._name = name;
+        return this;
+    };
+
+    p._id = "";
+    p.getId = function() {
+        return this._id;
+    };
+
+    p.setId = function(id) {
+        this._id = id;
+        this._domElement.id = id;
         return this;
     };
 
@@ -257,8 +324,8 @@
      */
     p._elementAdded = function (element, index, notifyListeners) {
         element.parent = this;
-        var host = this._wrapperDiv,
-            elementDiv = element._wrapperDiv;
+        var host = this._domElement,
+            elementDiv = element._domElement;
 
         // fixme 향후 Canvas 가 아닌 다른 Element 가 올 수 있으므로, 그 때 수정해야 함.
         var canvasNum = 0;
@@ -267,8 +334,8 @@
         if ((host.children.length - canvasNum) === index) {
             host.appendChild(elementDiv);
         } else {
-            console.log(this.getElementAt(index)._wrapperDiv);
-            host.insertBefore(elementDiv, this.getElementAt(index)._wrapperDiv);
+            console.log(this.getElementAt(index)._domElement);
+            host.insertBefore(elementDiv, this.getElementAt(index)._domElement);
         }
 
         if (notifyListeners) {
@@ -284,7 +351,7 @@
      */
     p._elementRemoved = function (element, index, notifyListeners) {
         element.parent = null;
-        this._wrapperDiv.removeChild(element._wrapperDiv);
+        this._domElement.removeChild(element._domElement);
 
         if (notifyListeners) {
             this.dispatchEvent("elementRemoved");
@@ -407,12 +474,27 @@
         this.addElementAt(element, index);
     };
 
-    p.setAlpha = function(value){
+    p.setAlpha = function(v){
+        this._alpha = v;
+        this._domElement.style.opacity = v;
         return this;
     };
 
     p.getAlpha = function(){
-        return null;
+        return this._alpha;
+    };
+
+    p._visible = false;
+    p.setVisible = function(v) {
+        var vstr;
+        this._visible = v;
+        (v === true) ? vstr = "visible" : vstr = "hidden"
+        this._domElement.style.visibility = vstr;
+        return this;
+    }
+
+    p.getVisible = function() {
+        return this._visible;
     }
 
     window.volcano.VolcanoSprite = VolcanoSprite;

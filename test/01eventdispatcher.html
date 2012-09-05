@@ -3,22 +3,23 @@
 <head>
     <meta charset="utf-8" />
     <title>VolcanoJS UIComponent Test</title>
-    <script src="http://underscorejs.org/underscore-min.js" ></script>
+    <script src="http://underscorejs.org/underscore.js" ></script>
+    <script src="http://backbonejs.org/backbone.js" ></script>
     <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-    <!--<script src="../src/core/Core.js"></script>-->
-    <!--<script src="../src/events/EventDispatcher.js"></script>-->
-    <script src="../lib/volcanojs.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/events/EventDispatcher.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
     <script>
 
         var evt;
 
         function onLoadHandler() {
             evt = new volcano.EventDispatcher();
-            evt.addEventListener("test",onTestHandler);
+            evt.on("test",onTestHandler);
         }
 
         function fireEvent() {
-            evt.dispatchEvent("test");
+            evt.trigger("test");
         }
 
         function onTestHandler() {

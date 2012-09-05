@@ -3,13 +3,14 @@
 <head>
     <meta charset="utf-8" />
     <title>VolcanoJS UIComponent Test</title>
-    <script src="http://underscorejs.org/underscore-min.js" ></script>
+    <script src="http://underscorejs.org/underscore.js" ></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
     <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
     <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
-    <!--<script src="../src/core/Core.js"></script>-->
-    <!--<script src="../src/core/VolcanoSprite.js"></script>-->
-    <!--<script src="../src/utils/ColorUtil.js"></script>-->
-    <script src="../lib/volcanojs.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VolcanoSprite.js"></script>
+    <script src="../src/utils/ColorUtil.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
     <script>
 
         var sprite,
@@ -17,7 +18,7 @@
                 testcase = {};
 
         function onLoadHandler() {
-            volcano.VolcanoSprite.randomColorMode = true;
+            volcano.VolcanoSprite.randomColorMode = true;   // 디버깅을 위한 배경화면 컬러설정
 
             sprite = new volcano.VolcanoSprite();
 
@@ -29,12 +30,12 @@
                 console.log(event instanceof MouseEvent);
                 console.log(event instanceof Event);
                 console.log(event instanceof CustomEvent);
-                console.log(event.volcanoCurrentTarget._wrapperDiv);
-                console.log(event.volcanoTarget._wrapperDiv);
+                console.log(event.currentTarget._domElement);
+                console.log(event.target._domElement);
             }
 
             sprite.addEventListener("click",onClickHandler)
-            document.body.appendChild(sprite._wrapperDiv);
+            document.body.appendChild(sprite._domElement);
 
             testcase.case1 = function() {
                 var numElements = sprite.getNumElements();
@@ -59,8 +60,8 @@
         }
 
         function tick() {
-            //testcase.case1();
-            testcase.case2();
+            //testcase.case1(); // removeElement 예제
+            testcase.case2(); // setElementIndex 예제
         }
 
     </script>

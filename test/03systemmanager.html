@@ -10,6 +10,7 @@
     <script src="../src/managers/SystemManager.js"></script>
     <script src="../src/managers/LayoutManager.js"></script>
     <script src="../src/utils/ColorUtil.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
     <script>
 
 
@@ -19,20 +20,27 @@
             var wrapper = document.getElementById("wrapper");
             var sysMgr = new volcano.SystemManager(wrapper);
 
-            sysMgr.addEventListener("resize", function () {
-                console.log(volcano.LayoutManager.systemManager);
-            });
-            var aa = 0;
-            var efCallback = function () {
-                console.log(aa++);
-                if (aa > 5)
-                    sysMgr.removeEnterFrameListener(efCallback);
-            };
-            var efCallback2 = function () {
-                console.log("callback2!!!");
-            };
-            sysMgr.addEnterFrameListener(efCallback);
-            sysMgr.addEnterFrameListener(efCallback2);
+            sp = new volcano.VolcanoSprite().setId("sp");
+            sysMgr.addElement(sp);
+
+            temp = document.getElementById("sp");
+
+            console.log(temp);
+
+//            sysMgr.addEventListener("resize", function () {
+//                console.log(volcano.LayoutManager.systemManager);
+//            });
+//            var aa = 0;
+//            var efCallback = function () {
+//                console.log(aa++);
+//                if (aa > 5)
+//                    sysMgr.removeEnterFrameListener(efCallback);
+//            };
+//            var efCallback2 = function () {
+//                console.log("callback2!!!");
+//            };
+//            sysMgr.addEnterFrameListener(efCallback);
+//            sysMgr.addEnterFrameListener(efCallback2);
         }
 
     </script>

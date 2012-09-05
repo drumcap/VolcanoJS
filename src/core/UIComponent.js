@@ -25,7 +25,7 @@
     p.states = null; //todo state mechanism 완성되면 코드삽입
     p._deferredSetStyles = null;
     p._owner = null;
-    p._wrapperDiv = null;
+    p._domElement = null;
     p._skinCanvas = null;
     p._updateCompletePendingFlag = false;
     p._processedDescriptiors = false;
@@ -41,7 +41,7 @@
         this._deferredSetStyles = {};
         this._owner = {};
 
-        this._wrapperDiv = {};
+        this._domElement = {};
         this._skinCanvas = {};
 
         this.VolcanoSprite_initialize(); //super
@@ -65,7 +65,7 @@
         };
 
         this._skinCanvas = createCanvas(this._width, this._height);
-        this._wrapperDiv.appendChild(this._skinCanvas);
+        this._domElement.appendChild(this._skinCanvas);
     };
 
     p.getOwner = function() {
@@ -75,17 +75,6 @@
         this._owner = o;
         return this;
     };
-
-    p._id = "";
-    p.getId = function() {
-        return this._id;
-    };
-
-    p.setId = function(id) {
-        this._id = id;
-        return this;
-    };
-
 
     p._nestLevel = 0;
     /**
@@ -246,7 +235,15 @@
 
     p.setWidth = function(w) {
         this._width = w;
-        this._wrapperDiv.width = w;
+        this._domElement.width = w+"px";
+        this.invalidateProperties();
+        this.invalidateDisplayList();
+        return this;
+    };
+
+    p.setPercentWidth = function(w) {
+        this._percentWidth = w;
+        this._domElement.width = w+"%";
         this.invalidateProperties();
         this.invalidateDisplayList();
         return this;
@@ -254,7 +251,15 @@
 
     p.setHeight = function(h) {
         this._height = h;
-        this._wrapperDiv.height = h;
+        this._domElement.height = h+"px";
+        this.invalidateProperties();
+        this.invalidateDisplayList();
+        return this;
+    };
+
+    p.setPercentHeight = function(h) {
+        this._percentHeight = h;
+        this._domElement.height = h+"%";
         this.invalidateProperties();
         this.invalidateDisplayList();
         return this;
@@ -274,12 +279,12 @@
     p.setActualSize = function(w,h) {
         var changed = false;
         if (this._width != w) {
-            this._wrapperDiv.width = w+"px";
+            this._domElement.width = w+"px";
             this._skinCanvas.width = w+"px";
             changed = true;
         }
         if (this._height != h) {
-            this._wrapperDiv.width = h+"px";
+            this._domElement.width = h+"px";
             this._skinCanvas.width = h+"px";
             changed = true;
         }
@@ -291,7 +296,7 @@
     };
 
     p.move = function(x,y) {
-        var wrapperStyle = this._wrapperDiv.style;
+        var wrapperStyle = this._domElement.style;
         var changed = false;
         if (this._x != x) {
             wrapperStyle.left = this._x+"px";

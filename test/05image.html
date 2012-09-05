@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>VolcanoJS Image Test</title>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VolcanoSprite.js"></script>
+    <script src="../src/managers/SystemManager.js"></script>
+    <script src="../src/managers/LayoutManager.js"></script>
+    <script src="../src/utils/ColorUtil.js"></script>
+    <script src="../src/controls/Image.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
+    <!--<script src="render.js"></script>-->
+    <!--<script src="../src/exlibs/zynga/scroller/Scroller.js"></script>-->
+    <!--<script src="../src/exlibs/zynga/scroller/Animate.js"></script>-->
+    <!--<script src="../src/exlibs/zynga/scroller/EasyScroller.js"></script>-->
+    <script src="../src/exlibs/greensock/src/uncompressed/TweenLite.js"></script>
+    <script src="../src/exlibs/greensock/src/uncompressed/plugins/CSSPlugin.js"></script>
+    <script src="../src/exlibs/iscroll/src/iscroll.js"></script>
+
+    <script>
+
+        var a,b = {};
+        function onLoadHandler() {
+            volcano.VolcanoSprite.randomColorMode = true;
+            var sysMgr = new volcano.SystemManager();
+            sysMgr.addEventListener("click", function(e) {
+                a = e;
+                _.extend(b,e);
+                //console.log("target : "+e.target.getId()+ " , currentTarget : "+e.currentTarget.getId());
+                console.log(e);
+            });
+            var container = new volcano.VolcanoSprite().setPercentWidth(100).setPercentHeight(100).setId("container");
+            var scroller = new volcano.VolcanoSprite().setPercentWidth(100).setHeight(1400).setId("scroller");
+            sysMgr.addElement(container);
+            container.addElement(scroller);
+
+//            container._domElement.setAttribute("data-scrollable","y");
+//            new EasyScroller(container._domElement, {
+//                scrollingX: false,
+//                scrollingY: true,
+//                zooming: false
+//            });
+
+            new iScroll("container");
+            volcano.Image.DEFAULT_ERR_IMGAGE = "img/noimg.jpg"
+
+            for (var i=0; i<20; i++) {
+                var width = 200;
+                var height = 200;
+                var regRowCnt = i%3;
+                var regColCnt = Math.floor(i/3);
+                var gapY = 20;
+                var regX = regRowCnt * width;
+                var regY = regColCnt * height;
+
+                var img = new volcano.Image().setId("img"+i).setWidth(width).setHeight(height).setX(regX).setY(regY - gapY).setVisible(false).setAlpha(0).setSource("http://jindo.dev.naver.com/docs/jindo-mobile/archive/latest/sample/latest/im/movie_image("+i+").jpg");
+                if (i == 18) img.setErrorImg("img/noimg.gif");
+                scroller.addElement(img);
+
+                //if (i==19) { setScroll = function() { new iScroll("container"); };}                if (i==19)
+                TweenLite.to(img._domElement,.5,{css:{top:regY,autoAlpha:1}, delay:0.1*i, ease:Quad.easeOut, onComplete:function(i){
+                    if (i==19) {
+//                        new iScroll("container");
+
+                    }
+                    console.log(i);
+                },onCompleteParams:[i]});
+            }
+
+//            sysMgr._domElement.style.overflow = "auto";
+//            sysMgr._domElement.style.overflowX = "hidden";
+//            sysMgr._domElement.dataset.scrollable = "y";
+
+
+
+
+        }
+
+
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()">
+<div id="console"></div>
+<div id="wrapper"></div>
+</body>
+</html>

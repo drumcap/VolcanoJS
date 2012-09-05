@@ -28,10 +28,11 @@
         Ticker.setFPS(this._fps);
         Ticker.addListener(this);
 
-        this.setWidth(window.innerWidth).setHeight(window.innerHeight);
+        this.setWidth(window.innerWidth).setHeight(window.innerHeight).setId("systemManager");
 
         (host) ? this._body = host : this._body = document.body;
-        this._body.appendChild(this._wrapperDiv);
+        this._body.appendChild(this._domElement);
+        this._domElement.style.overflow = "hidden";
         this._nestLevel = 1; // systemManager는 언제나 nestLevel 1
 
         volcano.LayoutManager.systemManager = this;
@@ -62,13 +63,14 @@
     p._elementAdded = function (element, index, notifyListeners) {
         this.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
 
-        element.setNestLevel(this.getNestLevel()+1); // nest level 추가
+        if (element.setNestLevel)
+            element.setNestLevel(this.getNestLevel()+1); // nest level 추가
         //todo 스타일 캐시 재생성 element.regenerateStyleCache(true);
         //todo 스타일 변경 알림  element.styleChanged(null);
         //todo 차일드에게 스타일 변경 알림 element.notifyStyleChangeInChildren(null, true);
         //todo 테마 컬러 초기화 element.initThemeColor();
         //todo 스타일 초기화 element.stylesInitialized();
-        if (element.getInitialized()) {
+        if (element.getInitialized && element.getInitialized()) {
             element.initComponent();
         }
     };

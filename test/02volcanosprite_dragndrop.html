@@ -3,13 +3,14 @@
 <head>
     <meta charset="utf-8"/>
     <title>VolcanoJS UIComponent Test</title>
-    <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://underscorejs.org/underscore.js" ></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
     <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
     <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
-    <!--<script src="../src/core/Core.js"></script>-->
-    <!--<script src="../src/core/VolcanoSprite.js"></script>-->
-    <!--<script src="../src/utils/ColorUtil.js"></script>-->
-    <script src="../lib/volcanojs.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VolcanoSprite.js"></script>
+    <script src="../src/utils/ColorUtil.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
     <script>
 
         var sprite,
@@ -17,6 +18,8 @@
                 testcase = {};
 
         function onLoadHandler() {
+
+
             volcano.VolcanoSprite.randomColorMode = true;
 
             sprite = new volcano.VolcanoSprite();
@@ -27,22 +30,23 @@
             }
 
             sprite.addEventListener("mousedown", onMouseDownHandler);
-            document.body.appendChild(sprite._wrapperDiv);
+            document.body.appendChild(sprite._domElement);
+
 
 //            Ticker.setFPS(30);
 //            Ticker.addListener(window);
         }
-        var regX, regY, target;
+        var regX, regY, target
 
         function onMouseDownHandler(event) {
             sprite.removeEventListener("mousedown", onMouseDownHandler);
             sprite.addEventListener("mousemove", onMouseMoveHandler);
             sprite.addEventListener("mouseup", onMouseUpHandler);
 
-            target = event.volcanoTarget;
+            target = event.target;
             regX = event.pageX - target.getX();
             regY = event.pageY - target.getY();
-            sprite.setElementIndex(event.volcanoTarget, sprite.getNumElements() - 1);
+            sprite.setElementIndex(event.target, sprite.getNumElements() - 1);
         }
 
         function onMouseMoveHandler(event) {
