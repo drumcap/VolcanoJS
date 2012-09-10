@@ -22,23 +22,37 @@
     <script src="../src/exlibs/greensock/src/uncompressed/TweenLite.js"></script>
     <script src="../src/exlibs/greensock/src/uncompressed/plugins/CSSPlugin.js"></script>
     <script src="../src/exlibs/iscroll/src/iscroll.js"></script>
+    <script src="Stats.js"></script>
 
     <script>
 
         var a,b = {};
         function onLoadHandler() {
-            volcano.VolcanoSprite.randomColorMode = true;
+//            volcano.VolcanoSprite.randomColorMode = true;
             var sysMgr = new volcano.SystemManager();
+            sysMgr.setFrameRate(60);
             sysMgr.addEventListener("click", function(e) {
                 a = e;
                 _.extend(b,e);
                 //console.log("target : "+e.target.getId()+ " , currentTarget : "+e.currentTarget.getId());
-                console.log(e);
+//                console.log(e);
             });
-            var container = new volcano.VolcanoSprite().setPercentWidth(100).setPercentHeight(100).setId("container");
-            var scroller = new volcano.VolcanoSprite().setPercentWidth(100).setHeight(1400).setId("scroller");
+
+            stats = new Stats();
+            stats.domElement.style.position = "absolute";
+            stats.domElement.style.top = "0px";
+            document.body.appendChild(stats.domElement);
+
+            sysMgr.addEnterFrameListener(function(){stats.update()});
+            var container = new volcano.VolcanoSprite().percentWidth(100).percentHeight(100).id("container");
+            var scroller = new volcano.VolcanoSprite().percentWidth(100).height(1400).id("scroller");
             sysMgr.addElement(container);
             container.addElement(scroller);
+
+            container.addEventListener("click", function(e){
+//                console.log(e.target);
+                TweenLite.to(e.target,.5,{z:-180, rotationY:0});
+            });
 
 //            container._domElement.setAttribute("data-scrollable","y");
 //            new EasyScroller(container._domElement, {
@@ -59,29 +73,19 @@
                 var regX = regRowCnt * width;
                 var regY = regColCnt * height;
 
-                var img = new volcano.Image().setId("img"+i).setWidth(width).setHeight(height).setX(regX).setY(regY - gapY).setVisible(false).setAlpha(0).setSource("http://jindo.dev.naver.com/docs/jindo-mobile/archive/latest/sample/latest/im/movie_image("+i+").jpg");
-                if (i == 18) img.setErrorImg("img/noimg.gif");
+                var img = new volcano.Image().id("img"+i).width(width).height(height).x(regX).y(regY - gapY).visible(false).alpha(0).source("http://jindo.dev.naver.com/docs/jindo-mobile/archive/latest/sample/latest/im/movie_image("+i+").jpg");
+                if (i == 18) img.errorImg("img/noimg.gif");
                 scroller.addElement(img);
 
                 //if (i==19) { setScroll = function() { new iScroll("container"); };}                if (i==19)
-                TweenLite.to(img._domElement,.5,{css:{top:regY,autoAlpha:1}, delay:0.1*i, ease:Quad.easeOut, onComplete:function(i){
-                    if (i==19) {
-//                        new iScroll("container");
-
-                    }
-                    console.log(i);
-                },onCompleteParams:[i]});
+                TweenLite.to(img,.5,{y:regY, rotationY:180, z:200, alpha:1, delay:0.1*i, ease:Quad.easeOut, onStart:function(target){
+                    target.visible(true);
+//                    console.log(target);
+                },onStartParams:[img]});
             }
-
-//            sysMgr._domElement.style.overflow = "auto";
-//            sysMgr._domElement.style.overflowX = "hidden";
-//            sysMgr._domElement.dataset.scrollable = "y";
-
-
 
 
         }
-
 
 
     </script>

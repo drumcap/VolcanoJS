@@ -160,14 +160,15 @@ var m = Math,
 		if ( that.options.zoom && isAndroid ){
 			translateZ = '';
 		}
-		
+        translateZ = '';
+
 		// Set some default styles
-		that.scroller.style[transitionProperty] = that.options.useTransform ? cssVendor + 'transform' : 'top left';
-		that.scroller.style[transitionDuration] = '0';
-		that.scroller.style[transformOrigin] = '0 0';
-		if (that.options.useTransition) that.scroller.style[transitionTimingFunction] = 'cubic-bezier(0.33,0.66,0.66,1)';
+//		that.scroller.style[transitionProperty] = that.options.useTransform ? cssVendor + 'transform' : 'top left';
+//		that.scroller.style[transitionDuration] = '0';
+//		that.scroller.style[transformOrigin] = '0 0';
+//		if (that.options.useTransition) that.scroller.style[transitionTimingFunction] = 'cubic-bezier(0.33,0.66,0.66,1)';
 		
-		if (that.options.useTransform) that.scroller.style[transform] = 'translate(' + that.x + 'px,' + that.y + 'px)' + translateZ;
+		if (that.options.useTransform) that.scroller.style[transform] = 'translate3d(' + that.x + 'px,' + that.y + 'px, 0px)' + translateZ;
 		else that.scroller.style.cssText += ';position:absolute;top:' + that.y + 'px;left:' + that.x + 'px';
 
 		if (that.options.useTransition) that.options.fixedScrollbar = true;
@@ -290,7 +291,7 @@ iScroll.prototype = {
 		y = this.vScroll ? y : 0;
 
 		if (this.options.useTransform) {
-			this.scroller.style[transform] = 'translate(' + x + 'px,' + y + 'px) scale(' + this.scale + ')' + translateZ;
+			this.scroller.style[transform] = 'translate3d(' + x + 'px,' + y + 'px, 0px)' + translateZ;
 		} else {
 			x = m.round(x);
 			y = m.round(y);
@@ -969,7 +970,7 @@ iScroll.prototype = {
 		that._scrollbar('v');
 
 		if (!that.zoomed) {
-			that.scroller.style[transitionDuration] = '0';
+//			that.scroller.style[transitionDuration] = '0';
 			that._resetPos(400);
 		}
 	},

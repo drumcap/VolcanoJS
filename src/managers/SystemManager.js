@@ -1,12 +1,40 @@
-(function(window) {
+/*
+ * SystemManager
+ * Visit http://volcanojs.com/ for documentation, updates and examples.
+ *
+ * Copyright (c) 2012 gstech.co.kr, inc.
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+(function (window) {
     /**
-    * Volcano의 전체 System Start Point
-    *
-    * @class SystemManager
-    * @author david yun
-    **/
-    var SystemManager = function(host) {
-        this.initialize(host);
+     * Volcano의 전체 System Start Point
+     *
+     * @class SystemManager
+     * @extends VolcanoSprite
+     * @author david yun
+     **/
+    var SystemManager = function (parent) {
+        this.initialize(parent);
     };
 
     var p = SystemManager.prototype = new volcano.VolcanoSprite();
@@ -17,35 +45,50 @@
     p._body = null;
     p._onEnterFrameItems = null;
 
-    p.initialize = function(host) {
+    p.initialize = function (parent) {
         // 변수 초기화
         this.instance = {};
         this._body = {};
         this._onEnterFrameItems = [];
 
-        this.VolcanoSprite_initialize();
+        this.VolcanoSprite_initialize("#systemManager");
 
         Ticker.setFPS(this._fps);
         Ticker.addListener(this);
 
-        this.setWidth(window.innerWidth).setHeight(window.innerHeight).setId("systemManager");
+        if (!_.isObject(parent))  this._body = parent = document.body;
 
-        (host) ? this._body = host : this._body = document.body;
+        var pst = parent.style;
+        this.setSize(pst.width, pst.height);
+//        this.width(_.isNumber(parent.style.width) ? parent.style.width : window.innerWidth ).height(_.isNumber(parent.style.height) ? parent.style.height : window.innerHeight);
+
         this._body.appendChild(this._domElement);
         this._domElement.style.overflow = "hidden";
+        this._domElement.style[volcano.Core._browserPrefix+"Perspective"] = "800px";
+        this._domElement.style[volcano.Core._browserPrefix+"PerspectiveOrigin"] = "0 0";
+        this._domElement.style[volcano.Core._browserPrefix+"TransformOrigin"] = "0 0";
+//        this._domElement.style.top = "50%";
+//        this._domElement.style.left = "50%";
+        this._domElement.style[volcano.Core._browserPrefix+"TransformStyle"] = "flat";
         this._nestLevel = 1; // systemManager는 언제나 nestLevel 1
 
         volcano.LayoutManager.systemManager = this;
-        var that = this.instance = this; //아래의 핸들러에서 this가 window 객체로 덮어쓰기 되기 때문에 클로저로 유지
+
+        var that = this.instance = this;
         var resizeHandler = function () {
-            that.setWidth(window.innerWidth).setHeight(window.innerHeight);
+            that.setSize(pst.width, pst.height);
             that.dispatchEvent("resize");
         };
 
         window.addEventListener("resize", resizeHandler);
     };
 
-    p.getNestLevel = function(){
+    p.setSize = function(w,h) {
+        this.width(_.isNumber(w) ? w : window.innerWidth).height(_.isNumber(h) ? h : window.innerHeight);
+        return this;
+    }
+
+    p.getNestLevel = function () {
         return this._nestLevel;
     };
 
@@ -64,7 +107,7 @@
         this.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
 
         if (element.setNestLevel)
-            element.setNestLevel(this.getNestLevel()+1); // nest level 추가
+            element.setNestLevel(this.getNestLevel() + 1); // nest level 추가
         //todo 스타일 캐시 재생성 element.regenerateStyleCache(true);
         //todo 스타일 변경 알림  element.styleChanged(null);
         //todo 차일드에게 스타일 변경 알림 element.notifyStyleChangeInChildren(null, true);
