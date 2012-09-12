@@ -30,7 +30,7 @@
      * VolcanoJS Project
      *
      * @class Image
-     * @extends VolcanoSprite
+     * @extends VSprite
      * @constructor
      * @author david yun
      *
@@ -39,14 +39,14 @@
         this.initialize();
     };
 
-    var p = Image.prototype = new volcano.VolcanoSprite();
-    p.VolcanoSprite_initialize = p.initialize;
+    var p = Image.prototype = new volcano.VSprite();
+    p.VSprite_initialize = p.initialize;
 
     p._imgElement;
 
     p.initialize = function () {
         this._imgElement = {};
-        this.VolcanoSprite_initialize(); //super
+        this.VSprite_initialize(); //super
         this._imgElement = document.createElement("img");
         this._imgElement.style.width = "100%";
         this._imgElement.style.height = "100%";

@@ -5,11 +5,13 @@
     <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
     <title>VolcanoJS Image Test</title>
+    <script src="http://zeptojs.com/zepto.js"></script>
     <script src="http://underscorejs.org/underscore.js"></script>
     <script src="http://backbonejs.org/backbone.js"></script>
     <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
     <script src="../src/core/Core.js"></script>
-    <script src="../src/core/VolcanoSprite.js"></script>
+    <script src="../src/core/VObject.js"></script>
+    <script src="../src/core/VSprite.js"></script>
     <script src="../src/managers/SystemManager.js"></script>
     <script src="../src/managers/LayoutManager.js"></script>
     <script src="../src/utils/ColorUtil.js"></script>
@@ -28,7 +30,7 @@
 
         var a,b = {};
         function onLoadHandler() {
-//            volcano.VolcanoSprite.randomColorMode = true;
+//            volcano.VObject.randomColorMode = true;
             var sysMgr = new volcano.SystemManager();
             sysMgr.setFrameRate(60);
             sysMgr.addEventListener("click", function(e) {
@@ -44,14 +46,21 @@
             document.body.appendChild(stats.domElement);
 
             sysMgr.addEnterFrameListener(function(){stats.update()});
-            var container = new volcano.VolcanoSprite().percentWidth(100).percentHeight(100).id("container");
-            var scroller = new volcano.VolcanoSprite().percentWidth(100).height(1400).id("scroller");
+            var container = new volcano.VSprite().percentWidth(100).percentHeight(100).id("container");
+            var scroller = new volcano.VSprite().percentWidth(100).height(1400).id("scroller");
             sysMgr.addElement(container);
             container.addElement(scroller);
 
-            container.addEventListener("click", function(e){
+            scroller.addEventListener("click", function(e){
 //                console.log(e.target);
-                TweenLite.to(e.target,.5,{z:-180, rotationY:0});
+                var target = e.target;
+                var ryTarget = 180;
+                if (target.rotationY() !== ryTarget){
+                    TweenLite.to(e.target,.5,{z:180, rotationY:ryTarget});
+                } else {
+                    TweenLite.to(e.target,.5,{z:0, rotationY:0});
+                }
+
             });
 
 //            container._domElement.setAttribute("data-scrollable","y");
@@ -61,8 +70,8 @@
 //                zooming: false
 //            });
 
-            new iScroll("container");
-            volcano.Image.DEFAULT_ERR_IMGAGE = "img/noimg.jpg"
+            new iScroll("container", { hScrollbar: false, vScrollbar: false });
+            volcano.Image.DEFAULT_ERR_IMGAGE = "img/noimg.jpg";
 
             for (var i=0; i<20; i++) {
                 var width = 200;
@@ -73,25 +82,23 @@
                 var regX = regRowCnt * width;
                 var regY = regColCnt * height;
 
-                var img = new volcano.Image().id("img"+i).width(width).height(height).x(regX).y(regY - gapY).visible(false).alpha(0).source("http://jindo.dev.naver.com/docs/jindo-mobile/archive/latest/sample/latest/im/movie_image("+i+").jpg");
+                var img = new volcano.Image().id("img"+i).rotationY(180).z(-600).width(width).height(height).x(regX).y(regY - gapY).visible(false).alpha(0).source("http://jindo.dev.naver.com/docs/jindo-mobile/archive/latest/sample/latest/im/movie_image("+i+").jpg");
                 if (i == 18) img.errorImg("img/noimg.gif");
                 scroller.addElement(img);
 
                 //if (i==19) { setScroll = function() { new iScroll("container"); };}                if (i==19)
-                TweenLite.to(img,.5,{y:regY, rotationY:180, z:200, alpha:1, delay:0.1*i, ease:Quad.easeOut, onStart:function(target){
+                TweenLite.to(img,.5,{y:regY, rotationY:0, z:0, alpha:1, delay:0.1*i, ease:Quad.easeOut, onStart:function(target){
                     target.visible(true);
 //                    console.log(target);
                 },onStartParams:[img]});
             }
-
-
-        }
+        };
 
 
     </script>
 </head>
 
-<body onload="onLoadHandler()">
+<body onload="onLoadHandler()" style="margin: 0px; padding: 0px;">
 <div id="console"></div>
 <div id="wrapper"></div>
 </body>

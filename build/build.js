@@ -7,7 +7,7 @@ CONFIGURATION
 var SOURCE_FILES = [
 	"../src/core/Core.js",
     "../src/events/EventDispatcher.js",
-    "../src/core/VolcanoSprite.js",
+    "../src/core/VSprite.js",
     "../src/managers/SystemManager.js",
     "../src/managers/LayoutManager.js",
     "../src/core/UIComponent.js",

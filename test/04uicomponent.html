@@ -7,7 +7,7 @@
     <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
     <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
     <script src="../src/core/Core.js"></script>
-    <script src="../src/core/VolcanoSprite.js"></script>
+    <script src="../src/core/VSprite.js"></script>
     <script src="../src/managers/SystemManager.js"></script>
     <script src="../src/managers/LayoutManager.js"></script>
     <script src="../src/core/UIComponent.js"></script>
@@ -17,11 +17,11 @@
 
 
         function onLoadHandler() {
-            volcano.VolcanoSprite.randomColorMode = true;
+            volcano.VSprite.randomColorMode = true;
             var sysMgr = new volcano.SystemManager();
 
-            var sp1 = new volcano.VolcanoSprite();
-            var sp2 = new volcano.VolcanoSprite();
+            var sp1 = new volcano.VSprite();
+            var sp2 = new volcano.VSprite();
 
             var ui1 = new volcano.UIComponent();
             var ui2 = new volcano.UIComponent();

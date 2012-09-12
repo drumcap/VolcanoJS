@@ -30,15 +30,15 @@
      * Volcano의 전체 System Start Point
      *
      * @class SystemManager
-     * @extends VolcanoSprite
+     * @extends VSprite
      * @author david yun
      **/
     var SystemManager = function (parent) {
         this.initialize(parent);
     };
 
-    var p = SystemManager.prototype = new volcano.VolcanoSprite();
-    p.VolcanoSprite_initialize = p.initialize;
+    var p = SystemManager.prototype = new volcano.VSprite();
+    p.VSprite_initialize = p.initialize;
 
     p.instance = null;
     p._nestLevel = 0;
@@ -51,7 +51,7 @@
         this._body = {};
         this._onEnterFrameItems = [];
 
-        this.VolcanoSprite_initialize("#systemManager");
+        this.VSprite_initialize("#systemManager");
 
         Ticker.setFPS(this._fps);
         Ticker.addListener(this);
@@ -102,9 +102,9 @@
         return this._fps;
     };
 
-    p.VolcanoSprite__elementAdded = p._elementAdded;
+    p.VSprite__elementAdded = p._elementAdded;
     p._elementAdded = function (element, index, notifyListeners) {
-        this.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
+        this.VSprite__elementAdded(element, index, notifyListeners); //super
 
         if (element.setNestLevel)
             element.setNestLevel(this.getNestLevel() + 1); // nest level 추가

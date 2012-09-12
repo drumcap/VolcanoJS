@@ -37,7 +37,7 @@
       this.initialize();
     };
 
-    var p = UIComponent.prototype = new volcano.VolcanoSprite();
+    var p = UIComponent.prototype = new volcano.VSprite();
 
     var MethodQueElement = function(method, args) {
         this.method = method;
@@ -57,7 +57,7 @@
     p._updateCompletePendingFlag = false;
     p._processedDescriptiors = false;
 
-    p.VolcanoSprite_initialize = p.initialize;
+    p.VSprite_initialize = p.initialize;
 
     p.initialize = function() {
         // 변수 초기화 (primitive 이외의 타입은 반드시 초기화 해야함)
@@ -71,7 +71,7 @@
         this._domElement = {};
         this._skinCanvas = {};
 
-        this.VolcanoSprite_initialize(); //super
+        this.VSprite_initialize(); //super
 
         // ie 인지 체크하고...
         var isExplorer = /msie [\w.]+/;
@@ -437,9 +437,9 @@
         }
     };
 
-    p.VolcanoSprite__elementAdded = p._elementAdded;
+    p.VSprite__elementAdded = p._elementAdded;
     p._elementAdded = function (element, index, notifyListeners) {
-        this.VolcanoSprite__elementAdded(element, index, notifyListeners); //super
+        this.VSprite__elementAdded(element, index, notifyListeners); //super
 
         element.parentChanged(this);
         element.setNestLevel(this.getNestLevel()+1); // nest level 추가
@@ -453,12 +453,12 @@
         }
     };
 
-    p.VolcanoSprite__elementRemoved = p._elementRemoved;
+    p.VSprite__elementRemoved = p._elementRemoved;
     p._elementRemoved = function(element, index, notifyListeners){
 
         element.parentChanged(null);
 
-        this.VolcanoSprite__elementRemoved(element, index, notifyListeners); //super
+        this.VSprite__elementRemoved(element, index, notifyListeners); //super
     };
 
     p.getUpdateCompletePendingFlag = function(){
