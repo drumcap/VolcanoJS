@@ -44,12 +44,14 @@
 
     if (typeof Backbone !== 'undefined' && Backbone) {
         _.extend(volcano, Backbone);
+
         volcano.BackboneVersion = volcano.VERSION;
     } else {
         throw new Error("volcanojs needs backbonejs library. \n you must include backbonejs before volcanojs");
     }
 
     volcano.VERSION = "0.1";
+    volcano.OS =
 
     /**
     * 이전 버전과의 충돌이 있을 경우 이전 버전을 사용 해야 할 때 호출.
@@ -71,7 +73,7 @@
     var Core = function() {
       this.initialize();
     };
-    Core.extend = window.volcano.Model.extend; // Backbone의 extend를 Core에 심어놓
+    Core.extend = window.volcano.Model.extend; // Backbone의 extend를 Core에 심어놓음
 
     Core._isInit = false;
     Core._isSupported = false;
@@ -97,7 +99,6 @@
                 }
             }
         }
-
     };
 
     window.volcano.Core = Core;

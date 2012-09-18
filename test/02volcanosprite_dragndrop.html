@@ -5,9 +5,8 @@
     <title>VolcanoJS UIComponent Test</title>
     <script src="http://underscorejs.org/underscore.js" ></script>
     <script src="http://backbonejs.org/backbone.js"></script>
-    <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
     <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VObject.js"></script>
     <script src="../src/core/VSprite.js"></script>
     <script src="../src/utils/ColorUtil.js"></script>
     <!--<script src="../lib/volcanojs.js"></script>-->
@@ -20,16 +19,20 @@
         function onLoadHandler() {
 
 
-            volcano.VSprite.randomColorMode = true;
+            volcano.VObject.randomColorMode = true;
+
+            volcano.mousedown = "mousedown";
+            volcano.mousemove = "mousemove";
+            volcano.mouseup = "mouseup";
 
             sprite = new volcano.VSprite();
-            sprite.setWidth(window.screen.width).setHeight(window.screen.width);
+            sprite.width(window.screen.width).height(window.screen.width);
 
             for (var i = 0; i < 50; i++) {
-                sprite.addElement(new volcano.VSprite().setWidth(100).setHeight(100).setX(i * 10).setY(i * 10));
+                sprite.addElement(new volcano.VSprite().width(100).height(100).x(i * 10).y(i * 10));
             }
 
-            sprite.addEventListener("mousedown", onMouseDownHandler);
+            sprite.addEventListener(volcano.mousedown, onMouseDownHandler);
             document.body.appendChild(sprite._domElement);
 
 
@@ -39,13 +42,13 @@
         var regX, regY, target
 
         function onMouseDownHandler(event) {
-            sprite.removeEventListener("mousedown", onMouseDownHandler);
-            sprite.addEventListener("mousemove", onMouseMoveHandler);
-            sprite.addEventListener("mouseup", onMouseUpHandler);
+            sprite.removeEventListener(volcano.mousedown, onMouseDownHandler);
+            sprite.addEventListener(volcano.mousemove, onMouseMoveHandler);
+            sprite.addEventListener(volcano.mouseup, onMouseUpHandler);
 
             target = event.target;
-            regX = event.pageX - target.getX();
-            regY = event.pageY - target.getY();
+            regX = event.pageX - target.x();
+            regY = event.pageY - target.y();
             sprite.setElementIndex(event.target, sprite.getNumElements() - 1);
         }
 
@@ -57,13 +60,13 @@
             var targetY = pageY - regY;
 
 //            console.log(targetX + " : " + targetY);
-            target.setX(targetX).setY(targetY);
+            target.x(targetX).y(targetY);
         }
 
         function onMouseUpHandler(event) {
-            sprite.addEventListener("mousedown", onMouseDownHandler);
-            sprite.removeEventListener("mousemove", onMouseMoveHandler);
-            sprite.removeEventListener("mouseup", onMouseUpHandler);
+            sprite.addEventListener(volcano.mousedown, onMouseDownHandler);
+            sprite.removeEventListener(volcano.mousemove, onMouseMoveHandler);
+            sprite.removeEventListener(volcano.mouseup, onMouseUpHandler);
         }
 
         function tick() {

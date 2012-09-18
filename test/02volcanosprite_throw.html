@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>VolcanoJS VSprite Throw Test</title>
+    <script src="http://zeptojs.com/zepto.js"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VObject.js"></script>
+    <script src="../src/core/VSprite.js"></script>
+    <script src="../src/managers/SystemManager.js"></script>
+    <script src="../src/managers/LayoutManager.js"></script>
+    <script src="../src/utils/ColorUtil.js"></script>
+    <script src="../src/controls/Image.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
+    <script src="Stats.js"></script>
+
+    <script>
+
+        var a,b = {},
+                container, sprite, sysMgr,
+                regX = 0, regY = 0,
+                targetX = 0, targetY = 0,
+                vX=0, vY=0;
+
+        var oldX=0, oldY=0;
+
+        var gravity = .5; //중력
+        var bounce = -0.7; //튕길때는 음수로 힘이 약간 상쇄된다.
+        var friction = .9; //마찰계수
+
+        var rect = {left:0, right:800, top:0, bottom:800}; //경계 Rect
+
+        function onLoadHandler() {
+            volcano.VObject.randomColorMode = true;
+            sysMgr = new volcano.SystemManager();
+            sysMgr.setFrameRate(60);
+
+            volcano.mousedown = "mousedown";
+            volcano.mousemove = "mousemove";
+            volcano.mouseup = "mouseup";
+
+            // FPS Viewer
+            stats = new Stats();
+            sysMgr.addElement(new volcano.VObject(stats.domElement));
+
+            container = new volcano.VSprite().percentWidth(100).percentHeight(100).id("container");
+            sprite = new volcano.VSprite().width(100).height(100).id("scroller");
+            sysMgr.addElement(container);
+            container.addElement(sprite);
+
+            var px = 0;
+
+            container.addEventListener(volcano.mousedown, onMouseDownHandler);
+
+            sysMgr.addEnterFrameListener(enterFrameHander);
+
+        }
+        var isMove = false;
+
+        var easingValue = 0.9;
+
+        function enterFrameHander() {
+            stats.update();
+
+            if (isMove) {
+                sprite.position(targetX, targetY, 0);
+            } else if (Math.abs(vX)>0 || Math.abs(vY)>0) {
+                vX = (Math.abs(vX) < 0.8) ? 0 : vX * friction;
+//                vY += gravity; //중력 추가
+                vY = (Math.abs(vY) < 0.8) ? 0 : vY * friction;
+
+
+                sprite.position(sprite.x() + vX, sprite.y() + vY, 0);
+
+                if (sprite.x() + sprite.width() > rect.right) {
+                    sprite.x(rect.right - sprite.width());
+                    vX *= bounce;
+                } else if (sprite.x() < rect.left) {
+                    sprite.x(rect.left);
+                    vX *= bounce;
+                }
+
+                if (sprite.y() + sprite.height() > rect.bottom) {
+                    sprite.y(rect.bottom - sprite.height());
+                    vY *= bounce;
+                } else if (sprite.y() < rect.top) {
+                    sprite.y(rect.top);
+                    vY *= bounce;
+                }
+
+            }
+
+        }
+
+        function onMouseDownHandler(event) {
+            target = event.target;
+
+            if (target !== sprite)
+                return;
+
+            container.removeEventListener(volcano.mousedown, onMouseDownHandler);
+            container.addEventListener(volcano.mousemove, onMouseMoveHandler);
+            container.addEventListener(volcano.mouseup, onMouseUpHandler);
+
+            isMove = false;
+
+            regX = event.pageX - target.x();
+            regY = event.pageY - target.y();
+
+            sysMgr.addEnterFrameListener(setAccelerate);
+        }
+
+
+        function onMouseMoveHandler(event) {
+            isMove = true;
+            var pageX = event.pageX,
+                pageY = event.pageY;
+
+            targetX = pageX - regX;
+            targetY = pageY - regY;
+
+        }
+
+        function onMouseUpHandler(event) {
+            isMove = false;
+            sysMgr.removeEnterFrameListener(setAccelerate);
+            container.addEventListener(volcano.mousedown, onMouseDownHandler);
+            container.removeEventListener(volcano.mousemove, onMouseMoveHandler);
+            container.removeEventListener(volcano.mouseup, onMouseUpHandler);
+        }
+
+        function setAccelerate() {
+            vX = targetX - oldX;
+            vY = targetY - oldY;
+
+            oldX = targetX;
+            oldY = targetY;
+        }
+
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()" style="margin: 0px; padding: 0px;">
+<div id="console"></div>
+<div id="wrapper"></div>
+</body>
+</html>

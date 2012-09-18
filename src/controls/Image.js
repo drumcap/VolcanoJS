@@ -39,22 +39,15 @@
         this.initialize();
     };
 
-    var p = Image.prototype = new volcano.VSprite();
-    p.VSprite_initialize = p.initialize;
+    var p = Image.prototype = new volcano.VObject();
+    p.VObject_initialize = p.initialize;
 
-    p._imgElement;
+    p._domElement;
 
     p.initialize = function () {
-        this._imgElement = {};
-        this.VSprite_initialize(); //super
-        this._imgElement = document.createElement("img");
-        this._imgElement.style.width = "100%";
-        this._imgElement.style.height = "100%";
-        this._imgElement.style[ volcano.Core._browserPrefix + "TransformStyle" ] = "preserve-3d";
-        this._imgElement.style[ volcano.Core._transformProperty ] = "translateZ(0px)";
-
+        var imgElement = document.createElement("img");
+        this.VObject_initialize(imgElement); //super
         _.bindAll(this,"errHandler");
-        this._domElement.appendChild(this._imgElement);
     };
 
     p.errHandler = function(event) {
@@ -62,15 +55,15 @@
         var condition2 = (this.errorImg() !== this._source);
 
         if (this.errorImg() !== "" && this.errorImg() !== this._source) {
-            this._imgElement.src = this.errorImg();
+            this._domElement.src = this.errorImg();
             console.log(this.errorImg() + this._source);
         }
     };
 
     p._source = "";
     p.source = function(value) {
-        this._imgElement.src = value;
-        this._imgElement.onerror = this.errHandler;
+        this._domElement.src = value;
+        this._domElement.onerror = this.errHandler;
         this._source = value;
         return this;
     };

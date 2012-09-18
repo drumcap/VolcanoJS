@@ -573,9 +573,11 @@ iScroll.prototype = {
 		}
 
 		if (duration < 300 && that.options.momentum) {
+            console.log("(dist, time, maxDistUpper, maxDistLower, size)", newPosY);
+            console.log(newPosY - that.startY, duration, -that.y, (that.maxScrollY < 0 ? that.scrollerH - that.wrapperH + that.y - that.minScrollY : 0), that.options.bounce ? that.wrapperH : 0);
 			momentumX = newPosX ? that._momentum(newPosX - that.startX, duration, -that.x, that.scrollerW - that.wrapperW + that.x, that.options.bounce ? that.wrapperW : 0) : momentumX;
 			momentumY = newPosY ? that._momentum(newPosY - that.startY, duration, -that.y, (that.maxScrollY < 0 ? that.scrollerH - that.wrapperH + that.y - that.minScrollY : 0), that.options.bounce ? that.wrapperH : 0) : momentumY;
-
+            console.log("momentumY.dist : ",momentumY.dist, ", time : ",momentumY.time);
 			newPosX = that.x + momentumX.dist;
 			newPosY = that.y + momentumY.dist;
 
@@ -601,7 +603,9 @@ iScroll.prototype = {
 
 			that.scrollTo(m.round(newPosX), m.round(newPosY), newDuration);
 
-			if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
+            console.log("mouseup scrollto : ", m.round(newPosX), m.round(newPosY), newDuration);
+
+            if (that.options.onTouchEnd) that.options.onTouchEnd.call(that, e);
 			return;
 		}
 
@@ -624,6 +628,8 @@ iScroll.prototype = {
 	},
 	
 	_resetPos: function (time) {
+
+        console.log("resetPos");
 		var that = this,
 			resetX = that.x >= 0 ? 0 : that.x < that.maxScrollX ? that.maxScrollX : that.x,
 			resetY = that.y >= that.minScrollY || that.maxScrollY > 0 ? that.minScrollY : that.y < that.maxScrollY ? that.maxScrollY : that.y;
@@ -760,6 +766,8 @@ iScroll.prototype = {
 
 			now = (now - startTime) / step.time - 1;
 			easeOut = m.sqrt(1 - now * now);
+            console.log(now, easeOut);
+
 			newX = (step.x - startX) * easeOut + startX;
 			newY = (step.y - startY) * easeOut + startY;
 			that._pos(newX, newY);

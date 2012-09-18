@@ -40,10 +40,11 @@
 //                console.log(e);
             });
 
+
             stats = new Stats();
-            stats.domElement.style.position = "absolute";
-            stats.domElement.style.top = "0px";
-            document.body.appendChild(stats.domElement);
+            sysMgr.addElement(new volcano.VObject(stats.domElement));
+
+//            document.body.appendChild(stats.domElement);
 
             sysMgr.addEnterFrameListener(function(){stats.update()});
             var container = new volcano.VSprite().percentWidth(100).percentHeight(100).id("container");

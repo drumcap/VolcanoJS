@@ -86,12 +86,15 @@
 
     p.Core_initialize = p.initialize;
     p.initialize = function (element) {
+
+        var $ = window.Zepto || window.jQuery,
+            createContainer;
         // 변수 초기화
         this._domElement = {};
         this.Core_initialize(); //call super
 
         // wrapper 컨테이너를 생성
-        var createContainer = function (w, h, bgColor) {
+        createContainer = function (w, h, bgColor) {
             var con = document.createElement('div');
             con.style.width = w + "px";
             con.style.height = h + "px";
@@ -126,8 +129,15 @@
                     element.id = str;
                     break;
             }
+        } else if (element.val && element.attr ) {
+            if (element.length > 1){
+                throw new Error("You are using multi selected jQuery/Zepto Object \n You MUST select only one DOM Object \n If you want to use multi selected jQuery/Zepto Object, you should use alternative class that is VobjectArray");
+            }
+            element = element.get(0);
         } else if (element.style.position == "static" ) {
             element.style.position = "relative";
+        } else {
+            element.style.position = "absolute";
         }
         element.style[ volcano.Core._browserPrefix + "TransformStyle" ] = "preserve-3d";
         element.style[ volcano.Core._transformProperty ] = "translateZ(0px)";
@@ -274,6 +284,7 @@
     p._height = 0;
     /**
      * height 값을 설정하는 Getter/Setter
+     * @param {Number} h
      * @return {*}
      */
     p.height = function (h) {
@@ -290,6 +301,7 @@
     p._percentWidth = 0;
     /**
      * percent width 값을 설정하는 Getter/Setter
+     * @param {Number} w
      * @return {*}
      */
     p.percentWidth = function (w) {
@@ -305,6 +317,7 @@
     p._percentHeight = 0;
     /**
      * percent height 값을 설정하는 Getter/Setter
+     * @param {Number} h
      * @return {*}
      */
     p.percentHeight = function (h) {
@@ -323,6 +336,7 @@
             if (this.isAutoUpdate) this.updateTransform();
             return this;
         } else {
+            var ret = this._string;
             return this._string[this._positions[0]] + this._ox;
         }
     };
@@ -491,11 +505,11 @@
 
     p.transformOrigin = function(tx,ty) {
         if ( arguments.length ) {
-            this.style[ volcano.Core._browserPrefix + "TransformOrigin" ] = (Number(tx)?tx+"px":tx) + " " + (Number(ty)?ty+"px":ty);
+            this._domElement.style[ volcano.Core._browserPrefix + "TransformOrigin" ] = (Number(tx)?tx+"px":tx) + " " + (Number(ty)?ty+"px":ty);
             if (this.isAutoUpdate) this.updateTransform();
             return this;
         }else{
-            return this.style[ volcano.Core._browserPrefix + "TransformOrigin" ];
+            return this._domElement.style[ volcano.Core._browserPrefix + "TransformOrigin" ];
         }
     };
 
@@ -556,22 +570,22 @@
     p.perspective = function(value) {
         switch(arguments.length) {
             case 0:
-                return this.style[volcano.Core._browserPrefix + "Perspective"];
+                return this._domElement.style[volcano.Core._browserPrefix + "Perspective"];
 
             case 1:
                 if (this.isAutoUpdate) this.updateTransform();
-                this.style[volcano.Core._browserPrefix + "Perspective"] = (typeof(value)==="string")?value:value+"px";
+                this._domElement.style[volcano.Core._browserPrefix + "Perspective"] = (typeof(value)==="string")?value:value+"px";
                 return this;
         }
     };
 
     p.getStyle = function(name) {
-        return this._domElement[name];
+        return this._domElement.style[name];
     };
 
     p.setStyle = function(name, value) {
-        this._domElement[name] = value;
-        if (arguments.length > 2) this.style[volcano.Core._browserPrefix + name] = value;
+        this._domElement.style[name] = value;
+        if (arguments.length > 2) this._domElement.style[volcano.Core._browserPrefix + name] = value;
         return this
     };
 

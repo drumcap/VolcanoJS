@@ -56,9 +56,9 @@
         Ticker.setFPS(this._fps);
         Ticker.addListener(this);
 
-        if (!_.isObject(parent))  this._body = parent = document.body;
+        this._body = (_.isObject(parent)) ? parent : document.body;
 
-        var pst = parent.style;
+        var pst = this._body.style;
         this.setSize(pst.width, pst.height);
 //        this.width(_.isNumber(parent.style.width) ? parent.style.width : window.innerWidth ).height(_.isNumber(parent.style.height) ? parent.style.height : window.innerHeight);
 

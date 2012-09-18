@@ -38,6 +38,28 @@
       this.initialize();
     }
 
+    var mp = volcano.Model.prototype,
+        cp = volcano.Collection.prototype,
+        vp = volcano.View.prototype,
+        rp = volcano.Router.prototype,
+        vEvents = window.volcano.Events;
+
+    mp.addEventListener = mp.on;
+    mp.removeEventListener = mp.off;
+    mp.dispatchEvent = mp.trigger;
+
+    cp.addEventListener = cp.on;
+    cp.removeEventListener = cp.off;
+    cp.dispatchEvent = cp.trigger;
+
+    vp.addEventListener = vp.on;
+    vp.removeEventListener = vp.off;
+    vp.dispatchEvent = vp.trigger;
+
+    rp.addEventListener = rp.on;
+    rp.removeEventListener = rp.off;
+    rp.dispatchEvent = rp.trigger;
+
     var p = EventDispatcher.prototype = new volcano.Core();
     p.Core_initialize = p.initialize;
 
@@ -45,9 +67,9 @@
         this.Core_initialize(); //call super
     };
 
-    p.addEventListener = p.on = p.bind = window.volcano.Events.on;
-    p.removeEventListener = p.off = p.unbind = window.volcano.Events.off;
-    p.dispatchEvent = p.trigger = window.volcano.Events.trigger;
+    p.addEventListener = p.on = p.bind = vEvents.on;
+    p.removeEventListener = p.off = p.unbind = vEvents.off;
+    p.dispatchEvent = p.trigger = vEvents.trigger;
 
     window.volcano.EventDispatcher = EventDispatcher;
 

@@ -4,8 +4,10 @@
     <meta charset="utf-8"/>
     <title>VolcanoJS UIComponent Test</title>
     <script src="http://underscorejs.org/underscore-min.js"></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
     <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
     <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VObject.js"></script>
     <script src="../src/core/VSprite.js"></script>
     <script src="../src/managers/SystemManager.js"></script>
     <script src="../src/managers/LayoutManager.js"></script>
@@ -20,27 +22,23 @@
             var wrapper = document.getElementById("wrapper");
             var sysMgr = new volcano.SystemManager(wrapper);
 
-            sp = new volcano.VSprite().setId("sp");
+            sp = new volcano.VSprite().id("sp");
             sysMgr.addElement(sp);
 
-            temp = document.getElementById("sp");
-
-            console.log(temp);
-
-//            sysMgr.addEventListener("resize", function () {
-//                console.log(volcano.LayoutManager.systemManager);
-//            });
-//            var aa = 0;
-//            var efCallback = function () {
-//                console.log(aa++);
-//                if (aa > 5)
-//                    sysMgr.removeEnterFrameListener(efCallback);
-//            };
-//            var efCallback2 = function () {
-//                console.log("callback2!!!");
-//            };
-//            sysMgr.addEnterFrameListener(efCallback);
-//            sysMgr.addEnterFrameListener(efCallback2);
+            sysMgr.addEventListener("resize", function () {
+                console.log(volcano.LayoutManager.systemManager);
+            });
+            var aa = 0;
+            var efCallback = function () {
+                console.log(aa++);
+                if (aa > 5)
+                    sysMgr.removeEnterFrameListener(efCallback);
+            };
+            var efCallback2 = function () {
+                console.log("callback2!!!");
+            };
+            sysMgr.addEnterFrameListener(efCallback);
+            sysMgr.addEnterFrameListener(efCallback2);
         }
 
     </script>

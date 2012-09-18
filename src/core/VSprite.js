@@ -38,14 +38,6 @@
         this.initialize(element);
     };
 
-    VSprite._eventSplitter = /\s+/;
-
-    /**
-     * Debug를 위해 Div에 랜덤 컬러를 지정 가능하게 한다.
-     * @type {Boolean}
-     */
-    VSprite.randomColorMode = false;
-
     var p = VSprite.prototype = new volcano.VObject();
     /**
      * 실제 화면에 display 될 래퍼 Div
@@ -80,8 +72,13 @@
     // transform 스타일 속성을 setter 호출시에 즉시 업데이트 할지의 여부
     p.isAutoUpdate = true;
 
+    // OriginX 값
     p._ox = 0;
+
+    // OriginY 값
     p._oy = 0;
+
+    // OriginZ 값
     p._oz = 0;
 
     p.VObject_initialize = p.initialize;

@@ -7,6 +7,7 @@ CONFIGURATION
 var SOURCE_FILES = [
 	"../src/core/Core.js",
     "../src/events/EventDispatcher.js",
+    "../src/core/VObject.js",
     "../src/core/VSprite.js",
     "../src/managers/SystemManager.js",
     "../src/managers/LayoutManager.js",
@@ -18,6 +19,8 @@ var SOURCE_FILES = [
 ];
 
 // default name for lib output:
+var JS_SRC_FILE_DEFAULT_NAME = "volcanojs.js";
+
 var JS_SRC_FILE_NAME = "volcanojs-%VERSION%.js";
 
 var JS_FILE_NAME = "volcanojs-%VERSION%.min.js";
@@ -28,16 +31,14 @@ var PROJECT_NAME = "VolcanoJS";
 // url for website or github repo for project:
 var PROJECT_URL = "http://drumcap.github.com/VolcanoJS/";
 
+// name of directory where generated files are placed
+var OUTPUT_DIR_NAME = "../lib";
 
 // name of directory for docs:
 var DOCS_DIR_NAME = PROJECT_NAME+"_docs-%VERSION%";
 
 // name of file for zipped docs:
 var DOCS_FILE_NAME = DOCS_DIR_NAME+".zip";
-
-// name of directory where generated files are placed
-var OUTPUT_DIR_NAME = "output";
-
 
 // path to directory that includes YUI Doc templates
 var TEMPLATE_DIR_PATH = "template";
@@ -254,7 +255,8 @@ function buildSourceTask(completeHandler)
     var license_data = FILE.readFileSync("license.txt", "UTF-8");
     JS_SRC_FILE_NAME = JS_SRC_FILE_NAME.split("%VERSION%").join(version);
     FILE.writeFileSync( PATH.join(OUTPUT_DIR_NAME, JS_SRC_FILE_NAME ), license_data+merged_source_data, "UTF-8");
-	
+    FILE.writeFileSync( PATH.join(OUTPUT_DIR_NAME, JS_SRC_FILE_DEFAULT_NAME), license_data+merged_source_data, "UTF-8");
+
 	var tmp_file = PATH.join(OUTPUT_DIR_NAME,"tmp.js");
 	var final_file = PATH.join(OUTPUT_DIR_NAME, js_file_name);
 
