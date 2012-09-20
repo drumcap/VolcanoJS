@@ -189,17 +189,18 @@
                     return;
                 }
 
-                event.volcanoCurrentTarget = this.volcanoObj; //핸들러에서의 this는 currentTarget을 가르킴
-                event.volcanoTarget = nodeTarget.volcanoObj;
-                event.domCurrentTarget = event.currentTarget;
-                event.domTarget = event.target;
+                event.vCurrentTarget = this.volcanoObj; //핸들러에서의 this는 currentTarget을 가르킴
+                event.vTarget = nodeTarget.volcanoObj;
+//                event.domCurrentTarget = event.currentTarget;
+//                event.domTarget = event.target;
 
-                _.extend(proxyEvent={}, event);
-                proxyEvent.currentTarget = event.volcanoCurrentTarget;
-                proxyEvent.target = event.volcanoTarget;
-                proxyEvent.constructor = event.constructor;
+//                _.extend(proxyEvent={}, event);
+//                proxyEvent.currentTarget = event.volcanoCurrentTarget;
+//                proxyEvent.target = event.volcanoTarget;
+//                proxyEvent.constructor = event.constructor;
+
             }
-            callback(proxyEvent);
+            callback(event);
         };
 
         while (event = events.shift()) {

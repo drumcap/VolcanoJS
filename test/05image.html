@@ -47,22 +47,21 @@
 //            document.body.appendChild(stats.domElement);
 
             sysMgr.addEnterFrameListener(function(){stats.update()});
-            var container = new volcano.VSprite().percentWidth(100).percentHeight(100).id("container");
+            var container = new volcano.VSprite().x(100).width(600).percentHeight(100).id("container");
             var scroller = new volcano.VSprite().percentWidth(100).height(1400).id("scroller");
             sysMgr.addElement(container);
             container.addElement(scroller);
 
-            scroller.addEventListener("click", function(e){
-//                console.log(e.target);
-                var target = e.target;
-                var ryTarget = 180;
-                if (target.rotationY() !== ryTarget){
-                    TweenLite.to(e.target,.5,{z:180, rotationY:ryTarget});
-                } else {
-                    TweenLite.to(e.target,.5,{z:0, rotationY:0});
-                }
-
-            });
+//            scroller.addEventListener("click", function(e){
+//                var target = e.target;
+//                var ryTarget = 180;
+//                if (target.rotationY() !== ryTarget){
+//                    TweenLite.to(e.target,.5,{z:180, rotationY:ryTarget});
+//                } else {
+//                    TweenLite.to(e.target,.5,{z:0, rotationY:0});
+//                }
+//
+//            });
 
 //            container._domElement.setAttribute("data-scrollable","y");
 //            new EasyScroller(container._domElement, {

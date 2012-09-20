@@ -21,9 +21,6 @@
 
             volcano.VObject.randomColorMode = true;
 
-            volcano.mousedown = "mousedown";
-            volcano.mousemove = "mousemove";
-            volcano.mouseup = "mouseup";
 
             sprite = new volcano.VSprite();
             sprite.width(window.screen.width).height(window.screen.width);
@@ -32,7 +29,7 @@
                 sprite.addElement(new volcano.VSprite().width(100).height(100).x(i * 10).y(i * 10));
             }
 
-            sprite.addEventListener(volcano.mousedown, onMouseDownHandler);
+            sprite.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
             document.body.appendChild(sprite._domElement);
 
 
@@ -42,17 +39,19 @@
         var regX, regY, target
 
         function onMouseDownHandler(event) {
-            sprite.removeEventListener(volcano.mousedown, onMouseDownHandler);
-            sprite.addEventListener(volcano.mousemove, onMouseMoveHandler);
-            sprite.addEventListener(volcano.mouseup, onMouseUpHandler);
+            event.preventDefault();
+            sprite.removeEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            sprite.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            sprite.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
 
-            target = event.target;
+            target = event.vTarget;
             regX = event.pageX - target.x();
             regY = event.pageY - target.y();
-            sprite.setElementIndex(event.target, sprite.getNumElements() - 1);
+            sprite.setElementIndex(event.vTarget, sprite.getNumElements() - 1);
         }
 
         function onMouseMoveHandler(event) {
+            event.preventDefault();
             var pageX = event.pageX,
                 pageY = event.pageY;
 
@@ -64,9 +63,9 @@
         }
 
         function onMouseUpHandler(event) {
-            sprite.addEventListener(volcano.mousedown, onMouseDownHandler);
-            sprite.removeEventListener(volcano.mousemove, onMouseMoveHandler);
-            sprite.removeEventListener(volcano.mouseup, onMouseUpHandler);
+            sprite.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            sprite.removeEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            sprite.removeEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
         }
 
         function tick() {

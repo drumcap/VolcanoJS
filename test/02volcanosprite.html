@@ -16,6 +16,7 @@
                 runTest = false,
                 testcase = {};
 
+
         function onLoadHandler() {
             volcano.VObject.randomColorMode = true;   // 디버깅을 위한 배경화면 컬러설정
 
@@ -29,8 +30,8 @@
                 console.log(event instanceof MouseEvent);
                 console.log(event instanceof Event);
                 console.log(event instanceof CustomEvent);
-                console.log(event.currentTarget._domElement);
-                console.log(event.target._domElement);
+                console.log(event.vCurrentTarget._domElement);
+                console.log(event.vTarget._domElement);
             }
 
             sprite.addEventListener("click",onClickHandler)

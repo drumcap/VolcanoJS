@@ -63,6 +63,39 @@
       return this;
     };
 
+    var agent = navigator.userAgent.toLocaleLowerCase();
+
+    // mobile 기기 테스트
+    volcano.isMobile = {
+        android: agent.match(/android/i) ? true : false,
+        blackberry: agent.match(/blackberry/i) ? true : false,
+        iphone: agent.match(/iphone|ipod/i) ? true : false,
+        ipad: agent.match(/ipad/i) ? true : false,
+        windows: agent.match(/iemobile/i) ? true : false
+    };
+
+    volcano.isMobile.any = (volcano.isMobile.android || volcano.isMobile.blackberry || volcano.isMobile.iphone || volcano.isMobile.ipad || volcano.isMobile.windows);
+    volcano.hasTouch = "ontouchstart" in window ? true : false;
+
+    // 이벤트 스트링 객체 설정
+    volcano.e = {
+        CLICK: volcano.hasTouch ? "touchend" : "click",
+        MOUSE_DOWN : volcano.hasTouch ? 'touchstart' : 'mousedown',
+        MOUSE_MOVE : volcano.hasTouch ? 'touchmove' : 'mousemove',
+        MOUSE_UP : volcano.hasTouch ? 'touchend' : 'mouseup',
+        CANCEL : volcano.hasTouch ? 'touchcancel' : 'mouseup'
+    };
+
+    // HTML5 기능 체크
+    volcano.isHtml5 = {
+        query: document["querySelectorAll"] ? true : false,
+        canvas: window["HTMLCanvasElement"] ? true : false,
+        audio: window["HTMLAudioElement"] && window["Audio"] ? true : false,
+        video: window["HTMLVideoElement"] && window["Video"] ? true : false,
+        storage: window["localStorage"] && window["localStorage"]["setItem"] ? true : false
+    };
+
+
     /** 클래스가 상속해야할 코어 클래스
     * 기본 네임스페이스 설정과 버전정보가 들어있다
     *

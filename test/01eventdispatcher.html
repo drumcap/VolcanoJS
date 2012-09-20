@@ -7,6 +7,7 @@
     <script src="http://backbonejs.org/backbone.js" ></script>
     <script src="../src/core/Core.js"></script>
     <script src="../src/events/EventDispatcher.js"></script>
+    <script src="../src/core/VObject.js"></script>
     <!--<script src="../lib/volcanojs.js"></script>-->
     <script>
 
@@ -15,6 +16,18 @@
         function onLoadHandler() {
             evt = new volcano.EventDispatcher();
             evt.on("test",onTestHandler);
+
+            var obj = new volcano.VObject(document.getElementById("btn"));
+            console.log(obj);
+            obj.addEventListener(volcano.e.CLICK, function(e){
+                alert(e.type);
+            });
+
+            obj.addEventListener("dblclick", function(e){
+                alert(e.type);
+            });
+
+
         }
 
         function fireEvent() {
@@ -31,5 +44,6 @@
 <body onload="onLoadHandler()">
 <div id="console" />
 <button onclick="fireEvent()">이벤트 송신</button>
+<button id="btn">클릭 송신</button>
 </body>
 </html>

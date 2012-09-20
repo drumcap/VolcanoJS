@@ -40,10 +40,6 @@
             sysMgr = new volcano.SystemManager();
             sysMgr.setFrameRate(60);
 
-            volcano.mousedown = "mousedown";
-            volcano.mousemove = "mousemove";
-            volcano.mouseup = "mouseup";
-
             // FPS Viewer
             stats = new Stats();
             sysMgr.addElement(new volcano.VObject(stats.domElement));
@@ -55,7 +51,7 @@
 
             var px = 0;
 
-            container.addEventListener(volcano.mousedown, onMouseDownHandler);
+            container.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
 
             sysMgr.addEnterFrameListener(enterFrameHander);
 
@@ -98,14 +94,14 @@
         }
 
         function onMouseDownHandler(event) {
-            target = event.target;
+            target = event.vTarget;
 
             if (target !== sprite)
                 return;
 
-            container.removeEventListener(volcano.mousedown, onMouseDownHandler);
-            container.addEventListener(volcano.mousemove, onMouseMoveHandler);
-            container.addEventListener(volcano.mouseup, onMouseUpHandler);
+            container.removeEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            container.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            container.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
 
             isMove = false;
 
@@ -129,9 +125,9 @@
         function onMouseUpHandler(event) {
             isMove = false;
             sysMgr.removeEnterFrameListener(setAccelerate);
-            container.addEventListener(volcano.mousedown, onMouseDownHandler);
-            container.removeEventListener(volcano.mousemove, onMouseMoveHandler);
-            container.removeEventListener(volcano.mouseup, onMouseUpHandler);
+            container.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            container.removeEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            container.removeEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
         }
 
         function setAccelerate() {
