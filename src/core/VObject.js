@@ -30,6 +30,8 @@
     /**
      * DOM Object를 감싸주는 기본 클래스
      * DOM Event 처리와, 기본 속성 조절 기능을 포함하고 있다.
+     * 3D transform features are inspired by Sprite3D.js Project
+     *
      * @class VObject
      * @constructor
      * @author david yun
@@ -337,7 +339,6 @@
             if (this.isAutoUpdate) this.updateTransform();
             return this;
         } else {
-            var ret = this._string;
             return this._string[this._positions[0]] + this._ox;
         }
     };
@@ -363,18 +364,21 @@
         }
     };
 
-    p.position = function( px, py, pz) {
+//    p.position = function( px, py, pz) {
+//        this._string[this._positions[0]] = px - this._ox;
+//        this._string[this._positions[1]] = py - this._oy;
+//        if ( arguments.length >= 3 ) this._string[this._positions[2]] = pz - this._oz;
+//        if (this.isAutoUpdate) this.updateTransform();
+//        return this;
+//    };
+
+    p.move = function(px,py,pz) {
         this._string[this._positions[0]] = px - this._ox;
         this._string[this._positions[1]] = py - this._oy;
         if ( arguments.length >= 3 ) this._string[this._positions[2]] = pz - this._oz;
-        if (this.isAutoUpdate) this.updateTransform();
-        return this;
-    };
-
-    p.move = function(px,py,pz) {
-        this._string[this._positions[0]] += px;
-        this._string[this._positions[1]] += py;
-        if ( arguments.length >= 3 ) this._string[this._positions[2]] += pz;
+//        this._string[this._positions[0]] += px;
+//        this._string[this._positions[1]] += py;
+//        if ( arguments.length >= 3 ) this._string[this._positions[2]] += pz;
         if (this.isAutoUpdate) this.updateTransform();
         return this;
     };
@@ -569,14 +573,12 @@
     };
 
     p.perspective = function(value) {
-        switch(arguments.length) {
-            case 0:
-                return this._domElement.style[volcano.Core._browserPrefix + "Perspective"];
-
-            case 1:
-                if (this.isAutoUpdate) this.updateTransform();
-                this._domElement.style[volcano.Core._browserPrefix + "Perspective"] = (typeof(value)==="string")?value:value+"px";
-                return this;
+        if (arguments.length) {
+            if (this.isAutoUpdate) this.updateTransform();
+            this._domElement.style[volcano.Core._browserPrefix + "Perspective"] = (typeof(value)==="string")?value:value+"px";
+            return this;
+        } else {
+            return this._domElement.style[volcano.Core._browserPrefix + "Perspective"];
         }
     };
 
@@ -584,7 +586,7 @@
         return this._domElement.style[name];
     };
 
-    p.setStyle = function(name, value) {
+    p.setStyle = function(name, value, prefix) {
         this._domElement.style[name] = value;
         if (arguments.length > 2) this._domElement.style[volcano.Core._browserPrefix + name] = value;
         return this

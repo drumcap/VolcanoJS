@@ -52,8 +52,6 @@
     p.states = null; //todo state mechanism 완성되면 코드삽입
     p._deferredSetStyles = null;
     p._owner = null;
-    p._domElement = null;
-    p._skinCanvas = null;
     p._updateCompletePendingFlag = false;
     p._processedDescriptiors = false;
 
@@ -68,31 +66,7 @@
         this._deferredSetStyles = {};
         this._owner = {};
 
-        this._domElement = {};
-        this._skinCanvas = {};
-
         this.VSprite_initialize(); //super
-
-        // ie 인지 체크하고...
-        var isExplorer = /msie [\w.]+/;
-        var docMode = document.documentMode;
-        var oldIE = (isExplorer.exec(navigator.userAgent.toLowerCase()) && (!docMode || docMode <= 7));
-
-        // 캔버스 태그를 만듬
-        var createCanvas = function (w, h) {
-            var c = document.createElement('canvas');
-            c.width = w;
-            c.height = h;
-            try {
-                if (oldIE) // excanvas hack
-                    c = window.G_vmlCanvasManager.initElement(c);
-            } catch (e) {}
-
-            return c;
-        };
-
-        this._skinCanvas = createCanvas(this._width, this._height);
-        this._domElement.appendChild(this._skinCanvas);
     };
 
     p.getOwner = function() {
@@ -180,157 +154,164 @@
     };
 
     /**
-   	 * 컴포넌트의 스타일을 가져옴
+   	 * 컴포넌트의 스타일을 셋
    	 * @method getStyle
    	 * @param styleProp
    	 **/
-    p.getStyle = function(styleProp) {
-        var ret = null;
-        if (_.isString(styleProp)) {
-            ret = this._deferredSetStyles[styleProp];
-        }
-        return ret;
-    };
-    p.setStyle = function(name,value) {
+    p.setStyle = function(name,value,prefix) {
         var isSetStyleChanged = false;
         if (_.isString(name)) {
-            this._deferredSetStyles[name] = value;
+            var sdata = (arguments.length > 2) ? {"value":value, "prefix":volcano.Core._browserPrefix + name} : {value:value};
+            this._deferredSetStyles[name] = sdata;
             isSetStyleChanged = true;
         }
 
         if (isSetStyleChanged) {
-            //todo dispatch setStyleChangeEvent
             this.invalidateProperties();
             this.invalidateDisplayList();
         }
         return this;
-    };
-
-    p._styleName = null;
-
-    p.getStyleName = function() {
-        return this._styleName;
-    };
-
-    p.setStyleName = function(value) {
-        if (this._styleName !== value) {
-            this._styleName = value;
-
-            //XXX we have to write code related to style later
-//            this.regenateStyleCache(true);
-//            initThemeColor();
-//            styleChanged("styleName");
-//            notifyStyleChangeInChildren("styleName", true);
-        }
-        return this;
-    };
-
-    p.getSkin = function() {
-        return this._skin;
-    };
-    p.setSkin = function(o) {
-        var isSkinChange = false;
-        if (this._skin !== o) {
-            this._skin = o;
-            isSkinChange = true;
-        }
-
-        if (isSkinChange) {
-            //todo dispatch skinChangeEvent
-            this.invalidateProperties();
-            this.invalidateDisplayList();
-        }
     };
 
     p._measuredWidth = 0;
-    p.getMeasuredWidth = function() {
-        return this._measuredWidth;
-    };
-    p.setMeasuredWidth = function(value) {
-        this._measuredWidth = value;
-        return this;
+    p.measuredWidth = function(w) {
+        if (arguments.length) {
+            this._measuredWidth = w;
+            return this;
+        }else{
+            return this._measuredWidth;
+        }
     };
 
     p._measuredHeight = 0;
-    p.getMeasuredHeight = function() {
-        return this._measuredHeight;
-    };
-    p.setMeasuredHeight = function(value) {
-        this._measuredHeight = value;
-        return this;
-    };
-
-    p.setWidth = function(w) {
-        this._width = w;
-        this._domElement.width = w+"px";
-        this.invalidateProperties();
-        this.invalidateDisplayList();
-        return this;
+    p.measuredHeight = function(h) {
+        if (arguments.length) {
+            this._measuredHeight = h;
+            return this;
+        }else{
+            return this._measuredHeight;
+        }
     };
 
-    p.setPercentWidth = function(w) {
-        this._percentWidth = w;
-        this._domElement.width = w+"%";
-        this.invalidateProperties();
-        this.invalidateDisplayList();
-        return this;
+    p._widthChanged = false;
+    p.width = function(w) {
+        if (arguments.length) {
+            this._width = w;
+            this._widthChanged = true;
+            this.invalidateProperties();
+            this.invalidateDisplayList();
+            return this;
+        }else{
+            return this._width;
+        }
     };
 
-    p.setHeight = function(h) {
-        this._height = h;
-        this._domElement.height = h+"px";
-        this.invalidateProperties();
-        this.invalidateDisplayList();
-        return this;
+    p._percentWidthChanged = false;
+    p.percentWidth = function(w) {
+        if (arguments.length) {
+            this._percentWidth = w;
+            this._percentWidthChanged = true;
+            this.invalidateProperties();
+            this.invalidateDisplayList();
+            return this;
+        }else{
+            return this._percentWidth;
+        }
     };
 
-    p.setPercentHeight = function(h) {
-        this._percentHeight = h;
-        this._domElement.height = h+"%";
-        this.invalidateProperties();
-        this.invalidateDisplayList();
-        return this;
+    p._heightChanged = false;
+    p.height = function(h) {
+        if (arguments.length) {
+            this._height = h;
+            this._heightChanged = true;
+            this.invalidateProperties();
+            this.invalidateDisplayList();
+            return this;
+        }else{
+            return this._height;
+        }
+    };
+
+    p._percentHeightChanged = false;
+    p.percentHeight = function(h) {
+        if (arguments.length) {
+            this._percentHeight = h;
+            this._percentHeightChanged = true;
+            this.invalidateProperties();
+            this.invalidateDisplayList();
+            return this;
+        }else{
+            return this._height;
+        }
     };
 
     p._enabled = false;
-    p.getEnabled = function () {
-        return this._enabled;
+
+    p.enabled = function (v) {
+        if (arguments.length) {
+            this._enabled = v;
+            this.invalidateDisplayList();
+            this.dispatchEvent("enabledChanged");
+        }else{
+            return this._enabled;
+        }
     };
 
-    p.setEnabled = function (value) {
-        this._enabled = value;
-        this.invalidateDisplayList();
-        //TODO dispatch enabled event
+    p._initialized = false;
+    p.getInitialized = function() {
+        return this._initialized;
     };
+
+    p.setInitialized = function(value) {
+        this._initialized = value;
+
+        if (value) {
+            this.dispatchEvent("creationComplete");
+        }
+    };
+
+    p.getUpdateCompletePendingFlag = function(){
+        return this._updateCompletePendingFlag;
+    };
+
+    p.setUpdateCompletePendingFlag = function(value){
+        this._updateCompletePendingFlag = value;
+    }
 
     p.setActualSize = function(w,h) {
         var changed = false;
         if (this._width != w) {
-            this._domElement.width = w+"px";
-            this._skinCanvas.width = w+"px";
+            this._width = w;
+            this._widthChanged = true;
             changed = true;
+            this.dispatchEvent("widthChanged");
         }
         if (this._height != h) {
-            this._domElement.width = h+"px";
-            this._skinCanvas.width = h+"px";
+            this._height = h;
+            this._heightChanged = true;
             changed = true;
+            this.dispatchEvent("heightChanged");
         }
         if (changed) {
             this.invalidateProperties();
             this.invalidateDisplayList();
-            //todo dispatch event to bind data
         }
     };
 
+    p.move = function(px,py,pz) {
+        this._string[this._positions[0]] = px - this._ox;
+        this._string[this._positions[1]] = py - this._oy;
+        if ( arguments.length >= 3 ) this._string[this._positions[2]] = pz - this._oz;
+        if (this.isAutoUpdate) this.updateTransform();
+        return this;
+    };
+
     p.move = function(x,y) {
-        var wrapperStyle = this._domElement.style;
         var changed = false;
         if (this._x != x) {
-            wrapperStyle.left = this._x+"px";
             changed = true;
         }
         if (this._y != y) {
-            wrapperStyle.top = this._y+"px";
             changed = true;
         }
         if (changed) {
@@ -461,14 +442,6 @@
         this.VSprite__elementRemoved(element, index, notifyListeners); //super
     };
 
-    p.getUpdateCompletePendingFlag = function(){
-        return this._updateCompletePendingFlag;
-    };
-
-    p.setUpdateCompletePendingFlag = function(value){
-        this._updateCompletePendingFlag = value;
-    }
-
     var parentChangedFlag = false;
     p.parentChanged = function(p){
         if(!p){
@@ -476,27 +449,11 @@
             this.setNestLevel(0);
         }else if(p.name === "systemManager"){
             this.parent = p;
-        }else if(p._skinCanvas && p._skinCanvas.localName === "canvas"){
-            this.parent = p;
         }else{
             this.parent = p.parent;
         }
 
         parentChangedFlag = true;
-    };
-
-
-    p._initialized = false;
-    p.getInitialized = function() {
-        return this._initialized;
-    };
-
-    p.setInitialized = function(value) {
-        this._initialized = value;
-
-        if (value) {
-            this.dispatchEvent("creationComplete");
-        }
     };
 
     p.initComponent = function() {
