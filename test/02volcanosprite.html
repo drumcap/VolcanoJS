@@ -5,6 +5,7 @@
     <title>VolcanoJS UIComponent Test</title>
     <script src="http://underscorejs.org/underscore.js" ></script>
     <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="../src/exlibs/Ticker.js"></script>
     <script src="../src/core/Core.js"></script>
     <script src="../src/core/VObject.js"></script>
     <script src="../src/core/VSprite.js"></script>
@@ -55,8 +56,8 @@
 //            setInterval(TestCase1,100);
 //            setInterval(TestCase2,100);
 
-            Ticker.setFPS(30);
-            Ticker.addListener(window);
+            createjs.Ticker.setFPS(30);
+            createjs.Ticker.addListener(window);
         }
 
         function tick() {

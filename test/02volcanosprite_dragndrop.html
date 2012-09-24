@@ -5,6 +5,7 @@
     <title>VolcanoJS UIComponent Test</title>
     <script src="http://underscorejs.org/underscore.js" ></script>
     <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="../src/exlibs/Ticker.js"></script>
     <script src="../src/core/Core.js"></script>
     <script src="../src/core/VObject.js"></script>
     <script src="../src/core/VSprite.js"></script>
@@ -39,21 +40,23 @@
         var regX, regY, target
 
         function onMouseDownHandler(event) {
+            var point = volcano.hasTouch ? event.touches[0] : event;
             event.preventDefault();
             sprite.removeEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
             sprite.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
             sprite.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
 
             target = event.vTarget;
-            regX = event.pageX - target.x();
-            regY = event.pageY - target.y();
+            regX = point.pageX - target.x();
+            regY = point.pageY - target.y();
             sprite.setElementIndex(event.vTarget, sprite.getNumElements() - 1);
         }
 
         function onMouseMoveHandler(event) {
+            var point = volcano.hasTouch ? event.touches[0] : event;
             event.preventDefault();
-            var pageX = event.pageX,
-                pageY = event.pageY;
+            var pageX = point.pageX,
+                pageY = point.pageY;
 
             var targetX = pageX - regX;
             var targetY = pageY - regY;

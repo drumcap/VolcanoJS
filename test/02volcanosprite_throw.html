@@ -8,7 +8,7 @@
     <script src="http://zeptojs.com/zepto.js"></script>
     <script src="http://underscorejs.org/underscore.js"></script>
     <script src="http://backbonejs.org/backbone.js"></script>
-    <script src="http://code.createjs.com/easeljs-0.4.2.min.js"></script>
+    <script src="../src/exlibs/Ticker.js"></script>
     <script src="../src/core/Core.js"></script>
     <script src="../src/core/VObject.js"></script>
     <script src="../src/core/VSprite.js"></script>
@@ -95,6 +95,9 @@
 
         function onMouseDownHandler(event) {
             target = event.vTarget;
+            event.preventDefault(); //브라우저의 스크롤을 막음
+
+            var point = volcano.hasTouch ? event.touches[0] : event;
 
             if (target !== sprite)
                 return;
@@ -105,17 +108,18 @@
 
             isMove = false;
 
-            regX = event.pageX - target.x();
-            regY = event.pageY - target.y();
+            regX = point.pageX - target.x();
+            regY = point.pageY - target.y();
 
             sysMgr.addEnterFrameListener(setAccelerate);
         }
 
 
         function onMouseMoveHandler(event) {
+            var point = volcano.hasTouch ? event.touches[0] : event;
             isMove = true;
-            var pageX = event.pageX,
-                pageY = event.pageY;
+            var pageX = point.pageX,
+                pageY = point.pageY;
 
             targetX = pageX - regX;
             targetY = pageY - regY;

@@ -53,8 +53,8 @@
 
         this.VSprite_initialize("#systemManager");
 
-        Ticker.setFPS(this._fps);
-        Ticker.addListener(this);
+        createjs.Ticker.setFPS(this._fps);
+        createjs.Ticker.addListener(this);
 
         this._body = (_.isObject(parent)) ? parent : document.body;
 
@@ -95,7 +95,7 @@
     p._fps = 24;
     p.setFrameRate = function (fps) {
         this._fps = fps;
-        Ticker.setFPS(fps);
+        createjs.Ticker.setFPS(fps);
         return this;
     };
     p.getFrameRate = function () {
