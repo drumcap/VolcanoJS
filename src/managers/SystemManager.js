@@ -88,26 +88,31 @@
         return this;
     }
 
-    p.getNestLevel = function () {
-        return this._nestLevel;
-    };
+    p.nestLevel = function(value){
+        if(arguments.length){
+
+        }else{
+            return this._nestLevel;
+        }
+    }
 
     p._fps = 24;
-    p.setFrameRate = function (fps) {
-        this._fps = fps;
-        createjs.Ticker.setFPS(fps);
-        return this;
-    };
-    p.getFrameRate = function () {
-        return this._fps;
-    };
+    p.frameRate = function(fps){
+        if(arguments.length){
+            this._fps = fps;
+            createjs.Ticker.setFPS(fps);
+            return this;
+        }else{
+            return this._fps;
+        }
+    }
 
     p.VSprite__elementAdded = p._elementAdded;
     p._elementAdded = function (element, index, notifyListeners) {
         this.VSprite__elementAdded(element, index, notifyListeners); //super
 
-        if (element.setNestLevel)
-            element.setNestLevel(this.getNestLevel() + 1); // nest level 추가
+        if (element.nestLevel)
+            element.nestLevel(this.nestLevel() + 1); // nest level 추가
         //todo 스타일 캐시 재생성 element.regenerateStyleCache(true);
         //todo 스타일 변경 알림  element.styleChanged(null);
         //todo 차일드에게 스타일 변경 알림 element.notifyStyleChangeInChildren(null, true);

@@ -106,12 +106,12 @@
 
         this.removeLargestChild = function(client){
             var max = maxPriority;
-            var min = client.getNestLevel();
+            var min = client.nestLevel();
 
             while(min <= max){
                 var bin = this._priorityBins[max];
                 if(bin && bin.length > 0){
-                    if(max === client.getNestLevel()){
+                    if(max === client.nestLevel()){
                         for(var i = 0 ; i < bin.items.length ; i++){
                             if(client === bin.items[i]){
                                 this.removeChild(bin.items[i], max);
@@ -171,12 +171,12 @@
         };
 
         this.removeSmallestChild = function(client){
-            var min = client.getNestLevel();
+            var min = client.nestLevel();
 
             while(min <= maxPriority){
                 var bin = this._priorityBins[min];
                 if(bin && bin.length > 0){
-                    if(min === client.getNestLevel()){
+                    if(min === client.nestLevel()){
                         for(var i = 0 ; i < bin.items.length ; i++){
                             if(client === bin.items[i]){
                                 this.removeChild(client, min);
@@ -208,7 +208,7 @@
         };
 
         this.removeChild = function(client, level){
-            var pri = (level >= 0) ? level : client.getNestLevel();
+            var pri = (level >= 0) ? level : client.nestLevel();
             var bin = this._priorityBins[pri];
             for(var i = 0 ; i < bin.items.length ; i++){
                 if(bin.items[i] === client){
@@ -263,15 +263,13 @@
     LayoutManager._currentObject = {};
     LayoutManager._usePhasedInstantiation = false;
 
-    LayoutManager.getUsePhasedInstantiation = function () {
-        return LayoutManager._usePhasedInstantiation;
-    };
-
-    LayoutManager.setUsePhasedInstantiation = function (value) {
-        if(LayoutManager._usePhasedInstantiation !== value){
-            LayoutManager._usePhasedInstantiation = value;
-
-            // XXX stage frameRate 설정 try catch
+    LayoutManager.usePhasedInstantiation = function(value){
+        if(arguments.length){
+            if(LayoutManager._usePhasedInstantiation !== value){
+                LayoutManager._usePhasedInstantiation = value;
+            }
+        }else{
+            return LayoutManager._usePhasedInstantiation;
         }
     };
 
@@ -283,10 +281,10 @@
                 LayoutManager.attachListeners(LayoutManager.systemManager);
             }
         }
-        if(LayoutManager._targetLevel <= obj.getNestLevel()){
+        if(LayoutManager._targetLevel <= obj.nestLevel()){
             LayoutManager._invalidateClientPropertiesFlag = true;
         }
-        LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
+        LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.nestLevel());
 
     };
 
@@ -298,10 +296,10 @@
             }
         }
 
-        if(LayoutManager._targetLevel <= obj.getNestLevel()){
+        if(LayoutManager._targetLevel <= obj.nestLevel()){
             LayoutManager._invalidateClientSizeFlag = true;
         }
-        LayoutManager._invalidateSizeQueue.addObject(obj, obj.getNestLevel());
+        LayoutManager._invalidateSizeQueue.addObject(obj, obj.nestLevel());
     };
 
     LayoutManager.invalidateDisplayList = function (obj) {
@@ -312,18 +310,18 @@
                 LayoutManager.attachListeners(LayoutManager.systemManager);
             }
         }
-        LayoutManager._invalidateDisplayListQueue.addObject(obj, obj.getNestLevel());
+        LayoutManager._invalidateDisplayListQueue.addObject(obj, obj.nestLevel());
     };
 
     LayoutManager._validateProperties = function() {
         var obj = LayoutManager._invalidatePropertiesQueue.removeSmallest();
         while(obj){
-            if(obj.getNestLevel()){
+            if(obj.nestLevel()){
                 LayoutManager._currentObject = obj;
                 obj.validateProperties();
-                if(!obj.getUpdateCompletePendingFlag()){
-                    LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
-                    obj.setUpdateCompletePendingFlag(true);
+                if(!obj.updateCompletePendingFlag()){
+                    LayoutManager._updateCompleteQueue.addObject(obj, obj.nestLevel());
+                    obj.updateCompletePendingFlag(true);
                 }
             }
             obj = LayoutManager._invalidatePropertiesQueue.removeSmallest();
@@ -337,12 +335,12 @@
     LayoutManager._validateSize = function() {
         var obj = LayoutManager._invalidateSizeQueue.removeLargest();
         while(obj){
-            if(obj.getNestLevel()){
+            if(obj.nestLevel()){
                 LayoutManager._currentObject = obj;
                 obj.validateSize();
-                if(!obj.getUpdateCompletePendingFlag()){
-                    LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
-                    obj.setUpdateCompletePendingFlag(true);
+                if(!obj.updateCompletePendingFlag()){
+                    LayoutManager._updateCompleteQueue.addObject(obj, obj.nestLevel());
+                    obj.updateCompletePendingFlag(true);
                 }
             }
 
@@ -357,12 +355,12 @@
     LayoutManager._validateDisplayList = function() {
         obj = LayoutManager._invalidateDisplayListQueue.removeSmallest();
         while(obj){
-            if(obj.getNestLevel()){
+            if(obj.nestLevel()){
                 LayoutManager._currentObject = obj;
                 obj.validateDisplayList();
-                if(!obj.getUpdateCompletePendingFlag()){
-                    LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
-                    obj.getUpdateCompletePendingFlag(true);
+                if(!obj.updateCompletePendingFlag()){
+                    LayoutManager._updateCompleteQueue.addObject(obj, obj.nestLevel());
+                    obj.updateCompletePendingFlag(true);
                 }
             }
 
@@ -375,7 +373,7 @@
     };
 
     LayoutManager._doPhasedInstantiation = function() {
-        if(LayoutManager.getUsePhasedInstantiation()){
+        if(LayoutManager.usePhasedInstantiation()){
             if(LayoutManager._invalidatePropertiesFlag){
                 LayoutManager._validateProperties();
                 //XXX Flex API -> The Preloader listens for this event.
@@ -401,16 +399,16 @@
         if(LayoutManager._invalidatePropertiesFlag || LayoutManager._invalidateSizeFlag || LayoutManager._invalidateDisplayListFlag){
             LayoutManager.attachListeners(LayoutManager.systemManager);
         }else{
-            LayoutManager.setUsePhasedInstantiation(false);
+            LayoutManager.usePhasedInstantiation(false);
             LayoutManager._listenersAttached = false;
 
             var obj = LayoutManager._updateCompleteQueue.removeLargest();
             while(obj){
-                if(!obj.getInitialized() && obj.getProcessedDescriptors()){
-                    obj.setInitialized(true);
+                if(!obj.initialized() && obj.processedDescriptors()){
+                    obj.initialized(true);
                 }
                 obj.dispatchEvent("updateComplete");
-                obj.setUpdateCompletePendingFlag(false);
+                obj.updateCompletePendingFlag(false);
                 obj = LayoutManager._updateCompleteQueue.removeLargest();
             }
             //TODO effect Handler를 위한 updateComplete Event Dispatch host = LayoutManager
@@ -439,7 +437,7 @@
     };
 
     LayoutManager.validateNow = function () {
-        if(!LayoutManager.getUsePhasedInstantiation()){
+        if(!LayoutManager.usePhasedInstantiation()){
             var infiniteLoopGuard = 0;
             while(LayoutManager._listenersAttached && infiniteLoopGuard++ < 100){
                 LayoutManager._doPhasedInstantiation();
@@ -455,7 +453,7 @@
         var oldTargetLevel = LayoutManager._targetLevel;
 
         if(LayoutManager._targetLevel === Number.MAX_VALUE){
-            LayoutManager._targetLevel = target.getNestLevel();
+            LayoutManager._targetLevel = target.nestLevel();
         }
 
         while(!done){
@@ -463,12 +461,12 @@
 
             obj = LayoutManager._invalidatePropertiesQueue.removeSmallestChild(target);
             while(obj){
-                if(obj.getNestLevel()){
+                if(obj.nestLevel()){
                     LayoutManager._currentObject = obj;
                     obj.validateProperties();
-                    if(!obj.getUpdateCompletePendingFlag()){
-                        LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
-                        obj.setUpdateCompletePendingFlag(true);
+                    if(!obj.updateCompletePendingFlag()){
+                        LayoutManager._updateCompleteQueue.addObject(obj, obj.nestLevel());
+                        obj.updateCompletePendingFlag(true);
                     }
                 }
 
@@ -483,19 +481,19 @@
             obj = LayoutManager._invalidateSizeQueue.removeLargestChild(target);
 
             while(obj){
-                if(obj.getNestLevel()){
+                if(obj.nestLevel()){
                     LayoutManager._currentObject = obj;
                     obj.validateSize();
-                    if(!obj.getUpdateCompletePendingFlag()){
-                        LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
-                        obj.setUpdateCompletePendingFlag(true)
+                    if(!obj.updateCompletePendingFlag()){
+                        LayoutManager._updateCompleteQueue.addObject(obj, obj.nestLevel());
+                        obj.updateCompletePendingFlag(true)
                     }
                 }
 
                 if(LayoutManager._invalidateClientPropertiesFlag){
                     obj = LayoutManager._invalidatePropertiesQueue.removeSmallestChild(target);
                     if(obj){
-                        LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
+                        LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.nestLevel());
                         done = false;
                         break;
                     }
@@ -512,19 +510,19 @@
             if(!skipDisplayList){
                 obj = LayoutManager._invalidateDisplayListQueue.removeSmallestChild(target);
                 while(obj){
-                    if(obj.getNestLevel()){
+                    if(obj.nestLevel()){
                         LayoutManager._currentObject = obj;
                         obj.validateDisplayList();
-                        if(!obj.getUpdateCompletePendingFlag()){
-                            LayoutManager._updateCompleteQueue.addObject(obj, obj.getNestLevel());
-                            obj.setUpdateCompletePendingFlag(true);
+                        if(!obj.updateCompletePendingFlag()){
+                            LayoutManager._updateCompleteQueue.addObject(obj, obj.nestLevel());
+                            obj.updateCompletePendingFlag(true);
                         }
                     }
 
                     if(LayoutManager._invalidateClientPropertiesFlag){
                         obj = LayoutManager._invalidatePropertiesQueue.removeSmallestChild(target);
                         if(obj){
-                            LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.getNestLevel());
+                            LayoutManager._invalidatePropertiesQueue.addObject(obj, obj.nestLevel());
                             done = false;
                             break;
                         }
@@ -533,7 +531,7 @@
                     if(LayoutManager._invalidateClientSizeFlag){
                         obj = LayoutManager._invalidateSizeQueue.removeLargestChild(target);
                         if(obj){
-                            LayoutManager._invalidateSizeQueue.addObject(obj, obj.getNestLevel());
+                            LayoutManager._invalidateSizeQueue.addObject(obj, obj.nestLevel());
                             done = false;
                             break;
                         }
@@ -553,13 +551,13 @@
             if(!skipDisplayList){
                 obj = LayoutManager._updateCompleteQueue.removeLargestChild(target);
                 while(obj){
-                    if(!obj.getInitialized()){
-                        obj.setInitialized(true);
+                    if(!obj.initialized()){
+                        obj.initialized(true);
                     }
 
                     // XXX obj의 hasEventListener이 있어야 한다.
 
-                    obj.setUpdateCompletePendingFlag(false);
+                    obj.updateCompletePendingFlag(false);
                     obj = LayoutManager._updateCompleteQueue.removeLargestChild(target);
                 }
             }

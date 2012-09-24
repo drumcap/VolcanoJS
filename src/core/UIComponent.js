@@ -54,7 +54,12 @@
     p._owner = null;
     p._updateCompletePendingFlag = false;
     p._processedDescriptiors = false;
-
+    /**
+     * 실제 화면에 display 될 래퍼 Div
+     * @type {*}
+     * @private
+     */
+    p._domElement = null;
     p.VSprite_initialize = p.initialize;
 
     p.initialize = function() {
@@ -65,67 +70,69 @@
         this.states = []; //todo state mechanism 완성되면 코드삽입
         this._deferredSetStyles = {};
         this._owner = {};
+        this._domElement = {};
 
         this.VSprite_initialize(); //super
     };
 
-    p.getOwner = function() {
-        return this._owner ? this._owner : this.parent;
-    };
-    p.setOwner = function (o) {
-        this._owner = o;
-        return this;
+    p.owner = function(value){
+      if(arguments.length){
+          this._owner = value;
+          return this;
+      }else{
+          return this._owner ? this._owner : this.parent;
+      }
     };
 
     p._nestLevel = 0;
     /**
+     * getter
    	 * 중첩레벨을 깊이(depth)를 정의하는 속성 게터이며, 레이아웃 코드에서 사용된다.
      * 만약 값이 0이라면 DisplayList에 포함되지 않은 것이다.
-   	 * @method getNestLevel
+   	 * @method nestLevel
    	 **/
-    p.getNestLevel = function() {
-        return this._nestLevel;
-    };
     /**
-   	 * 중첩레벨을 깊이(depth)를 정의하는 속성 게터세터이며, 레이아웃 코드에서 사용된다.
+     * setter
+     * 중첩레벨을 깊이(depth)를 정의하는 속성 게터세터이며, 레이아웃 코드에서 사용된다.
      * 만약 값이 0이라면 DisplayList에 포함되지 않은 것이다. SystemManager는 1, Appplication은 2 이다.
-   	 * @method setNestLevel
-   	 * @param value
-   	 **/
-    p.setNestLevel = function(value) {
-//        if (this._nestLevel !== value || value === 1) {
-//            return;
-//        }
-        if (value === 1) {
-            return;
-        }
-
-        if (value > 1 && this._nestLevel !== value) {
-            this._nestLevel = value;
-            this._updateCallbacks();
-            value++;
-        } else if (value === 0) {
-            this._nestLevel = value = 0;
-        } else {
-            value++;
-        }
-
-        var n = this.getNumElements();
-        for (var i = 0; i<n; i++) {
-            var ui = this.getElementAt(i);
-            if (ui) {
-                ui.setNestLevel(value);
+     * @method nestLevel
+     * @param value
+     **/
+    p.nestLevel = function(value){
+        if(arguments.length){
+            if (value === 1) {
+                return;
             }
+
+            if (value > 1 && this._nestLevel !== value) {
+                this._nestLevel = value;
+                this._updateCallbacks();
+                value++;
+            } else if (value === 0) {
+                this._nestLevel = value = 0;
+            } else {
+                value++;
+            }
+
+            var n = this.getNumElements();
+            for (var i = 0; i<n; i++) {
+                var ui = this.getElementAt(i);
+                if (ui) {
+                    ui.nestLevel(value);
+                }
+            }
+        }else{
+            return this._nestLevel;
         }
     };
 
-    p.setProcessedDescriptors = function(value){
-        this._processedDescriptors = value;
-    };
-
-    p.getProcessedDescriptors = function(){
-        return this._processedDescriptors;
-    };
+    p.processedDescriptors = function(value){
+        if(arguments.length){
+            this._processedDescriptors = value;
+        }else{
+            return this._processedDescriptors;
+        }
+    }
 
     p._updateCallbacks = function() {
         if (this._invalidateDisplayListFlag) {
@@ -194,6 +201,10 @@
     };
 
     p._widthChanged = false;
+    p._width = 0;
+    p._height = 0;
+    p._oldWidth = 0;
+    p._oldHeight = 0;
     p.width = function(w) {
         if (arguments.length) {
             this._width = w;
@@ -206,6 +217,8 @@
         }
     };
 
+    p._percentWidth = 0;
+    p._oldPercentWidth = 0;
     p._percentWidthChanged = false;
     p.percentWidth = function(w) {
         if (arguments.length) {
@@ -232,6 +245,8 @@
         }
     };
 
+    p._percentHeight = 0;
+    p._oldPercentHeight = 0;
     p._percentHeightChanged = false;
     p.percentHeight = function(h) {
         if (arguments.length) {
@@ -258,25 +273,25 @@
     };
 
     p._initialized = false;
-    p.getInitialized = function() {
-        return this._initialized;
-    };
+    p.initialized = function(){
+        if(arguments.length){
+            this._initialized = arguments[0];
 
-    p.setInitialized = function(value) {
-        this._initialized = value;
-
-        if (value) {
-            this.dispatchEvent("creationComplete");
+            if (arguments[0]) {
+                this.dispatchEvent("creationComplete");
+            }
+        }else{
+            return this._initialized;
         }
     };
 
-    p.getUpdateCompletePendingFlag = function(){
-        return this._updateCompletePendingFlag;
+    p.updateCompletePendingFlag = function(value){
+        if(arguments.length){
+            this._updateCompletePendingFlag = value;
+        }else{
+            return this._updateCompletePendingFlag;
+        }
     };
-
-    p.setUpdateCompletePendingFlag = function(value){
-        this._updateCompletePendingFlag = value;
-    }
 
     p.setActualSize = function(w,h) {
         var changed = false;
@@ -298,25 +313,220 @@
         }
     };
 
+    p._ox = 0;
+    p._oy = 0;
+    p._oz = 0;
+    p._x = 0;
+    p._y = 0;
+    p._z = 0;
+    p._oldX = 0;
+    p._oldY = 0;
+    p._oldZ = 0;
+
+    p.x = function(px) {
+        if ( arguments.length ) {
+            if(this._x != px){
+                this._x = px;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[0]] + this._ox;
+        }
+    };
+
+    p.y = function(py) {
+        if ( arguments.length ) {
+            if(this._y != py){
+                this._y = py;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[1]] + this._oy;
+        }
+    };
+
+    p.z =  function(pz) {
+        if ( arguments.length ) {
+            if(this._z != pz){
+                this._z = pz;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[2]] + this._oz;
+        }
+    };
+
     p.move = function(px,py,pz) {
-        this._string[this._positions[0]] = px - this._ox;
-        this._string[this._positions[1]] = py - this._oy;
-        if ( arguments.length >= 3 ) this._string[this._positions[2]] = pz - this._oz;
-        if (this.isAutoUpdate) this.updateTransform();
+        var changed = false;
+        if (this._x != px) {
+            this._x = px;
+            changed = true;
+        }
+        if (this._y != py) {
+            this._y = py;
+            changed = true;
+        }
+        if(arguments.length >= 3){
+            if (this._z != pz) {
+                this._z = pz;
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            this.invalidateProperties();
+            this.invalidateDisplayList();
+        }
+    };
+    
+    p._rotationX = 0;
+    p._rotationY = 0;
+    p._rotationZ = 0;
+    p._oldRotationX = 0;
+    p._oldRotationY = 0;
+    p._oldRotationZ = 0;
+    
+    p.rotationX = function(rx) {
+        if ( arguments.length ) {
+            if(rx != this._rotationX){
+                this._rotationX = rx;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[3]];
+        }
+    };
+
+    p.rotationY = function(ry) {
+        if ( arguments.length ) {
+            if(ry != this._rotationY){
+                this._rotationY = ry;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[4]];
+        }
+    };
+
+    p.rotationZ = function(rz) {
+        if ( arguments.length ) {
+            if(rz != this._rotationZ){
+                this._rotationZ = rz;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[5]];
+        }
+    };
+
+    p.rotation = function(rx,ry,rz) {
+        var changed = false;
+        
+        if(rx != this._rotationX){
+            this._rotationX = rx;
+            changed = true;
+        }
+        if(ry != this._rotationY){
+            this._rotationY = ry;
+            changed = true;
+        }
+        if(rz != this._rotationZ){
+            this._rotationZ = rz;
+            changed = true;
+        }
+        
+        if(changed){
+            this.invalidateProperties();
+            this.invalidateDisplayList();
+        }
         return this;
     };
 
-    p.move = function(x,y) {
+    p._scaleX = 1;
+    p._scaleY = 1;
+    p._scaleZ = 1;
+    p._oldScaleX = 1;
+    p._oldScaleY = 1;
+    p._oldScaleZ = 1;
+
+    p.scaleX = function(sx) {
+        if ( arguments.length ) {
+            if(this._scaleX != sx){
+                this._scaleX = sx;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[6]];
+        }
+    };
+
+    p.scaleY = function(sy) {
+        if ( arguments.length ) {
+            if(this._scaleY != sy){
+                this._scaleY = sy;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[7]];
+        }
+    };
+
+    p.scaleZ = function(sz) {
+        if ( arguments.length ) {
+            if(this._scaleZ != sz){
+                this._scaleZ = sz;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+            }
+            return this;
+        } else {
+            return this._string[this._positions[8]];
+        }
+    };
+
+    p.scale = function(sx,sy,sz) {
         var changed = false;
-        if (this._x != x) {
-            changed = true;
+        switch(arguments.length){
+            case 0:
+                if (this.isAutoUpdate) this.updateTransform();
+                return this._string[this._positions[6]];
+            case 1:
+                this._scaleZ = this._scaleY = this._scaleX = sx;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+                break;
+            case 2:
+                this._scaleX = sx;
+                this._scaleY = sy;
+                this._scaleZ = 1;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+                break;
+            case 3:
+                this._scaleX = sx;
+                this._scaleY = sy;
+                this._scaleZ = sz;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+                break;
         }
-        if (this._y != y) {
-            changed = true;
-        }
-        if (changed) {
-            //todo dispatch event to bind data
-        }
+        return this;
     };
 
     p._invalidatePropertiesFlag = false;
@@ -378,7 +588,7 @@
 
     p.validateDisplayList = function() {
         if (this._invalidateDisplayListFlag) {
-            this.updateDisplayList(this.getMeasuredWidth(), this.getMeasuredHeight() );
+            this.updateDisplayList(this.measuredWidth(), this.measuredHeight() );
             this._invalidateDisplayListFlag = false;
         }
     };
@@ -423,13 +633,13 @@
         this.VSprite__elementAdded(element, index, notifyListeners); //super
 
         element.parentChanged(this);
-        element.setNestLevel(this.getNestLevel()+1); // nest level 추가
+        element.nestLevel(this.nestLevel()+1); // nest level 추가
         //todo 스타일 캐시 재생성 element.regenerateStyleCache(true);
         //todo 스타일 변경 알림  element.styleChanged(null);
         //todo 차일드에게 스타일 변경 알림 element.notifyStyleChangeInChildren(null, true);
         //todo 테마 컬러 초기화 element.initThemeColor();
         //todo 스타일 초기화 element.stylesInitialized();
-        if (!element.getInitialized()) {
+        if (!element.initialized()) {
             element.initComponent();
         }
     };
@@ -446,7 +656,7 @@
     p.parentChanged = function(p){
         if(!p){
             this.parent = null;
-            this.setNestLevel(0);
+            this.nestLevel(0);
         }else if(p.name === "systemManager"){
             this.parent = p;
         }else{
@@ -457,7 +667,7 @@
     };
 
     p.initComponent = function() {
-        if (this.getInitialized()) {
+        if (this.initialized()) {
             return;
         }
 
@@ -500,7 +710,55 @@
      * @protected
      */
     p.commitProperties = function() {
-        console.log(this.getName() +  "   -------------   " + "commitProperties");
+        console.log(this.name() +  "   -------------   " + "commitProperties");
+        // x, y, z 속성
+        var transformChanged = false;
+        if(this._x != this._oldx || this._y != this._oldy || this._z != this._oldz){
+            
+            this._oldx = this._x;
+            this._oldy = this._y;
+            this._oldz = this._z;
+            this._string[this._positions[0]] = this._x - this._ox;
+            this._string[this._positions[1]] = this._y - this._oy;
+            this._string[this._positions[2]] = this._z - this._oz;
+
+            transformChanged = true;
+        }
+
+        if(this._rotationX != this._oldRotationX || this._rotationY != this._oldRotationY || this._rotationZ != this._oldRotationZ){
+            this._oldRotationX = this._rotationX;
+            this._oldRotationY = this._rotationY;
+            this._oldRotationZ = this._rotationZ;
+            this._string[this._positions[3]] = this._rotationX;
+            this._string[this._positions[4]] = this._rotationY;
+            this._string[this._positions[5]] = this._rotationZ;
+
+            transformChanged = true;
+        }
+
+        if(this._scaleX != this._oldScaleX || this._scaleY != this._oldScaleY || this._scaleZ != this._oldScaleZ){
+            this._oldScaleX = this._scaleX;
+            this._oldScaleY = this._scaleY;
+            this._oldScaleZ = this._scaleZ;
+            this._string[this._positions[6]] = this._scaleX;
+            this._string[this._positions[7]] = this._scaleY;
+            this._string[this._positions[8]] = this._scaleZ;
+
+            transformChanged = true;
+        }
+
+        if(transformChanged){
+            this.updateTransform();
+        }
+
+        // width, height 속성
+        if(this._width != this._oldWidth || this._height != this._oldHeight){
+            this._oldWidth = this._width;
+            this._oldHeight = this._height;
+
+            this._domElement.style.width = this._width + "px";
+            this._domElement.style.height = this._height + "px";
+        }
     };
 
     /**
@@ -508,7 +766,7 @@
      * @protected
      */
     p.measure = function() {
-        console.log(this.getName() +  "   -------------   " + "measure");
+        console.log(this.name() +  "   -------------   " + "measure");
     };
     /**
      * 좌표 조절을 위한 override용 메소드
@@ -517,7 +775,7 @@
      * @protected
      */
     p.updateDisplayList = function(w,h) {
-        console.log(this.getName() +  "   -------------   " + "updateDisplayList");
+        console.log(this.name() +  "   -------------   " + "updateDisplayList");
     };
 
     /**
@@ -526,7 +784,7 @@
      */
     p.initializationComplete = function() {
         this.dispatchEvent("initialize");
-        this.setProcessedDescriptors(true);
+        this.processedDescriptors(true);
     };
 
     window.volcano.UIComponent = UIComponent;

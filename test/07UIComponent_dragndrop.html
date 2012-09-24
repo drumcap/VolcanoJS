@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>VolcanoJS UIComponent Test</title>
+    <script src="http://underscorejs.org/underscore.js" ></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="../src/exlibs/Ticker.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VObject.js"></script>
+    <script src="../src/core/VSprite.js"></script>
+    <script src="../src/core/UIComponent.js"></script>
+    <script src="../src/managers/SystemManager.js"></script>
+    <script src="../src/managers/LayoutManager.js"></script>
+    <script src="../src/utils/ColorUtil.js"></script>
+    <script src="Stats.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
+    <script>
+
+        var uicom, sysMgr, application
+                runTest = false,
+                testcase = {};
+
+        function onLoadHandler() {
+
+            sysMgr = new volcano.SystemManager();
+            sysMgr.frameRate(60);
+            sysMgr.name("systemManager");
+
+            stats = new Stats();
+            sysMgr.addElement(new volcano.VObject(stats.domElement));
+            sysMgr.addEnterFrameListener(function(){stats.update()});
+
+            application = new volcano.UIComponent().name("application");
+
+            volcano.VObject.randomColorMode = true;
+
+
+            uicom = new volcano.UIComponent();
+            uicom.width(window.screen.width).height(window.screen.width);
+
+            for (var i = 0; i < 50; i++) {
+                uicom.addElement(new volcano.UIComponent().width(100).height(100).x(i * 10).y(i * 10));
+            }
+
+            uicom.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            sysMgr.addElement(application);
+            application.addElement(uicom);
+
+//            Ticker.setFPS(30);
+//            Ticker.addListener(window);
+        }
+        var regX, regY, target
+
+        function onMouseDownHandler(event) {
+            var point = volcano.hasTouch ? event.touches[0] : event;
+            event.preventDefault();
+            uicom.removeEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            uicom.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            uicom.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
+
+            target = event.vTarget;
+            regX = point.pageX - target.x();
+            regY = point.pageY - target.y();
+            uicom.setElementIndex(event.vTarget, uicom.getNumElements() - 1);
+
+            target.width(500);
+            target.height(500);
+            target.x(100);
+            target.y(100);
+        }
+
+        function onMouseMoveHandler(event) {
+            var point = volcano.hasTouch ? event.touches[0] : event;
+            event.preventDefault();
+            var pageX = point.pageX,
+                    pageY = point.pageY;
+
+            var targetX = pageX - regX;
+            var targetY = pageY - regY;
+
+//            console.log(targetX + " : " + targetY);
+            target.x(targetX).y(targetY);
+        }
+
+        function onMouseUpHandler(event) {
+            uicom.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            uicom.removeEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            uicom.removeEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
+        }
+
+        function tick() {
+        }
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()">
+<div id="console"/>
+</body>
+</html>
