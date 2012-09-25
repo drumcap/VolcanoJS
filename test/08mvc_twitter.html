@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <title>VolcanoJS MVC Twitter</title>
+    <link rel="stylesheet" href="css/08mvc_twitter.css">
+
+    <script src="http://code.jquery.com/jquery-1.7.2.js"></script>
+    <!--<script src="http://zeptojs.com/zepto.js"></script>-->
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+    <script src="../src/exlibs/Ticker.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <!--<script src="../lib/volcanojs.js"></script>-->
+    <script src="Stats.js"></script>
+
+    <script>
+
+        function onLoadHandler() {
+            console.log(volcano);
+
+            window.Tweet = volcano.Model.extend();
+
+            window.Tweets = volcano.Collection.extend({
+                model: Tweet
+            });
+
+            window.FormView = volcano.View.extend({
+                el: $("#search_form"),
+                search_twitter: function(e) {
+                    e.preventDefault();
+                    var self = this;
+                    $.getJSON("http://search.twitter.com/search.json?callback=?",{
+                        q: $("#q").val()
+                    }, function(data) {
+                        $("#tweets li").fadeOut();
+                        for(var i in data.results) {
+                            var tweet = new Tweet(data.results[i]);
+                            console.log(data.results[i]);
+                            var tweetView = new TweetView({model: tweet});
+                            tweetView.render();
+                        }
+                    });
+                },
+                events: {
+                    "submit": "search_twitter"
+                }
+            });
+
+            window.TweetView = volcano.View.extend({
+                render: function() {
+                    var tweet = _.template( $("#tweet_template").html(), this.model.toJSON());
+                    $("#tweets").append(tweet);
+                    $("#t_" + this.model.get("id")).fadeIn();
+                }
+            });
+
+            var App = volcano.Router.extend({
+                routes: {
+                    "": "index",
+                    "Go":"index"
+                },
+                index: function() {
+                    var formView = new window.FormView;
+                }
+            });
+            var app = new App();
+
+            volcano.history.start();
+
+        }
+
+    </script>
+</head>
+
+<body onload="onLoadHandler()">
+<h1>VolcanoJS MVC Twitter</h1>
+<form id="search_form" action="" method="POST">
+    <label for="q">검색어 입력</label>
+    <input autocomplete="off" autofocus="true" type="text" name="q" id="q" value="" />
+    <input type="submit" id="button" value="Go" />
+</form>
+<ul id="tweets">
+</ul>
+<script type="text/template" id="tweet_template">
+    <li id="t_<%= id %>">
+        <h3>
+            <img src="<%= profile_image_url %>" alt="<%= from_user %>" width="45" />
+            <div>
+                <a href="http://twitter.com/<%= from_user %>" title="<%= from_user %>">@<%= from_user %></a> at
+                <span class="date"><%= Date.parse(created_at).add(-5).hours().toString("h:mmtt").toLowerCase() %></span>:
+            </div>
+        </h3>
+        <p><%= text %>
+    </li>
+</script></body>
+</html>
