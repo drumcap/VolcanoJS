@@ -12,6 +12,7 @@
     <script src="../src/core/Core.js"></script>
     <script src="../src/core/VObject.js"></script>
     <script src="../src/core/VSprite.js"></script>
+    <script src="../src/core/UIComponent.js"></script>
     <script src="../src/managers/SystemManager.js"></script>
     <script src="../src/managers/LayoutManager.js"></script>
     <script src="../src/utils/ColorUtil.js"></script>
@@ -29,9 +30,10 @@
     <script>
 
         var a,b = {};
+        var sysMgr, scroller, container;
         function onLoadHandler() {
 //            volcano.VObject.randomColorMode = true;
-            var sysMgr = new volcano.SystemManager();
+            sysMgr = new volcano.SystemManager();
             sysMgr.frameRate(60);
             sysMgr.addEventListener("click", function(e) {
                 a = e;
@@ -40,39 +42,25 @@
 //                console.log(e);
             });
 
-
+//            var application = new volcano.UIComponent().name("application").percentWidth(100).percentHeight(100);
             stats = new Stats();
             sysMgr.addElement(new volcano.VObject(stats.domElement));
-
-//            document.body.appendChild(stats.domElement);
-
             sysMgr.addEnterFrameListener(function(){stats.update()});
-            var container = new volcano.VSprite().x(100).width(600).percentHeight(100).id("container");
-            var scroller = new volcano.VSprite().percentWidth(100).height(1400).id("scroller");
+
+
+
+            container = new volcano.UIComponent().x(100).width(600).percentHeight(100).id("container");
+            scroller = new volcano.UIComponent().percentWidth(100).height(1400).id("scroller");
+            scroller.addEventListener("creationComplete",OnScrollerCreationComplete);
             sysMgr.addElement(container);
             container.addElement(scroller);
+            console.log("top");
+        };
 
-//            scroller.addEventListener("click", function(e){
-//                var target = e.target;
-//                var ryTarget = 180;
-//                if (target.rotationY() !== ryTarget){
-//                    TweenLite.to(e.target,.5,{z:180, rotationY:ryTarget});
-//                } else {
-//                    TweenLite.to(e.target,.5,{z:0, rotationY:0});
-//                }
-//
-//            });
-
-//            container._domElement.setAttribute("data-scrollable","y");
-//            new EasyScroller(container._domElement, {
-//                scrollingX: false,
-//                scrollingY: true,
-//                zooming: false
-//            });
-
-            new iScroll("container", { hScrollbar: false, vScrollbar: false });
+        OnScrollerCreationComplete = function(event){
+            console.log("bottom");
+            new iScroll("container");
             volcano.Image.DEFAULT_ERR_IMGAGE = "img/noimg.jpg";
-
             for (var i=0; i<20; i++) {
                 var width = 200;
                 var height = 200;
@@ -81,18 +69,20 @@
                 var gapY = 20;
                 var regX = regRowCnt * width;
                 var regY = regColCnt * height;
-
                 var img = new volcano.Image().id("img"+i).rotationY(180).z(-600).width(width).height(height).x(regX).y(regY - gapY).visible(false).alpha(0).source("http://jindo.dev.naver.com/docs/jindo-mobile/archive/latest/sample/latest/im/movie_image("+i+").jpg");
                 if (i == 18) img.errorImg("img/noimg.gif");
-                scroller.addElement(img);
 
                 //if (i==19) { setScroll = function() { new iScroll("container"); };}                if (i==19)
+                scroller.addElement(img);
                 TweenLite.to(img,.5,{y:regY, rotationY:0, z:0, alpha:1, delay:0.1*i, ease:Quad.easeOut, onStart:function(target){
                     target.visible(true);
 //                    console.log(target);
                 },onStartParams:[img]});
             }
-        };
+
+
+
+        }
 
 
     </script>

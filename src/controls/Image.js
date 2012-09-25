@@ -30,7 +30,7 @@
      * VolcanoJS Project
      *
      * @class Image
-     * @extends VSprite
+     * @extends UIComponent
      * @constructor
      * @author david yun
      *
@@ -39,14 +39,19 @@
         this.initialize();
     };
 
-    var p = Image.prototype = new volcano.VObject();
-    p.VObject_initialize = p.initialize;
+    var p = Image.prototype = new volcano.UIComponent();
+    p.UIComponent_initialize = p.initialize;
 
     p._domElement;
 
+    p._imageElement;
+
     p.initialize = function () {
-        var imgElement = document.createElement("img");
-        this.VObject_initialize(imgElement); //super
+//        var imgElement = document.createElement("img");
+//        this.UIComponent_initialize(imgElement); //super
+        this._domElement = {};
+        this._imageElement = {};
+        this.UIComponent_initialize(); //super
         _.bindAll(this,"errHandler");
     };
 
@@ -55,17 +60,26 @@
         var condition2 = (this.errorImg() !== this._source);
 
         if (this.errorImg() !== "" && this.errorImg() !== this._source) {
-            this._domElement.src = this.errorImg();
-            console.log(this.errorImg() + this._source);
+            this._imageElement.src = this.errorImg();
         }
     };
 
     p._source = "";
+    p._oldSource = "";
     p.source = function(value) {
-        this._domElement.src = value;
-        this._domElement.onerror = this.errHandler;
-        this._source = value;
-        return this;
+        if(arguments.length){
+            if(value != this._source){
+                this._source = value;
+                this.invalidateProperties();
+                this.invalidateDisplayList();
+                return this;
+            }else{
+
+                return this;
+            }
+        }else{
+            return this._source;
+        }
     };
 
     p._errorImg = "";
@@ -77,6 +91,26 @@
         }else{
             return (this._errorImg === "") ? Image.DEFAULT_ERR_IMGAGE : this._errorImg;
         }
+    };
+
+    p.createChildren = function(){
+        this._imageElement = document.createElement("img");
+        this._domElement.appendChild(this._imageElement);
+        this._imageElement.style.width = 100 + "%";
+        this._imageElement.style.height = 100 + "%";
+        this._imageElement.onerror = this.errHandler;
+    };
+
+    p.UIComponent_commitProperties = p.commitProperties;
+    p.commitProperties = function(){
+        this.UIComponent_commitProperties();
+
+        if(this._source != this._oldSource){
+            this._oldSource = this._source;
+//            console.log(this._source);
+            this._imageElement.src = this._source;
+        }
+
     };
 
     this.window.volcano.Image = Image;

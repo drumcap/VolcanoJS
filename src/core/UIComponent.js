@@ -62,7 +62,7 @@
     p._domElement = null;
     p.VSprite_initialize = p.initialize;
 
-    p.initialize = function() {
+    p.initialize = function(element) {
         // 변수 초기화 (primitive 이외의 타입은 반드시 초기화 해야함)
         this._methodQueue = [];
         this.systemManager = volcano.LayoutManager.systemManager;
@@ -72,7 +72,7 @@
         this._owner = {};
         this._domElement = {};
 
-        this.VSprite_initialize(); //super
+        this.VSprite_initialize(element); //super
     };
 
     p.owner = function(value){
@@ -273,7 +273,7 @@
     };
 
     p._initialized = false;
-    p.initialized = function(){
+    p.initialized = function(value){
         if(arguments.length){
             this._initialized = arguments[0];
 
@@ -710,7 +710,7 @@
      * @protected
      */
     p.commitProperties = function() {
-        console.log(this.name() +  "   -------------   " + "commitProperties");
+//        console.log(this.name() +  "   -------------   " + "commitProperties");
         // x, y, z 속성
         var transformChanged = false;
         if(this._x != this._oldx || this._y != this._oldy || this._z != this._oldz){
@@ -752,12 +752,29 @@
         }
 
         // width, height 속성
-        if(this._width != this._oldWidth || this._height != this._oldHeight){
-            this._oldWidth = this._width;
-            this._oldHeight = this._height;
 
+        var sizeWidthChanged = false;
+        if(this._width != this._oldWidth){
+            this._oldWidth = this._width;
             this._domElement.style.width = this._width + "px";
+            sizeWidthChanged = true;
+        }
+
+        if(this._percentWidth != this._oldPercentWidth && !sizeWidthChanged){
+            this._oldPercentWidth = this._percentWidth;
+            this._domElement.style.width = this._percentWidth + "%";
+        }
+
+        var sizeHeightChanged = false;
+        if(this._height != this._oldHeight){
+            this._oldHeight = this._height;
             this._domElement.style.height = this._height + "px";
+            sizeHeightChanged = true;
+        }
+
+        if(this._percentHeight != this._oldPercentHeight && !sizeHeightChanged){
+            this._oldPercentHeight = this._percentHeight;
+            this._domElement.style.height = this._percentHeight + "%";
         }
     };
 
@@ -766,7 +783,7 @@
      * @protected
      */
     p.measure = function() {
-        console.log(this.name() +  "   -------------   " + "measure");
+//        console.log(this.name() +  "   -------------   " + "measure");
     };
     /**
      * 좌표 조절을 위한 override용 메소드
@@ -775,7 +792,7 @@
      * @protected
      */
     p.updateDisplayList = function(w,h) {
-        console.log(this.name() +  "   -------------   " + "updateDisplayList");
+//        console.log(this.name() +  "   -------------   " + "updateDisplayList");
     };
 
     /**
