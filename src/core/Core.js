@@ -92,7 +92,9 @@
         canvas: window["HTMLCanvasElement"] ? true : false,
         audio: window["HTMLAudioElement"] && window["Audio"] ? true : false,
         video: window["HTMLVideoElement"] && window["Video"] ? true : false,
-        storage: window["localStorage"] && window["localStorage"]["setItem"] ? true : false
+        storage: window["localStorage"] && window["localStorage"]["setItem"] ? true : false,
+        orientation: "onorientationchange" in window ? true : false,
+        hashchange: "onhashchange" in window ? true : false
     };
 
 
