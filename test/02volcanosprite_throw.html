@@ -38,7 +38,7 @@
         function onLoadHandler() {
             volcano.VObject.randomColorMode = true;
             sysMgr = new volcano.SystemManager();
-            sysMgr.setFrameRate(60);
+            sysMgr.frameRate(60);
 
             // FPS Viewer
             stats = new Stats();
@@ -64,14 +64,14 @@
             stats.update();
 
             if (isMove) {
-                sprite.position(targetX, targetY, 0);
+                sprite.move(targetX, targetY, 0);
             } else if (Math.abs(vX)>0 || Math.abs(vY)>0) {
                 vX = (Math.abs(vX) < 0.8) ? 0 : vX * friction;
 //                vY += gravity; //중력 추가
                 vY = (Math.abs(vY) < 0.8) ? 0 : vY * friction;
 
 
-                sprite.position(sprite.x() + vX, sprite.y() + vY, 0);
+                sprite.move(sprite.x() + vX, sprite.y() + vY, 0);
 
                 if (sprite.x() + sprite.width() > rect.right) {
                     sprite.x(rect.right - sprite.width());

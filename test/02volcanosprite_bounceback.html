@@ -40,7 +40,7 @@
         function onLoadHandler() {
             volcano.VObject.randomColorMode = true;
             sysMgr = new volcano.SystemManager();
-            sysMgr.setFrameRate(60);
+            sysMgr.frameRate(60);
 
             // FPS Viewer
             stats = new Stats();
@@ -81,7 +81,7 @@
             stats.update();
 
             if (isMove) {
-                sprite.position(targetX, targetY, 0);
+                sprite.move(targetX, targetY, 0);
             } else {
                 var sx = sprite.x(),
                     sy = sprite.y();
@@ -123,7 +123,7 @@
                     if ((sx > 0 && sx < 1) || (sx > maxScrollX-1 && sx < maxScrollX)) isXBacking = false;
                     if ((sy > 0 && sy < 1) || (sy > maxScrollY-1 && sy < maxScrollY)) isYBacking = false;
 
-                    sprite.position(rx, ry, 0);
+                    sprite.move(rx, ry, 0);
                 }
             }
         }
