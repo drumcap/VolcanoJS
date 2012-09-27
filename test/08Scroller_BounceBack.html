@@ -1,0 +1,64 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Volcano Scroller Bounce Test</title>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">-->
+    <script src="http://zeptojs.com/zepto.js"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="../src/exlibs/Ticker.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VObject.js"></script>
+    <script src="../src/core/VSprite.js"></script>
+    <script src="../src/managers/SystemManager.js"></script>
+    <script src="../src/managers/LayoutManager.js"></script>
+    <script src="../src/utils/ColorUtil.js"></script>
+    <script src="../src/controls/Image.js"></script>
+    <script src="../src/controls/Scroller.js"></script>
+    <script src="Stats.js"></script>
+
+    <script>
+
+        var sysMgr, stats, container, scroll;
+        function onLoadHandler(){
+            volcano.VObject.randomColorMode = true;
+            sysMgr = new volcano.SystemManager();
+            sysMgr.frameRate(60);
+
+            var sysDom = document.getElementById("systemManager");
+            console.log(sysDom.volcanoObj);
+
+            // FPS Viewer
+            stats = new Stats();
+            sysMgr.addElement(new volcano.VObject(stats.domElement));
+            stats.update();
+
+            container = new volcano.VSprite().x(100).y(100).width(400).height(400).id("container").setStyle("overflow","hidden");
+            viewPort = new volcano.VSprite().x(0).y(0).width(800).height(800).id("viewport");
+
+            for(var i = 0 ; i < 100 ; i++){
+                var width = 80;
+                var height = 80;
+                var regRowCnt = i%10;
+                var regColCnt = Math.floor(i/10);
+                var regX = regRowCnt * width;
+                var regY = regColCnt * height;
+                viewPort.addElement(new volcano.VSprite().width(width).height(height).x(regX).y(regY));
+            }
+
+            sysMgr.addElement(container);
+            container.addElement(viewPort);
+
+            new volcano.Scroller(container, sysMgr);
+        }
+
+    </script>
+</head>
+<body onload="onLoadHandler()" style="margin: 0px; padding: 0px;">
+<div id="console"></div>
+<div id="wrapper"></div>
+
+</body>
+</html>
