@@ -34,8 +34,8 @@
      * @constructor
      * @author david yun
      **/
-    var VSprite = function (element) {
-        this.initialize(element);
+    var VSprite = function (element, options) {
+        this.initialize(element, options);
     };
 
     var p = VSprite.prototype = new volcano.VObject();
@@ -82,13 +82,13 @@
     p._oz = 0;
 
     p.VObject_initialize = p.initialize;
-    p.initialize = function (element) {
+    p.initialize = function (element, options) {
         // 변수 초기화
         this._domElement = {};
         this._elementsContent = [];
         this.parent = {};
 
-        this.VObject_initialize(element); //call super
+        this.VObject_initialize(element, options); //call super
     };
 
     /**

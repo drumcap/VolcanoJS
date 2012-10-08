@@ -36,8 +36,8 @@
      * @constructor
      * @author david yun
      **/
-    var VObject = function (element) {
-        this.initialize(element);
+    var VObject = function (element, options) {
+        this.initialize(element, options);
     };
 
     VObject._eventSplitter = /\s+/;
@@ -86,8 +86,12 @@
     p._oy = 0;
     p._oz = 0;
 
+    // 스타일 속성 설정
+    // default : on/off
+    p._option = {};
+
     p.Core_initialize = p.initialize;
-    p.initialize = function (element) {
+    p.initialize = function (element, options) {
 
         var $ = window.Zepto || window.jQuery,
             createContainer;
@@ -95,23 +99,34 @@
         this._domElement = {};
         this.Core_initialize(); //call super
 
+        if(options !== undefined){
+            this._option = options;
+        }else{
+            this._option.default = "on";
+        }
+
+        var that = this;
+
+
         // wrapper 컨테이너를 생성
         createContainer = function (w, h, bgColor) {
-            var con = document.createElement('div');
-            con.style.width = w + "px";
-            con.style.height = h + "px";
-            con.style.margin = "0px";
-            con.style.padding = "0px";
-            if (bgColor != undefined) {
-                con.style.backgroundColor = bgColor;
-            }
-            if (VObject.randomColorMode) {
-                con.style.backgroundColor = volcano.ColorUtil.getRandomColor();
-                //con.innerHTML = volcano.ColorUtil.getRandomColor();;
-                //con.style.opacity = 0.3;
+                var con = document.createElement('div');
+                con.style.width = w + "px";
+                con.style.height = h + "px";
+                con.style.margin = "0px";
+                con.style.padding = "0px";
+                if (bgColor != undefined) {
+                    con.style.backgroundColor = bgColor;
+                }
+                if (VObject.randomColorMode) {
+                    con.style.backgroundColor = volcano.ColorUtil.getRandomColor();
+                    //con.innerHTML = volcano.ColorUtil.getRandomColor();;
+                    //con.style.opacity = 0.3;
+                }
+                if(that._option.default === "on"){
+                    con.style.position = "absolute";
             }
 
-            con.style.position = "absolute";
             return con;
         };
 
@@ -136,13 +151,18 @@
                 throw new Error("You are using multi selected jQuery/Zepto Object \n You MUST select only one DOM Object \n If you want to use multi selected jQuery/Zepto Object, you should use alternative class that is VobjectArray");
             }
             element = element.get(0);
-        } else if (element.style.position == "static" ) {
+        }else if(this._option.default === "off"){ // 기본 스타일을 off로 설정
+            console.log("create Volcano Style Default Option =====> off");
+        }else if (element.style.position == "static" ) {
             element.style.position = "relative";
-        } else {
+        }else {
             element.style.position = "absolute";
         }
-        element.style[ volcano.Core._browserPrefix + "TransformStyle" ] = "preserve-3d";
-        element.style[ volcano.Core._transformProperty ] = "translateZ(0px)";
+
+        if(this._option.default === "on"){ // 기본 스타일을 on으로 설정
+            element.style[ volcano.Core._browserPrefix + "TransformStyle" ] = "preserve-3d";
+            element.style[ volcano.Core._transformProperty ] = "translateZ(0px)";
+        }
 
         // add private properties
         this._string = [
@@ -281,6 +301,10 @@
             this._domElement.style.width = w+"px";
             return this;
         }else{
+            this._width = this._domElement.style.width.toString().split("px")[0];
+            if(this._width === ""){
+                this._width = getComputedStyle(this._domElement).width.toString().split("px")[0];
+            }
             return this._width;
         }
     };
@@ -296,6 +320,10 @@
             this._domElement.style.height = h+"px";
             return this;
         }else{
+            this._height = this._domElement.style.height.toString().split("px")[0];
+            if(this._height === ""){
+                this._height = getComputedStyle(this._domElement).height.toString().split("px")[0];
+            }
             return this._height;
         }
 
@@ -313,6 +341,9 @@
             this._domElement.style.width = w+"%";
             return this;
         }else{
+            if(this._percentWidth === ""){
+                this._percentWidth = getComputedStyle(this._domElement).percentWidth;
+            }
             return this._percentWidth;
         }
     };
@@ -329,6 +360,9 @@
             this._domElement.style.height = h+"%";
             return this;
         }else{
+            if(this._percentHeight === ""){
+                this._percentHeight = getComputedStyle(this._domElement).percentHeight;
+            }
             return this._percentHeight;
         }
     };
@@ -662,7 +696,7 @@
         }else{
             return this._visible;
         }
-    }
+    };
 
     window.volcano.VObject = VObject;
 

@@ -1,5 +1,5 @@
 /*
- * VSprite
+ * Scroller
  * Visit http://volcanojs.com/ for documentation, updates and examples.
  *
  * Copyright (c) 2012 gstech.co.kr, inc.
@@ -27,8 +27,8 @@
  */
 (function (window) {
 
-    var Scroller = function (conElement, sysMgr, option) {
-        this.initialize(conElement, sysMgr, option);
+    var Scroller = function (viewElement, sysMgr, option) {
+        this.initialize(viewElement, sysMgr, option);
     };
 
     var p = Scroller.prototype = new volcano.VObject();
@@ -59,22 +59,36 @@
     var bounce = -0.7; //튕길때는 음수로 힘이 약간 상쇄된다.
     var friction = .9; //마찰계수
     var downPoint;
+    var scrollOption;
+    var containerElement;
+//    var scrollMode = "auto";
 
     p.VObject_initialize = p.initialize;
-    p.initialize = function (conElement, sysMgr, option) {
+    /**
+     * @param viewElement viewPort
+     * @param sysMgr systemManager
+     * @param option option
+     */
+    p.initialize = function (viewElement, sysMgr, option) {
         // 변수 초기화
         this._domElement = {};
         this._scroller = {};
+        scrollOption = {
+            scrollMode: "auto"
+        };
 
-//        this.VObject_initialize(); //call super
-        viewPort = conElement.getElementAt(0);
+        containerElement = viewElement.parent;
+        for (i in option) scrollOption[i] = option[i];
+        containerElement.setStyle("overflow","hidden")
+;        viewPort = viewElement;
         _sysMgr = sysMgr;
-        this._domElement = conElement._domElement;
+
+        this._domElement = viewElement._domElement;
         this._domElement.volcanoObj = this; //FIXME 향후 메모리 문제가 생길 소지 있으니 개선해야함.
         this._scroller = this._domElement.children[0];
 
-        maxScrollX = conElement.width() - conElement.getElementAt(0).width();
-        maxScrollY = conElement.height() - conElement.getElementAt(0).height();
+        maxScrollX = containerElement.width() - viewPort.width();
+        maxScrollY = containerElement.height() - viewPort.height();
 
         _sysMgr.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
 
@@ -85,13 +99,16 @@
 //        stats.update();
 
         if (isMove) {
-            viewPort.move(targetX, targetY, 0);
+            // Scroll 모드에 따라서 좌표 설정
+            if(scrollOption.scrollMode === "auto"){
+                viewPort.move(targetX, targetY, 0);
+            }else if(scrollOption.scrollMode === "vertical"){
+                viewPort.move(0, targetY, 0);
+            }else if(scrollOption.scrollMode === "horizontal"){
+                viewPort.move(targetX, 0, 0);
+            }
         } else if(isDown){
             // TODO mouseDown 일 경우
-//            oldX = 0;
-//            oldY = 0;
-//            vX = 0;
-//            vY = 0;
         }else
          {
             var sx = viewPort.x(),
@@ -127,12 +144,22 @@
             var rx,ry;
             if (Math.abs(vX)>0.01 || Math.abs(vY)>0.01)
             {
-                // reset value
-                rx = (sx > 0 && sx < 1) ? 0 : (sx > maxScrollX-1 && sx < maxScrollX) ? maxScrollX : sx + vX;
-                ry = (sy > 0 && sy < 1) ? 0 : (sy > maxScrollY-1 && sy < maxScrollY) ? maxScrollY : sy + vY;
+                // scroll Mode 에 따라서 좌표값을 설정
+                if(scrollOption.scrollMode === "auto"){
+                    rx = (sx > 0 && sx < 1) ? 0 : (sx > maxScrollX-1 && sx < maxScrollX) ? maxScrollX : sx + vX;
+                    ry = (sy > 0 && sy < 1) ? 0 : (sy > maxScrollY-1 && sy < maxScrollY) ? maxScrollY : sy + vY;
 
-                if ((sx > 0 && sx < 1) || (sx > maxScrollX-1 && sx < maxScrollX)) isXBacking = false;
-                if ((sy > 0 && sy < 1) || (sy > maxScrollY-1 && sy < maxScrollY)) isYBacking = false;
+                    if ((sx > 0 && sx < 1) || (sx > maxScrollX-1 && sx < maxScrollX)) isXBacking = false;
+                    if ((sy > 0 && sy < 1) || (sy > maxScrollY-1 && sy < maxScrollY)) isYBacking = false;
+                }else if(scrollOption.scrollMode === "vertical"){
+                    rx = 0;
+                    ry = (sy > 0 && sy < 1) ? 0 : (sy > maxScrollY-1 && sy < maxScrollY) ? maxScrollY : sy + vY;
+                    if ((sy > 0 && sy < 1) || (sy > maxScrollY-1 && sy < maxScrollY)) isYBacking = false;
+                }else if(scrollOption.scrollMode === "horizontal"){
+                    rx = (sx > 0 && sx < 1) ? 0 : (sx > maxScrollX-1 && sx < maxScrollX) ? maxScrollX : sx + vX;
+                    if ((sx > 0 && sx < 1) || (sx > maxScrollX-1 && sx < maxScrollX)) isXBacking = false;
+                    ry = 0;
+                }
 
                 viewPort.move(rx, ry, 0);
             }
@@ -143,8 +170,10 @@
     function onMouseDownHandler(event) {
         var point = volcano.hasTouch ? event.touches[0] : event;
         downPoint = point;
-        console.log("down === " + point.pageX);
         event.preventDefault();
+
+        maxScrollX = containerElement.width() - viewPort.width();
+        maxScrollY = containerElement.height() - viewPort.height();
 
         _sysMgr.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
         _sysMgr.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
@@ -156,7 +185,6 @@
         regX = point.pageX - viewPort.x();
         regY = point.pageY - viewPort.y();
 
-        console.log("down");
 
         isFirstDown = true;
 //        _sysMgr.addEnterFrameListener(setAccelerate);
@@ -183,7 +211,6 @@
         }
 
         setAccelerate();
-        console.log("move");
 
     }
 
@@ -194,7 +221,6 @@
         _sysMgr.removeEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
         _sysMgr.removeEventListener(volcano.e.CANCEL, onMouseUpHandler);
 //        _sysMgr.removeEnterFrameListener(setAccelerate);
-        console.log("up");
     }
 
     function setAccelerate() {

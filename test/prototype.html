@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>VolcanoJS Components</title>
+    <script type="text/javascript" src="http://underscorejs.org/underscore-min.js" ></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script>
+
+        var counterNum = 0;
+        var inA,inB;
+        var res1,res2;
+
+        $(document).ready(function(){
+            console.log("test!!");
+//            console.log(window.requestAnimationFrame);
+//            console.log(window.webkitRequestAnimationFrame);
+//            console.log(window.mozRequestAnimationFrame);
+//            console.log(window.msRequestAnimationFrame);
+//            var tid = setTimeout(tick, 300);
+//            var f = window.mozRequestAnimationFrame;
+//            f(tick);
+//            console.log("timeout id : "+tid);
+            //setInterval(500);
+//            checkTimer1();
+//            checkTimer2();
+            inA = new inheritA();
+            inB = new inheritB();
+            aa = document.getElementById("bb");
+
+//            console.log(inA.inner1());
+//            console.log(inA.inner2());
+//            console.log(inA.inner3());
+//            console.log(inA.inner4());
+//            console.log(inA.inner5());
+//            console.log(inA.inner6());
+//            console.log(inB.inner1());
+//            console.log(inB.inner2());
+//            console.log(inB.inner3());
+//            console.log(inB.inner4());
+//            console.log(inB.inner5());
+//            console.log(inB.inner6());
+
+            checkTimer1();
+            checkTimer2();
+            document.getElementById("console").innerHTML = "style 속성 : "+res1+"<br/> getComputedStyle : "+res2;
+
+//            tick();
+        });
+
+        var funcA = function() {
+            this.inner1 = function() {
+                return "innerA1";
+            },
+            this.inner2 = function() {
+                return "innerA2";
+            }
+        }
+
+        var funcB = function() {
+            this.inner3 = function() {
+                return "innerB1";
+            },
+            this.inner4 = function() {
+                return "innerB2";
+            }
+        }
+
+        var funcC = function() {
+            this.inner5 = function() {
+                return "innerC1";
+            },
+            this.inner6 = function() {
+                return "innerC2";
+            }
+        }
+
+        var inheritA = function(){};
+        _.extend(inheritA.prototype, new funcA, new funcB, new funcC);
+
+        var inheritB = function() {};
+        funcB.prototype = new funcC();
+        funcA.prototype = new funcB();
+        inheritB.prototype = new funcA();
+
+        var _max = 999999;
+
+        function checkTimer1() {
+//            var now = new Date().getTime();
+            var now = Date.now();
+            for (var i= 0; i<_max; i++) {
+                aa.style.width;
+            }
+            res1 = Date.now() - now;
+        }
+
+        function checkTimer2() {
+            var now = Date.now();
+            for (var i= 0; i<_max; i++) {
+                if(true){
+                    aa.style.width;
+                }else{
+                    getComputedStyle(aa).width;
+                }
+            }
+            res2 = Date.now() - now;
+        }
+
+        function tick() {
+            console.log("test");
+            setInterval(function() {console.log("fps : "+counterNum);counterNum=0},1000);
+            onEnterFrame();
+        }
+
+
+        function onEnterFrame() {
+            counterNum++;
+            mozRequestAnimationFrame(onEnterFrame);
+        }
+
+
+    </script>
+</head>
+
+<body>
+<div id="bb" />
+<div id="console" />
+
+</body>
+</html>
