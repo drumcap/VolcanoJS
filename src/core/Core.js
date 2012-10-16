@@ -69,6 +69,9 @@
 
     volcano.isMobile.any = (volcano.isMobile.android || volcano.isMobile.blackberry || volcano.isMobile.iphone || volcano.isMobile.ipad || volcano.isMobile.windows);
     volcano.hasTouch = "ontouchstart" in window ? true : false;
+    volcano.has3d = (function() {
+        return ('WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix());
+    })();
 
     // 이벤트 스트링 객체 설정
     volcano.e = {

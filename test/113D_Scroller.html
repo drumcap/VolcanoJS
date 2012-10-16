@@ -14,9 +14,18 @@
     <script src="../src/managers/SystemManager.js"></script>
     <script src="../src/managers/LayoutManager.js"></script>
     <script src="../src/controls/Image.js"></script>
+    <style>
+
+        .reflrction{
+            -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.25, transparent), color-stop(1.0, rgba(255, 255, 255, 0.5)));
+        }
+
+    </style>
     <script>
 
-        var sysMgr, transViewPort;
+
+
+        var sysMgr, transViewPort, container;
         var documentWidth = 1650;
         var documentHeight = 1000;
         var maxCols = 1, maxRows = 1;
@@ -35,22 +44,24 @@
         var containerElement;
         var isDown;
         var scrollMode = "horizontal";
-        var container;
         var accelRotate = 0;
 
         function onLoadHandler(){
-            sysMgr = new volcano.SystemManager();
+            sysMgr = new volcano.SystemManager().setStyle("overflow", "visible");
             sysMgr.frameRate(60);
-            container = new volcano.VSprite().id("container").width(innerWidth).height(0).x(0).y(100);//.origin(1650, 150);
-            transViewPort = new volcano.VSprite().id("viewPort").height(150).width(6600);
+            container = new volcano.VSprite().id("container").width(0).height(0).x(0).y(100);//.origin(1650, 150);
+            transViewPort = new volcano.VSprite().id("viewPort").height(450+180).width(6600+3080);
 
             sysMgr.addElement(container);
+            sysMgr.x(innerWidth/2);
             container.addElement(transViewPort);
 
             var i = 0;
             var imageX = 0;
             var imageY = 0;
             var yCount = -1;
+            var gap = 70;
+            var backX = -(innerWidth / 2);
             maxCols = parseInt(6600 / imageWidth);
             maxRows = parseInt(150 / imageHeight);
 
@@ -58,8 +69,12 @@
                 yCount = (i % maxCols) == 0 ? yCount + 1 : yCount;
                 var imageX = (i % maxCols) * imageWidth;
                 var imageY = yCount * imageHeight;
-                var img = new volcano.Image(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).source("img/art" + i%imageLen + ".png");
-                elementArr.push(img);
+                var img = new volcano.Image(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(backX + imageX + ((i%(imageLen*2)) * gap)).y(imageY + (yCount * gap)).source("img/art" + i%imageLen + ".png");
+                if(yCount === 2){
+                    img._domElement.className = "reflrction";
+                    img.rotationX(180);
+                }
+//                elementArr.push(img);
                 transViewPort.addElement(img);
             }
 
@@ -72,14 +87,10 @@
             sysMgr.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
             sysMgr.addEnterFrameListener(onEnterFrame);
 
-            var len = transViewPort.getNumElements();
-            var sumWidth = 0;
-            var sumHeight = 0;
-
-//                            transViewPort.rotationX(-500);
             sysMgr.origin(0,0,0);
             sysMgr.setStyle("Perspective-origin-y", 325 + "px", volcano._browserPrefix);
-            sysMgr.setStyle("Perspective", 6600 + "px", volcano._browserPrefix);
+            sysMgr.setStyle("Perspective-origin-x", 0 + "px", volcano._browserPrefix);
+            sysMgr.setStyle("Perspective", 800 + "px", volcano._browserPrefix);
 
         };
 
@@ -89,6 +100,7 @@
         var isXBacking = false;
         var isYBacking = false;
         var maxRotate = 30;
+        var sumValue = 2;
         var currentRotate = 0;
         var testFlag = false;
         var yRotateValue = 0;
@@ -194,74 +206,82 @@
 
                     transViewPort.move(rx, ry, 0);
 
-                    currentRotate = vX;
+                }
+                currentRotate = vX;
 
-                    if(currentRotate > maxRotate && scrollerOutX === false){
-                        if(motionStr !== "leftFast"){
-                            accelRotate = 0.1;
-                        }
-                        motionStr = "leftFast";
-                    }else if(currentRotate < -maxRotate && scrollerOutX === false){
-                        if(motionStr !== "rightFast"){
-                            accelRotate = 0.1;
-                        }
-                        motionStr = "rightFast";
-                    }else{
-                        if(0 < currentRotate && currentRotate < oldRotate && scrollerOutX === false){
-                            if(motionStr !== "leftSlow"){
-                                accelRotate = 0.1;
-                            }
-                            motionStr = "leftSlow";
-                        }else if(0 > currentRotate && currentRotate > oldRotate && scrollerOutX === false){
-                            if(motionStr !== "rightSlow"){
-                                accelRotate = 0.1;
-                            }
-                            motionStr = "rightSlow";
-                        }else if(0 === currentRotate && currentRotate === oldRotate || scrollerOutX === true){
-                            if(motionStr !== "stop"){
-                                accelRotate = 0.1;
-                            }
-                            motionStr = "stop";
-                        }
+                if(currentRotate > maxRotate && scrollerOutX === false){
+                    if(motionStr !== "leftFast"){
+                        accelRotate = 0.1;
                     }
+                    motionStr = "leftFast";
+                }else if(currentRotate < -maxRotate && scrollerOutX === false){
+                    if(motionStr !== "rightFast"){
+                        accelRotate = 0.1;
+                    }
+                    motionStr = "rightFast";
+                }else{
+                    if(0 < currentRotate && currentRotate < oldRotate && scrollerOutX === false){
+                        if(motionStr !== "leftSlow"){
+                            accelRotate = 0.1;
+                        }
+                        motionStr = "leftSlow";
+                    }else if(0 > currentRotate && currentRotate > oldRotate && scrollerOutX === false){
+                        if(motionStr !== "rightSlow"){
+                            accelRotate = 0.1;
+                        }
+                        motionStr = "rightSlow";
+                    }else if(0 === currentRotate && currentRotate === oldRotate || scrollerOutX === true){
+                        if(motionStr !== "stop"){
+                            accelRotate = 0.1;
+                        }
+                        motionStr = "stop";
+                    }
+                }
 
-                    oldRotate = currentRotate;
-                    var sumValue = 1;
+                oldRotate = currentRotate;
 
-                    accelRotate = accelRotate + 0.05 > maxAccelRotate ? 1 : accelRotate + 0.05;
+                accelRotate = accelRotate + 0.3 > maxAccelRotate ? 1 : accelRotate + 0.3;
 //                    console.log(scrollerOutX);
 
-                    if(motionStr === "stop" || scrollerOutX){
-                        testFlag = false;
-                        if(yRotateValue > 0.3){
-                            yRotateValue = yRotateValue - (0.3 * accelRotate);
-                            yRotateValue = yRotateValue < 0 ? 0 : yRotateValue;
-                        }else if(yRotateValue < -0.3){
-                            yRotateValue = yRotateValue + (0.3 * accelRotate);
-                            yRotateValue = yRotateValue > 0 ? 0 : yRotateValue;
-                        }else{
-                            yRotateValue = 0;
-                        }
-//                        console.log("stop" + " ======= " + yRotateValue);
-                    }else if(motionStr === "leftSlow"){
-                        yRotateValue = yRotateValue < -maxRotate ? -maxRotate : yRotateValue - (0.3 * accelRotate);
 
-                            yRotateValue = yRotateValue < 0 ? 0 : yRotateValue;
-//                        console.log("leftSlow");
-                    }else if(motionStr === "rightSlow"){
-                        yRotateValue = yRotateValue > maxRotate ? maxRotate : yRotateValue + (0.3 * accelRotate);
+                if(motionStr === "stop" || scrollerOutX){
+                    testFlag = false;
+                    if(yRotateValue > 0.3){
+                        yRotateValue = yRotateValue - (0.3 * accelRotate);
+                        yRotateValue = yRotateValue < 0 ? 0 : yRotateValue;
+                    }else if(yRotateValue < -0.3){
+                        yRotateValue = yRotateValue + (0.3 * accelRotate);
                         yRotateValue = yRotateValue > 0 ? 0 : yRotateValue;
-//                        console.log("rightSlow");
-                    }else if(motionStr === "leftFast"){
-                        yRotateValue = yRotateValue > maxRotate ? maxRotate : yRotateValue + (sumValue * accelRotate);
-//                        console.log("leftFast");
-                    }else if(motionStr === "rightFast"){
-                        yRotateValue = yRotateValue < -maxRotate ? -maxRotate : yRotateValue - (sumValue * accelRotate);
-//                        console.log("rightFast");
+                    }else{
+                        yRotateValue = 0;
                     }
+//                        console.log("stop");
+                }else if(motionStr === "leftSlow"){
+//                    if(maxRotate/3 < currentRotate){
+//                        yRotateValue = yRotateValue > maxRotate ? maxRotate : yRotateValue + (0.8 * accelRotate);
+//                    }else{
+                        yRotateValue = yRotateValue < -maxRotate ? -maxRotate : yRotateValue - (0.8 * accelRotate);
+                        yRotateValue = yRotateValue < 0 ? 0 : yRotateValue;
+//                    }
+//                    console.log("leftSlow " + maxRotate/3 + " ============== " + currentRotate);
+                }else if(motionStr === "rightSlow"){
+//                    if(-(maxRotate / 3) > currentRotate){
+//                        yRotateValue = yRotateValue < -maxRotate ? -maxRotate : yRotateValue - (0.8 * accelRotate);
+//                    }else{
+                        yRotateValue = yRotateValue > maxRotate ? maxRotate : yRotateValue + (0.8 * accelRotate);
+                        yRotateValue = yRotateValue > 0 ? 0 : yRotateValue;
+//                    }
+//                    console.log("rightSlow " + -(maxRotate / 3) + " ============== " + currentRotate);
+                }else if(motionStr === "leftFast"){
+                    yRotateValue = yRotateValue >= maxRotate ? maxRotate : yRotateValue + (sumValue * accelRotate);
+                        console.log("leftFast");
+                }else if(motionStr === "rightFast"){
+                    yRotateValue = yRotateValue <= -maxRotate ? -maxRotate : yRotateValue - (sumValue * accelRotate);
+                        console.log("rightFast", yRotateValue);
                 }
             }
             container.rotationY(-yRotateValue);
+//            container.rotationY(20);
         }
 
         var isFirstDown = false;
@@ -324,7 +344,7 @@
 
     </script>
 </head>
-<body onload="onLoadHandler()" id="bodyCon" >
+<body onload="onLoadHandler()" id="bodyCon" bgcolor="0x000000" style="overflow: hidden;">
 
 </body>
 </html>
