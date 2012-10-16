@@ -48,7 +48,7 @@
      */
     VObject.randomColorMode = false;
 
-    var p = VObject.prototype = new volcano.Core();
+    var p = VObject.prototype;
     /**
      * 실제 화면에 display 될 래퍼 Div
      * @type {*}
@@ -90,14 +90,12 @@
     // default : on/off
     p._option = {};
 
-    p.Core_initialize = p.initialize;
     p.initialize = function (element, options) {
 
         var $ = window.Zepto || window.jQuery,
             createContainer;
         // 변수 초기화
         this._domElement = {};
-        this.Core_initialize(); //call super
 
         if(options !== undefined){
             this._option = options;
@@ -160,8 +158,8 @@
         }
 
         if(this._option.default === "on"){ // 기본 스타일을 on으로 설정
-            element.style[ volcano.Core._browserPrefix + "TransformStyle" ] = "preserve-3d";
-            element.style[ volcano.Core._transformProperty ] = "translateZ(0px)";
+            element.style[ volcano._browserPrefix + "TransformStyle" ] = "preserve-3d";
+            element.style[ volcano._transformProperty ] = "translateZ(0px)";
         }
 
         // add private properties
@@ -544,11 +542,11 @@
 
     p.transformOrigin = function(tx,ty) {
         if ( arguments.length ) {
-            this._domElement.style[ volcano.Core._browserPrefix + "TransformOrigin" ] = (Number(tx)?tx+"px":tx) + " " + (Number(ty)?ty+"px":ty);
+            this._domElement.style[ volcano._browserPrefix + "TransformOrigin" ] = (Number(tx)?tx+"px":tx) + " " + (Number(ty)?ty+"px":ty);
             if (this.isAutoUpdate) this.updateTransform();
             return this;
         }else{
-            return this._domElement.style[ volcano.Core._browserPrefix + "TransformOrigin" ];
+            return this._domElement.style[ volcano._browserPrefix + "TransformOrigin" ];
         }
     };
 
@@ -609,10 +607,10 @@
     p.perspective = function(value) {
         if (arguments.length) {
             if (this.isAutoUpdate) this.updateTransform();
-            this._domElement.style[volcano.Core._browserPrefix + "Perspective"] = (typeof(value)==="string")?value:value+"px";
+            this._domElement.style[volcano._browserPrefix + "Perspective"] = (typeof(value)==="string")?value:value+"px";
             return this;
         } else {
-            return this._domElement.style[volcano.Core._browserPrefix + "Perspective"];
+            return this._domElement.style[volcano._browserPrefix + "Perspective"];
         }
     };
 
@@ -622,7 +620,7 @@
 
     p.setStyle = function(name, value, prefix) {
         this._domElement.style[name] = value;
-        if (arguments.length > 2) this._domElement.style[volcano.Core._browserPrefix + name] = value;
+        if (arguments.length > 2) this._domElement.style[volcano._browserPrefix + name] = value;
         return this
     };
 
@@ -650,7 +648,7 @@
     p.updateTransform = function() {
         var s = "";
         _.all(this._string, function(value){ s += value; return true; });
-        this._domElement.style[volcano.Core._transformProperty] = s;
+        this._domElement.style[volcano._transformProperty] = s;
         return this;
     };
 

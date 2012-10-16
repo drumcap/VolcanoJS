@@ -168,7 +168,7 @@
     p.setStyle = function(name,value,prefix) {
         var isSetStyleChanged = false;
         if (_.isString(name)) {
-            var sdata = (arguments.length > 2) ? {"value":value, "prefix":volcano.Core._browserPrefix + name} : {value:value};
+            var sdata = (arguments.length > 2) ? {"value":value, "prefix":volcano._browserPrefix + name} : {value:value};
             this._deferredSetStyles[name] = sdata;
             isSetStyleChanged = true;
         }

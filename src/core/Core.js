@@ -47,13 +47,13 @@
     volcano.VERSION = "0.1";
 
     /**
-    * 이전 버전과의 충돌이 있을 경우 이전 버전을 사용 해야 할 때 호출.
-    * @method noConflict
-    * @return {Object} a string representation of the instance.
-    **/
+     * 이전 버전과의 충돌이 있을 경우 이전 버전을 사용 해야 할 때 호출.
+     * @method noConflict
+     * @return {Object} a string representation of the instance.
+     **/
     volcano.noConflict = function() {
-      window.volcano = previousVolcano;
-      return this;
+        window.volcano = previousVolcano;
+        return this;
     };
 
     var agent = navigator.userAgent.toLocaleLowerCase();
@@ -90,45 +90,24 @@
         hashchange: "onhashchange" in window ? true : false
     };
 
+    volcano._browserPrefix = "webkit";
+    volcano._transformProperty = "webkitTransform";
 
-    /** 클래스가 상속해야할 코어 클래스
-    * 기본 네임스페이스 설정과 버전정보가 들어있다
-    *
-    * @class Core
-    * @constructor
-    * @author david yun
-    **/
-    var Core = function() {
-      this.initialize();
-    };
-//    Core.extend = window.volcano.Model.extend; // Backbone의 extend를 Core에 심어놓음
-
-    Core._isInit = false;
-    Core._isSupported = false;
-    Core._browserPrefix = "webkit";
-    Core._transformProperty = "webkitTransform";
-
-    var p = Core.prototype;
-    p.initialize = function() {
-
-        if (!Core._isInit) {
-            var d = document.createElement("div"),
-                prefixes = ["", "webkit", "Moz", "O", "ms" ],
-                n = prefixes.length, i;
-
-            Core._isInit = true;
-            // check for 3D transforms
+    volcano.isCss3DocumentDIV = document.createElement("div");
+    volcano.isCss3 = {
+        isTransform: (function(){
+            var prefixes = ["", "webkit", "Moz", "O", "ms" ], n = prefixes.length, i;
             for( i = 0; i < n; i++ ) {
-                if ( ( prefixes[i] + "Perspective" ) in d.style ) {
-                    Core._transformProperty = prefixes[i] + "Transform";
-                    Core._isSupported = true;
-                    Core._browserPrefix = prefixes[i];
+                if ( ( prefixes[i] + "Perspective" ) in volcano.isCss3DocumentDIV.style ) {
+                    volcano._transformProperty = prefixes[i] + "Transform";
+                    volcano._browserPrefix = prefixes[i];
                     return true;
                 }
-            }
-        }
+            }return false;
+        })(),
+        isTransition: (function(){
+
+        })()
     };
 
-    window.volcano.Core = Core;
-    console.log(volcano);
 })(window);

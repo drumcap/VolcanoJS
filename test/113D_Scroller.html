@@ -1,0 +1,330 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" name="viewport" content="initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="../src/exlibs/Ticker.js"></script>
+    <script src="../src/core/Core.js"></script>
+    <script src="../src/core/VObject.js"></script>
+    <script src="../src/core/VSprite.js"></script>
+    <script src="../src/controls/Scroller.js"></script>
+    <script src="../src/managers/SystemManager.js"></script>
+    <script src="../src/managers/LayoutManager.js"></script>
+    <script src="../src/controls/Image.js"></script>
+    <script>
+
+        var sysMgr, transViewPort;
+        var documentWidth = 1650;
+        var documentHeight = 1000;
+        var maxCols = 1, maxRows = 1;
+        var imageLen = 22, imageWidth = 150, imageHeight = 150;
+        var elementArr = [];
+        var gravity = .5; //중력
+        var bounce = -0.7; //튕길때는 음수로 힘이 약간 상쇄된다.
+        var friction = 0.95; //마찰계수
+        var maxScrollX, maxScrollY;
+        var regX = 0, regY = 0,
+                targetX = 0, targetY = 0,
+                vX=0, vY=0;
+        var oldX=0, oldY=0;
+        var downPoint;
+        var scrollOption;
+        var containerElement;
+        var isDown;
+        var scrollMode = "horizontal";
+        var container;
+        var accelRotate = 0;
+
+        function onLoadHandler(){
+            sysMgr = new volcano.SystemManager();
+            sysMgr.frameRate(60);
+            container = new volcano.VSprite().id("container").width(innerWidth).height(0).x(0).y(100);//.origin(1650, 150);
+            transViewPort = new volcano.VSprite().id("viewPort").height(150).width(6600);
+
+            sysMgr.addElement(container);
+            container.addElement(transViewPort);
+
+            var i = 0;
+            var imageX = 0;
+            var imageY = 0;
+            var yCount = -1;
+            maxCols = parseInt(6600 / imageWidth);
+            maxRows = parseInt(150 / imageHeight);
+
+            for(i = 0 ; i < imageLen * 6 ; i++){
+                yCount = (i % maxCols) == 0 ? yCount + 1 : yCount;
+                var imageX = (i % maxCols) * imageWidth;
+                var imageY = yCount * imageHeight;
+                var img = new volcano.Image(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).source("img/art" + i%imageLen + ".png");
+                elementArr.push(img);
+                transViewPort.addElement(img);
+            }
+
+            var px = 0;
+            maxScrollX = innerWidth - transViewPort.width();
+            maxScrollY = innerHeight - transViewPort.height();
+//            maxScrollX = container.width() - transViewPort.width();
+//            maxScrollY = container.height() - transViewPort.height();
+
+            sysMgr.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            sysMgr.addEnterFrameListener(onEnterFrame);
+
+            var len = transViewPort.getNumElements();
+            var sumWidth = 0;
+            var sumHeight = 0;
+
+//                            transViewPort.rotationX(-500);
+            sysMgr.origin(0,0,0);
+            sysMgr.setStyle("Perspective-origin-y", 325 + "px", volcano._browserPrefix);
+            sysMgr.setStyle("Perspective", 6600 + "px", volcano._browserPrefix);
+
+        };
+
+        var isMove = false;
+        var bounceback = 0.7;
+        var backeasing = 0.1;
+        var isXBacking = false;
+        var isYBacking = false;
+        var maxRotate = 30;
+        var currentRotate = 0;
+        var testFlag = false;
+        var yRotateValue = 0;
+        var oldRotate = 0;
+        var leftOutX = false;
+        var rightOutX = false;
+        var scrollerOutX = false;
+        // stop, leftFast, leftSlow, rightFast, rightSlow
+        var motionStr = "stop";
+        var maxAccelRotate = 1;
+        var accelRotate = 0.1;
+        function onEnterFrame(){
+
+            maxScrollX = innerWidth - transViewPort.width();
+            maxScrollY = innerHeight - transViewPort.height();
+
+            if (isMove) {
+                if(scrollMode === "auto"){
+                    transViewPort.move(targetX, targetY, 0);
+                }else if(scrollMode === "vertical"){
+                    transViewPort.move(0, targetY, 0);
+                    viewPort.move(0, targetY, 0);
+                }else if(scrollMode === "horizontal"){
+                    transViewPort.move(targetX, 0, 0);
+                }
+
+                if(yRotateValue > 0.3){
+                    yRotateValue = yRotateValue - (0.3 * accelRotate);
+                    yRotateValue = yRotateValue < 0 ? 0 : yRotateValue;
+                }else if(yRotateValue < -0.3){
+                    yRotateValue = yRotateValue + (0.3 * accelRotate);
+                    yRotateValue = yRotateValue > 0 ? 0 : yRotateValue;
+                }else{
+                    yRotateValue = 0;
+                }
+            }else if(isDown){
+                // TODO mouseDown 일 경우
+                if(yRotateValue > 0.3){
+                    yRotateValue = yRotateValue - (0.3 * accelRotate);
+                    yRotateValue = yRotateValue < 0 ? 0 : yRotateValue;
+                }else if(yRotateValue < -0.3){
+                    yRotateValue = yRotateValue + (0.3 * accelRotate);
+                    yRotateValue = yRotateValue > 0 ? 0 : yRotateValue;
+                }else{
+                    yRotateValue = 0;
+                }
+            } else {
+                var sx = transViewPort.x(),
+                        sy = transViewPort.y();
+
+                if (Math.abs(vX)>0 || Math.abs(vY)>0) {
+                    vX = (Math.abs(vX) < 0.9) ? 0 : vX * friction;
+                    vY = (Math.abs(vY) < 0.9) ? 0 : vY * friction;
+                }
+
+                //좌표가 스크롤 영역에서 벗어나 있을때
+                scrollerOutX = false;
+                if (sx > 0 || sx < maxScrollX) {
+                    var tx = sx > 0 ? 0 : maxScrollX;
+                    if (vX === 0 || isXBacking) {
+                        vX = (tx-sx) * backeasing;
+                        isXBacking = true;
+                        if(tx === 0){
+                            leftOutX = true;
+                        }else if(tx === maxScrollX){
+                            rightOutX = true;
+                        }
+
+                    } else {
+                        vX *= bounceback;
+                    }
+                    scrollerOutX = true;
+                }
+
+                if (sy > 0 || sy < maxScrollY) {
+                    var ty = sy > 0 ? 0 : maxScrollY;
+                    if (vY === 0 || isYBacking) {
+                        vY = (ty-sy) * backeasing;
+                        isYBacking = true;
+                    } else {
+                        vY *= bounceback;
+                    }
+                }
+
+                var rx,ry;
+                if (Math.abs(vX)>0.01 || Math.abs(vY)>0.01)
+                {
+                    if(scrollMode === "auto"){
+                        rx = (sx > 0 && sx < 1) ? 0 : (sx > maxScrollX-1 && sx < maxScrollX) ? maxScrollX : sx + vX;
+                        ry = (sy > 0 && sy < 1) ? 0 : (sy > maxScrollY-1 && sy < maxScrollY) ? maxScrollY : sy + vY;
+
+                        if ((sx > 0 && sx < 1) || (sx > maxScrollX-1 && sx < maxScrollX)) isXBacking = false;
+                        if ((sy > 0 && sy < 1) || (sy > maxScrollY-1 && sy < maxScrollY)) isYBacking = false;
+                    }else if(scrollMode === "vertical"){
+                        rx = 0;
+                        ry = (sy > 0 && sy < 1) ? 0 : (sy > maxScrollY-1 && sy < maxScrollY) ? maxScrollY : sy + vY;
+                        if ((sy > 0 && sy < 1) || (sy > maxScrollY-1 && sy < maxScrollY)) isYBacking = false;
+                    }else if(scrollMode === "horizontal"){
+                        rx = (sx > 0 && sx < 1) ? 0 : (sx > maxScrollX-1 && sx < maxScrollX) ? maxScrollX : sx + vX;
+                        if ((sx > 0 && sx < 1) || (sx > maxScrollX-1 && sx < maxScrollX)) isXBacking = false;
+                        ry = 0;
+                    }
+
+                    transViewPort.move(rx, ry, 0);
+
+                    currentRotate = vX;
+
+                    if(currentRotate > maxRotate && scrollerOutX === false){
+                        if(motionStr !== "leftFast"){
+                            accelRotate = 0.1;
+                        }
+                        motionStr = "leftFast";
+                    }else if(currentRotate < -maxRotate && scrollerOutX === false){
+                        if(motionStr !== "rightFast"){
+                            accelRotate = 0.1;
+                        }
+                        motionStr = "rightFast";
+                    }else{
+                        if(0 < currentRotate && currentRotate < oldRotate && scrollerOutX === false){
+                            if(motionStr !== "leftSlow"){
+                                accelRotate = 0.1;
+                            }
+                            motionStr = "leftSlow";
+                        }else if(0 > currentRotate && currentRotate > oldRotate && scrollerOutX === false){
+                            if(motionStr !== "rightSlow"){
+                                accelRotate = 0.1;
+                            }
+                            motionStr = "rightSlow";
+                        }else if(0 === currentRotate && currentRotate === oldRotate || scrollerOutX === true){
+                            if(motionStr !== "stop"){
+                                accelRotate = 0.1;
+                            }
+                            motionStr = "stop";
+                        }
+                    }
+
+                    oldRotate = currentRotate;
+                    var sumValue = 1;
+
+                    accelRotate = accelRotate + 0.05 > maxAccelRotate ? 1 : accelRotate + 0.05;
+//                    console.log(scrollerOutX);
+
+                    if(motionStr === "stop" || scrollerOutX){
+                        testFlag = false;
+                        if(yRotateValue > 0.3){
+                            yRotateValue = yRotateValue - (0.3 * accelRotate);
+                            yRotateValue = yRotateValue < 0 ? 0 : yRotateValue;
+                        }else if(yRotateValue < -0.3){
+                            yRotateValue = yRotateValue + (0.3 * accelRotate);
+                            yRotateValue = yRotateValue > 0 ? 0 : yRotateValue;
+                        }else{
+                            yRotateValue = 0;
+                        }
+//                        console.log("stop" + " ======= " + yRotateValue);
+                    }else if(motionStr === "leftSlow"){
+                        yRotateValue = yRotateValue < -maxRotate ? -maxRotate : yRotateValue - (0.3 * accelRotate);
+
+                            yRotateValue = yRotateValue < 0 ? 0 : yRotateValue;
+//                        console.log("leftSlow");
+                    }else if(motionStr === "rightSlow"){
+                        yRotateValue = yRotateValue > maxRotate ? maxRotate : yRotateValue + (0.3 * accelRotate);
+                        yRotateValue = yRotateValue > 0 ? 0 : yRotateValue;
+//                        console.log("rightSlow");
+                    }else if(motionStr === "leftFast"){
+                        yRotateValue = yRotateValue > maxRotate ? maxRotate : yRotateValue + (sumValue * accelRotate);
+//                        console.log("leftFast");
+                    }else if(motionStr === "rightFast"){
+                        yRotateValue = yRotateValue < -maxRotate ? -maxRotate : yRotateValue - (sumValue * accelRotate);
+//                        console.log("rightFast");
+                    }
+                }
+            }
+            container.rotationY(-yRotateValue);
+        }
+
+        var isFirstDown = false;
+
+        function onMouseDownHandler(event) {
+            var point = volcano.hasTouch ? event.touches[0] : event;
+            downPoint = point;
+            event.preventDefault();
+
+            sysMgr.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            sysMgr.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
+            sysMgr.addEventListener(volcano.e.CANCEL, onMouseUpHandler);
+
+            isMove = false;
+            isDown = true;
+
+            regX = point.pageX - transViewPort.x();
+            regY = point.pageY - transViewPort.y();
+
+            isFirstDown = true;
+        }
+
+        function onMouseMoveHandler(event) {
+            var point = volcano.hasTouch ? event.touches[0] : event;
+
+            event.preventDefault();
+
+            isMove = true;
+            isDown = false;
+            var pageX = point.pageX,
+                pageY = point.pageY;
+
+            targetX = pageX - regX;
+            targetY = pageY - regY;
+
+            if(isFirstDown){
+                oldX = targetX;
+                oldY = targetY;
+                isFirstDown = false;
+            }
+
+            setAccelerate();
+        }
+
+        function onMouseUpHandler(event) {
+            isMove = false;
+            isDown = false;
+            sysMgr.removeEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            sysMgr.removeEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
+            sysMgr.removeEventListener(volcano.e.CANCEL, onMouseUpHandler);
+        }
+
+        function setAccelerate() {
+            vX = targetX - oldX;
+            vY = targetY - oldY;
+
+            oldX = targetX;
+            oldY = targetY;
+        }
+
+    </script>
+</head>
+<body onload="onLoadHandler()" id="bodyCon" >
+
+</body>
+</html>
