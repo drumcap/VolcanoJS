@@ -16,7 +16,7 @@
     <script src="../src/controls/Image.js"></script>
     <style>
 
-        .reflrction{
+        .reflection{
             -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.25, transparent), color-stop(1.0, rgba(255, 255, 255, 0.5)));
         }
 
@@ -26,10 +26,6 @@
 
 
         var sysMgr, transViewPort, container;
-        var documentWidth = 1650;
-        var documentHeight = 1000;
-        var maxCols = 1, maxRows = 1;
-        var imageLen = 22, imageWidth = 150, imageHeight = 150;
         var elementArr = [];
         var gravity = .5; //중력
         var bounce = -0.7; //튕길때는 음수로 힘이 약간 상쇄된다.
@@ -46,53 +42,156 @@
         var scrollMode = "horizontal";
         var accelRotate = 0;
 
+        // 전체 이미지 개수 설정, cols count 설정
+        var imageLen = 69;
+        var colsLen = 3;
+        var rowsLen = imageLen / colsLen;
+        var imageGap = 20;
+        // reflection 기능 여부
+        var isReflection = true;
+        var reflectionArr = [];
+        var reflectionStartIndex = -1;
+        var reflectionEndIndex = -1;
+        var reflectionGap = 5;
+        // 윈도우 화면에서 view 화면의 크기 비율 구하기
+        var windowMaxHeight;
+        var windowMaxWidht;
+        var windowBlank = 10;
+        var windowGap; // 윈도우 전체 크기에서 top, bottom의 갭을 구한다.
+
+        var windowHeight;
+        var imageHeight;// 이미지 높이
+        var imageWidth;
+        var viewPortHeight;
+        var viewPortWidth;
+        var viewPortBack;
+
+        // 이미지 담기
+        var imageArr = [];
+        var imageReflectionArr = [];
+
         function onLoadHandler(){
-            sysMgr = new volcano.SystemManager().setStyle("overflow", "visible");
-            sysMgr.frameRate(60);
-            container = new volcano.VSprite().id("container").width(0).height(0).x(0).y(100);//.origin(1650, 150);
-            transViewPort = new volcano.VSprite().id("viewPort").height(450+180).width(6600+3080);
+            windowMaxHeight = innerHeight;
+            windowMaxWidht = innerWidth;
 
-            sysMgr.addElement(container);
-            sysMgr.x(innerWidth/2);
-            container.addElement(transViewPort);
+            windowGap = windowMaxHeight / windowBlank;
 
-            var i = 0;
-            var imageX = 0;
-            var imageY = 0;
-            var yCount = -1;
-            var gap = 70;
-            var backX = -(innerWidth / 2);
-            maxCols = parseInt(6600 / imageWidth);
-            maxRows = parseInt(150 / imageHeight);
-
-            for(i = 0 ; i < imageLen * 6 ; i++){
-                yCount = (i % maxCols) == 0 ? yCount + 1 : yCount;
-                var imageX = (i % maxCols) * imageWidth;
-                var imageY = yCount * imageHeight;
-                var img = new volcano.Image(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(backX + imageX + ((i%(imageLen*2)) * gap)).y(imageY + (yCount * gap)).source("img/art" + i%imageLen + ".png");
-                if(yCount === 2){
-                    img._domElement.className = "reflrction";
-                    img.rotationX(180);
-                }
-//                elementArr.push(img);
-                transViewPort.addElement(img);
+            if(isReflection){
+                windowHeight = windowMaxHeight - (windowGap * 2);
+                imageHeight = windowHeight / (colsLen + 0.7) - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
+                imageWidth = imageHeight;
+                viewPortHeight = windowHeight;
+                viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
+            }else{
+                windowHeight = windowMaxHeight - (windowGap * 2);
+                imageHeight = windowHeight / colsLen - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
+                imageWidth = imageHeight;
+                viewPortHeight = windowHeight;
+                viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
             }
 
-            var px = 0;
+            viewPortBack = -(windowMaxWidht/2);
+            sysMgr = new volcano.SystemManager().setStyle("overflow", "visible").x(windowMaxWidht/2);
+            sysMgr.frameRate(60);
+            container = new volcano.VSprite().id("container").width(0).height(windowHeight).x(0).y(windowGap);
+            transViewPort = new volcano.VSprite().id("viewPort").height(viewPortHeight).width(viewPortWidth);
+
+            sysMgr.addElement(container);
+            container.addElement(transViewPort);
+
+            var imageX = 0;
+            var imageY = 0;
+            var i = 0;
+            // 이미지 객체 생성
+            for(i = 0 ; i < imageLen ; i++){
+                var imageX = (i%rowsLen) * (imageWidth + imageGap) + viewPortBack;
+                var imageY = parseInt(i/(imageLen / colsLen)) * (imageHeight + imageGap);
+                var img = new volcano.Image(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).source("img/art" + (i%(imageLen / colsLen)) + ".png");
+                if(isReflection){
+                    if(parseInt(i/(imageLen / colsLen)) === colsLen - 1){
+                        if(reflectionStartIndex === -1){
+                            reflectionStartIndex = i;
+                        }
+                        reflectionEndIndex = i + 1;
+                    }
+                }
+                transViewPort.addElement(img);
+                imageArr.push(img);
+            }
+
+            // 이미지 객체 reflection 생성
+            if(isReflection){
+                for(i = reflectionStartIndex ; i < reflectionEndIndex ; i++){
+                    var imageX = (i%rowsLen) * (imageWidth + imageGap) + viewPortBack;
+                    var imageY = parseInt(colsLen) * (imageHeight + imageGap) - (imageGap) + reflectionGap;
+                    var img = new volcano.Image(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).source("img/art" + (i%(imageLen / colsLen)) + ".png");
+                    transViewPort.addElement(img);
+                    img._domElement.className = "reflection";
+                    img.rotationX(180);
+                    imageReflectionArr.push(img);
+                }
+            }
+
             maxScrollX = innerWidth - transViewPort.width();
             maxScrollY = innerHeight - transViewPort.height();
-//            maxScrollX = container.width() - transViewPort.width();
-//            maxScrollY = container.height() - transViewPort.height();
 
             sysMgr.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
+            sysMgr.addEventListener("resize", onSystemManagerResize);
             sysMgr.addEnterFrameListener(onEnterFrame);
 
-            sysMgr.origin(0,0,0);
-            sysMgr.setStyle("Perspective-origin-y", 325 + "px", volcano._browserPrefix);
-            sysMgr.setStyle("Perspective-origin-x", 0 + "px", volcano._browserPrefix);
-            sysMgr.setStyle("Perspective", 800 + "px", volcano._browserPrefix);
-
+            sysMgr.setStyle("Perspective", windowHeight/2 + "px", volcano._browserPrefix);
         };
+
+        function onSystemManagerResize(){
+
+            windowMaxHeight = innerHeight;
+            windowMaxWidht = innerWidth;
+
+            viewPortBack = -(windowMaxWidht/2);
+            sysMgr.x(windowMaxWidht/2);
+
+            windowGap = windowMaxHeight / windowBlank;
+
+            if(isReflection){
+                windowHeight = windowMaxHeight - (windowGap * 2);
+                imageHeight = windowHeight / (colsLen + 0.7) - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
+                imageWidth = imageHeight;
+                viewPortHeight = windowHeight;
+                viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
+            }else{
+                windowHeight = windowMaxHeight - (windowGap * 2);
+                imageHeight = windowHeight / colsLen - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
+                imageWidth = imageHeight;
+                viewPortHeight = windowHeight;
+                viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
+            }
+
+            container.width(0).height(windowHeight).x(0).y(windowGap);
+            transViewPort.height(viewPortHeight).width(viewPortWidth);
+
+            var imageX = 0;
+            var imageY = 0;
+
+            var i = 0;
+            // 이미지 객체
+            for(i = 0 ; i < imageLen ; i++){
+                var imageX = (i%rowsLen) * (imageWidth + imageGap) + viewPortBack;
+                var imageY = parseInt(i/(imageLen / colsLen)) * (imageHeight + imageGap);
+                console.log(imageY);
+                imageArr[i].width(imageWidth).height(imageHeight).x(imageX).y(imageY);
+            }
+
+            // 이미지 객체
+            if(isReflection){
+                for(i = reflectionStartIndex ; i < reflectionEndIndex ; i++){
+                    var imageX = (i%rowsLen) * (imageWidth + imageGap) + viewPortBack;
+                    var imageY = parseInt(colsLen) * (imageHeight + imageGap) - (imageGap) + reflectionGap;
+                    imageReflectionArr[i - reflectionStartIndex].width(imageWidth).height(imageHeight).x(imageX).y(imageY);
+                }
+            }
+
+            sysMgr.setStyle("Perspective", windowHeight/2 + "px", volcano._browserPrefix);
+        }
 
         var isMove = false;
         var bounceback = 0.7;
@@ -113,6 +212,9 @@
         var maxAccelRotate = 1;
         var accelRotate = 0.1;
         function onEnterFrame(){
+
+            // systemManager 크기 조절
+            sysMgr.width(innerWidth).height(innerHeight);
 
             maxScrollX = innerWidth - transViewPort.width();
             maxScrollY = innerHeight - transViewPort.height();
@@ -344,7 +446,7 @@
 
     </script>
 </head>
-<body onload="onLoadHandler()" id="bodyCon" bgcolor="0x000000" style="overflow: hidden;">
+<body onload="onLoadHandler()" id="bodyCon" bgcolor="0x000000" style="overflow: hidden; margin: 0;">
 
 </body>
 </html>
