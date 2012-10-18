@@ -43,8 +43,8 @@
         var accelRotate = 0;
 
         // 전체 이미지 개수 설정, cols count 설정
-        var imageLen = 69;
-        var colsLen = 3;
+        var imageLen = 68;
+        var colsLen = 2;
         var rowsLen = imageLen / colsLen;
         var imageGap = 20;
         // reflection 기능 여부
@@ -65,6 +65,7 @@
         var viewPortHeight;
         var viewPortWidth;
         var viewPortBack;
+        var mainContainer;
 
         // 이미지 담기
         var imageArr = [];
@@ -91,12 +92,14 @@
             }
 
             viewPortBack = -(windowMaxWidht/2);
-            sysMgr = new volcano.SystemManager().setStyle("overflow", "visible").x(windowMaxWidht/2);
+            sysMgr = new volcano.SystemManager().setStyle("overflow", "visible").width(innerWidth).height(innerHeight).x(0).y(0);
             sysMgr.frameRate(60);
-            container = new volcano.VSprite().id("container").width(0).height(windowHeight).x(0).y(windowGap);
-            transViewPort = new volcano.VSprite().id("viewPort").height(viewPortHeight).width(viewPortWidth);
+            mainContainer = new volcano.VSprite().id("mainContainer").width(0).height(0).x(-viewPortBack);
+            container = new volcano.VSprite().id("container").width(0).height(0).x(0).y(windowGap);
+            transViewPort = new volcano.VSprite().id("viewPort").height(0).width(0);
 
-            sysMgr.addElement(container);
+            sysMgr.addElement(mainContainer);
+            mainContainer.addElement(container);
             container.addElement(transViewPort);
 
             var imageX = 0;
@@ -132,14 +135,16 @@
                 }
             }
 
-            maxScrollX = innerWidth - transViewPort.width();
-            maxScrollY = innerHeight - transViewPort.height();
+            maxScrollX = innerWidth - viewPortWidth;
+            maxScrollY = innerHeight - viewPortHeight;
 
             sysMgr.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
             sysMgr.addEventListener("resize", onSystemManagerResize);
             sysMgr.addEnterFrameListener(onEnterFrame);
 
-            sysMgr.setStyle("Perspective", windowHeight/2 + "px", volcano._browserPrefix);
+            sysMgr.setStyle("Perspective", 0 + "px", volcano._browserPrefix);
+            mainContainer.setStyle("Perspective", 800 + "px", volcano._browserPrefix);
+            mainContainer.setStyle("perspective-origin-y", innerHeight/2, volcano._browserPrefix);
         };
 
         function onSystemManagerResize(){
@@ -148,8 +153,6 @@
             windowMaxWidht = innerWidth;
 
             viewPortBack = -(windowMaxWidht/2);
-            sysMgr.x(windowMaxWidht/2);
-
             windowGap = windowMaxHeight / windowBlank;
 
             if(isReflection){
@@ -166,8 +169,9 @@
                 viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
             }
 
-            container.width(0).height(windowHeight).x(0).y(windowGap);
-            transViewPort.height(viewPortHeight).width(viewPortWidth);
+            mainContainer.width(0).height(0).x(-viewPortBack);
+            container.width(0).height(0).x(0).y(windowGap);
+            transViewPort.height(0).width(0);
 
             var imageX = 0;
             var imageY = 0;
@@ -190,7 +194,10 @@
                 }
             }
 
-            sysMgr.setStyle("Perspective", windowHeight/2 + "px", volcano._browserPrefix);
+            maxScrollX = innerWidth - viewPortWidth;
+            maxScrollY = innerHeight - viewPortHeight;
+
+            mainContainer.setStyle("perspective-origin-y", innerHeight/2, volcano._browserPrefix);
         }
 
         var isMove = false;
@@ -216,8 +223,8 @@
             // systemManager 크기 조절
             sysMgr.width(innerWidth).height(innerHeight);
 
-            maxScrollX = innerWidth - transViewPort.width();
-            maxScrollY = innerHeight - transViewPort.height();
+            maxScrollX = innerWidth - viewPortWidth;
+            maxScrollY = innerHeight - viewPortHeight;
 
             if (isMove) {
                 if(scrollMode === "auto"){
@@ -383,7 +390,7 @@
                 }
             }
             container.rotationY(-yRotateValue);
-//            container.rotationY(20);
+//            container.rotationY(10);
         }
 
         var isFirstDown = false;
