@@ -183,11 +183,11 @@
         mainContainer.setStyle("perspective-origin-y", innerHeight/2, volcano._browserPrefix);
 
         sysMgr.addEventListener("mousewheel", mouseWheelHandler, false);
-        sysMgr.addEventListener("keypress", keyDownHandler);
+        var bd = document.body;
+        bd.addEventListener("keydown", keyDownHandler);
     };
 
     function keyDownHandler(event){
-        console.log("asdfasdf");
         var keyCode = event.keyCode;
         isMove = false;
         isDown = false;
