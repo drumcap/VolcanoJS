@@ -64,12 +64,15 @@
 
         this._body.appendChild(this._domElement);
         this._domElement.style.overflow = "hidden";
-        this._domElement.style[volcano._browserPrefix+"Perspective"] = "800px";
-        this._domElement.style[volcano._browserPrefix+"PerspectiveOrigin"] = "0 0";
+
         this._domElement.style[volcano._browserPrefix+"TransformOrigin"] = "0 0";
 //        this._domElement.style.top = "50%";
 //        this._domElement.style.left = "50%";
-        this._domElement.style[volcano._browserPrefix+"TransformStyle"] = "flat";
+        if(volcano.has3d){
+            this._domElement.style[volcano._browserPrefix+"Perspective"] = "800px";
+            this._domElement.style[volcano._browserPrefix+"PerspectiveOrigin"] = "0 0";
+            this._domElement.style[volcano._browserPrefix+"TransformStyle"] = "flat";
+        }
         this._nestLevel = 1; // systemManager는 언제나 nestLevel 1
 
         volcano.LayoutManager.systemManager = this;

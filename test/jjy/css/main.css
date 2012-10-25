@@ -1,0 +1,58 @@
+@CHARSET "UTF-8";
+/*
+ VER : 1.0
+ DATE : 2012. 10. 22
+ AUTHOR : drumcap
+*/
+
+/* reset */
+html, body, div, span, iframe, h1, h2, h3, h4, h5, h6, p, a, em, img, strong, dl, dt, dd, ol, ul, li, fieldset, form, label, button, legend, table, caption, tbody, tfoot, thead, tr, th, td, button{margin:0;padding:0; font-size:100%; line-height:125%;}
+body{color:#FFF; background-color:#000; font:0.75em Gulim, Helvetica, AppleGothic, sans-serif;
+-webkit-text-size-adjust:none;/* 뷰표트 변환시 폰트크기 자동확대 방지. */}
+dl,ul,ol{list-style:none;}
+fieldset, img{border:none;}
+img{vertical-align:top;}
+input,textarea,select{font-size:12px;}
+button {border:0; background:none;}
+table{width:100%;border-spacing:0;empty-cells:show; word-break:break-all;}
+em, address{font-style:normal;}
+a{color:#6a5c55;text-decoration:none;}
+a:hover,a:active{color:#6a5c55;}
+
+/* disabled navigational button */
+a.disabled {
+    /*visibility:hidden !important;*/
+    opacity: .2;
+}
+
+.reflection{
+    -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.25, transparent), color-stop(1.0, rgba(255, 255, 255, 0.5)));
+}
+
+ul { background-color: #000055;}
+
+li {
+    position: absolute;
+}
+
+.dramaitem {width: 240px; height: 240px; display: block;}
+.dramaitem .chaton {width:86px; height:42px; font-weight: bold; font-size: 1.2em; color: #FFFC00 ; padding: 20px 5px 5px 8px; position: absolute; top: 0px; display: block; width:86px; height:42px; background: url(../img/icon_mainimg_top.png) no-repeat -42px 0 ;}
+.dramaitem .chaton.onair {padding: 20px 5px 5px 50px; background-position: 0 0;}
+.dramaitem .desc {display: block; position: absolute; bottom: 0; height: 40px; width: 100%; text-align: justify; text-indent: 2px; }
+.dramaitem .desc span {position:absolute; top: 13px;}
+.dramaitem .desc .icon {position:absolute; top: 14px; left: 5px;}
+.dramaitem .desc .text {text-align: center; width: 100%;}
+.dramaitem .desc .text.chat {background: url(../img/icon_chat2.png) no-repeat 0 0; left: 5px; text-indent: 25px; width: 95%; text-align: left;}
+.dramaitem .desc .bg {display:block; background-color: #000000; opacity: 0.5; height: 100%; width: 100%; top: 0;}
+
+
+body, textarea {	
+	scrollbar-face-color: #b6cbe4;
+	scrollbar-shadow-color: #DEDEDE;
+	scrollbar-highlight-color: #b6cbe4;
+	scrollbar-3dlight-color: #FFFFFF;
+	scrollbar-darkshadow-color: #FFFFFF;
+	scrollbar-track-color: #FFFFFF;
+	scrollbar-arrow-color: #014d7e;
+}
+

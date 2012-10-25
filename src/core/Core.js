@@ -101,7 +101,7 @@
         isTransform: (function(){
             var prefixes = ["", "webkit", "Moz", "O", "ms" ], n = prefixes.length, i;
             for( i = 0; i < n; i++ ) {
-                if ( ( prefixes[i] + "Perspective" ) in volcano.isCss3DocumentDIV.style ) {
+                if ( ( prefixes[i] + "Transform" ) in volcano.isCss3DocumentDIV.style ) {
                     volcano._transformProperty = prefixes[i] + "Transform";
                     volcano._browserPrefix = prefixes[i];
                     return true;

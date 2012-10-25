@@ -13,7 +13,7 @@
     <script src="../src/controls/Image.js"></script>
     <script src="../src/controls/MessageImage.js"></script>
     <script src="../src/controls/LiImageForm.js"></script>
-    <script src="../src/controls/ThreeDimensionsScroller.js"></script>
+    <script src="../src/controls/TestScroller.js"></script>
     <script src="../src/managers/SystemManager.js"></script>
     <script src="../src/managers/LayoutManager.js"></script>
 
@@ -35,13 +35,13 @@
 
             sysMgr = new volcano.SystemManager().width(innerWidth).height(innerHeight).setStyle("overflow", "visible").x(0).y(0);
             sysMgr.frameRate(60);
-            tdScroller = new volcano.ThreeDimensionsScroller(sysMgr);
+            tdScroller = new volcano.TestScroller(sysMgr);
             sysMgr.addElement(tdScroller);
 
             // data 넣기
             tdScroller.dataProvider(objectData);
             // 속성 변경하기
-            tdScroller.setConfig({cols: 2, imageGap: 15, isReflection: false});
+            tdScroller.setConfig({cols: 1, imageGap: 15, isReflection: false});
             // 데이타 설정이 모두 끝났으면, 화면을 그려준다.
             tdScroller.drawView();
         };

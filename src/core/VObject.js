@@ -150,26 +150,25 @@
             }
             element = element.get(0);
         }else if(this._option.default === "off"){ // 기본 스타일을 off로 설정
-            console.log("create Volcano Style Default Option =====> off");
+//            console.log("create Volcano Style Default Option =====> off");
         }else if (element.style.position == "static" ) {
             element.style.position = "relative";
         }else {
             element.style.position = "absolute";
         }
 
-        if(this._option.default === "on"){ // 기본 스타일을 on으로 설정
+        if(this._option.default === "on" && volcano.has3d){ // 기본 스타일을 on으로 설정
             element.style[ volcano._browserPrefix + "TransformStyle" ] = "preserve-3d";
             element.style[ volcano._transformProperty ] = "translateZ(0px)";
         }
 
         // add private properties
-        this._string = [
-            "translate3d(", 0, "px,", 0, "px,", 0, "px) ",
-            "rotateX(", 0, "deg) ",
-            "rotateY(", 0, "deg) ",
-            "rotateZ(", 0, "deg) ",
-            "scale3d(", 1, ", ", 1, ", ", 1, ") "
-        ];
+        this._string = [ "translate3d(", 0, "px,", 0, "px,", 0, "px) ",
+                    "rotateX(", 0, "deg) ",
+                    "rotateY(", 0, "deg) ",
+                    "rotateZ(", 0, "deg) ",
+                    "scale3d(", 1, ", ", 1, ", ", 1, ") "];
+
         this._positions = [
             1,  3,  5, // x, y, z
             8, 11, 14, // rotationX, rotationY, rotationZ
@@ -412,6 +411,7 @@
 //        this._string[this._positions[1]] += py;
 //        if ( arguments.length >= 3 ) this._string[this._positions[2]] += pz;
         if (this.isAutoUpdate) this.updateTransform();
+
         return this;
     };
 
@@ -498,7 +498,7 @@
             case 2:
                 this._string[this._positions[6]] = sx;
                 this._string[this._positions[7]] = sy;
-                //this._string[this._positions[8]] = 1;
+                this._string[this._positions[8]] = 1;
                 if (this.isAutoUpdate) this.updateTransform();
                 return this;
             case 3:
@@ -645,9 +645,53 @@
         }
     };
 
+    /**
+     * 3d transform
+     * @return {*}
+     */
     p.updateTransform = function() {
         var s = "";
-        _.all(this._string, function(value){ s += value; return true; });
+        var cnt = 0;
+        _.all(this._string, function(value){
+            if(volcano.has3d == true){
+                s += value;
+            }else{
+                if(value === "translate3d("){
+                    s += "translate(";
+                }
+                else if(volcano._browserPrefix == "ms"){
+                    if(cnt == 4){
+                        s += "px)"  // translate 값 y좌표 px 닫는 문구
+                    }else if(cnt < 4){
+                        s += value;
+                    }else{
+                        // 필요없는 속성 제거
+                    }
+                }else if(volcano._browserPrefix == "O"){
+                    if(cnt == 4){
+                        s += "px)"  // translate 값 y좌표 px 닫는 문구
+                    }else if(cnt < 4){
+                        s += value;
+                    }else{
+                        // 필요없는 속성 제거
+                    }
+                }else{
+                    if(cnt == 5 || cnt == 6 || cnt == 13 || cnt == 14 || cnt == 15 || cnt == 20 || cnt == 21){
+                        // 필요없는 속성을 제거한다.
+                    }else{
+                        if(cnt == 4){
+                            s += "px)"  // translate 값 y좌표 px 닫는 문구
+                        }else if(cnt == 16){
+                            s += "scale(";
+                        }else{
+                            s += value;
+                        }
+                    }
+                }
+            }
+            cnt++;
+            return true;
+        });
         this._domElement.style[volcano._transformProperty] = s;
         return this;
     };
@@ -695,6 +739,43 @@
             return this._visible;
         }
     };
+
+    /**
+     * 클레스 네임 추가
+     * type Array
+     * @return {*}
+     */
+    p.addClass = function(){
+        var className = arguments;
+        var len = className.length;
+        for(var i = 0 ; i < len ; i++){
+            if (!this.hasClass(className[i])) {
+                this._domElement.className = this._domElement.className ? this._domElement.className + ' ' + className[i] : className[i];
+            }
+        }
+        return this;
+    };
+
+    /**
+     * 클레스 네임 삭제
+     * type Array
+     * @return {*}
+     */
+    p.removeClass = function(){
+        var className = arguments;
+        var len = className.length;
+        for(var i = 0 ; i < len ; i++){
+            if(this.hasClass(className[i])){
+                this._domElement.className = this._domElement.className.replace(new RegExp('(^|\\s+)' + className[i] + '(\\s+|$)'), ' ');
+            }
+        }
+        return this;
+    };
+
+    p.hasClass = function(className){
+        return (" " + this._domElement.className + " ").replace(/[\n\t]/g, " ").indexOf(" " + className + " ") > -1;
+    };
+
 
     window.volcano.VObject = VObject;
 
