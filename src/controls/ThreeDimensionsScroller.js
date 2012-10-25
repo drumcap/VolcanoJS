@@ -45,7 +45,6 @@
     var viewPortHeight;
     var viewPortWidth;
     var viewPortBack;
-    var mainContainer;
 
     // 이미지 담기
     var imageArr = [];
@@ -74,7 +73,12 @@
     var maxAccelRotate = 1;
     var accelRotate = 0.1;
     var isFirstDown = false;
-    var sysMgr, transViewPort, container;
+//    var sysMgr, transViewPort, container;
+//    var mainContainer;
+    p.sysMgr;
+    p.transViewPort;
+    p.container;
+    p.mainContainer
     var onlyOneDrawFlag = false;
     var _dataProvider = [];
     // 브라우저 3D 기능 체크
