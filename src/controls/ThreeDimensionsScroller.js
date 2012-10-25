@@ -158,6 +158,8 @@
             imageArr.push(img);
         }
 
+        this._imageArr = imageArr;
+
         // 이미지 객체 reflection 생성
         if(isReflection){
             for(i = reflectionStartIndex ; i < reflectionEndIndex ; i++){
@@ -169,6 +171,8 @@
                 img.rotationX(180);
                 imageReflectionArr.push(img);
             }
+
+            this._imageReflectionArr = imageReflectionArr;
         }
 
         maxScrollX = innerWidth - viewPortWidth;
@@ -195,12 +199,12 @@
         var keyPos = 10;
         var codeFlag = false;
 
-        if(keyCode == 38){
+        if(keyCode == 38 || keyCode == 39){
             // 키보드 up 방향키
             keyAccel = -100;
             keyPos = -10;
             codeFlag = true;
-        }else if(keyCode == 40){
+        }else if(keyCode == 40 || keyCode == 37){
             // 키보드 down 방향키
             keyAccel = 100;
             keyPos = 10;
