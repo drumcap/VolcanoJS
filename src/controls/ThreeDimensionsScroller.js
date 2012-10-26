@@ -53,6 +53,15 @@
     // 이미지 담기
     p._imageArr = [];
     p._imageReflectionArr = [];
+    p.sysMgr;
+    p.transViewPort;
+    p.container;
+    p.mainContainer;
+    // bounceBack 사용 유무
+    p.isBounceBack = true;
+    p.imageWidth;
+    p.imageHeight;
+    p.viewPortBack;
 
     var isMove = false;
     var bounceback = 0.7;
@@ -73,16 +82,14 @@
     var maxAccelRotate = 1;
     var accelRotate = 0.1;
     var isFirstDown = false;
-//    var sysMgr, transViewPort, container;
-//    var mainContainer;
-    p.sysMgr;
-    p.transViewPort;
-    p.container;
-    p.mainContainer
+    var sysMgr, transViewPort, container;
+    var mainContainer;
     var onlyOneDrawFlag = false;
     var _dataProvider = [];
     // 브라우저 3D 기능 체크
     var browserIs3dFix = true;
+    var minViewPortHeight = 200;
+    var maxViewPortHeight = 500;
 
     p.VSprite_initialize = p.initialize;
     p.initialize = function(mgr){
@@ -110,25 +117,31 @@
     p.initContainer = function(){
         windowMaxHeight = innerHeight;
         windowMaxWidht = innerWidth;
+        this.isBounceBack = true;
 
         windowGap = windowMaxHeight / windowBlank;
         // 이미지 객체 생성
         imageLen = _dataProvider.length;
         rowsLen = imageLen / colsLen;
 
-        if(isReflection){
-            windowHeight = windowMaxHeight - (windowGap * 2);
-            imageHeight = windowHeight / (colsLen + 0.7) - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
-            imageWidth = imageHeight;
-            viewPortHeight = windowHeight;
-            viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
-        }else{
-            windowHeight = windowMaxHeight - (windowGap * 2);
-            imageHeight = windowHeight / colsLen - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
-            imageWidth = imageHeight;
-            viewPortHeight = windowHeight;
-            viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
+        windowHeight = windowMaxHeight - (windowGap * 2);
+        if(windowHeight < minViewPortHeight){ // 최소사이즈
+            windowHeight = minViewPortHeight;
+            windowGap = (windowMaxHeight - minViewPortHeight) * 0.5;
+        }else if(windowHeight > maxViewPortHeight){
+            windowHeight = maxViewPortHeight;
+            windowGap = (windowMaxHeight - maxViewPortHeight) * 0.5;
         }
+
+        if(isReflection){
+            imageHeight = windowHeight / (colsLen + 0.7) - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
+        }else{
+            imageHeight = windowHeight / colsLen - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
+        }
+
+        imageWidth = imageHeight;
+        viewPortHeight = windowHeight;
+        viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
 
         viewPortBack = -(windowMaxWidht/2);
         mainContainer = new volcano.VSprite().id("mainContainer").width(0).height(0).x(-viewPortBack);
@@ -179,8 +192,13 @@
             this._imageReflectionArr = imageReflectionArr;
         }
 
-        maxScrollX = innerWidth - viewPortWidth;
-        maxScrollY = innerHeight - viewPortHeight;
+        this.sysMgr = sysMgr;
+        this.transViewPort = transViewPort;
+        this.container = container;
+        this.mainContainer = mainContainer;
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
+        this.viewPortBack = viewPortBack;
 
         sysMgr.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
         sysMgr.addEventListener("resize", onSystemManagerResize);
@@ -271,19 +289,24 @@
         viewPortBack = -(windowMaxWidht/2);
         windowGap = windowMaxHeight / windowBlank;
 
-        if(isReflection){
-            windowHeight = windowMaxHeight - (windowGap * 2);
-            imageHeight = windowHeight / (colsLen + 0.7) - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
-            imageWidth = imageHeight;
-            viewPortHeight = windowHeight;
-            viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
-        }else{
-            windowHeight = windowMaxHeight - (windowGap * 2);
-            imageHeight = windowHeight / colsLen - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
-            imageWidth = imageHeight;
-            viewPortHeight = windowHeight;
-            viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
+        windowHeight = windowMaxHeight - (windowGap * 2);
+        if(windowHeight < minViewPortHeight){
+            windowHeight = minViewPortHeight;
+            windowGap = (windowMaxHeight - minViewPortHeight) * 0.5;
+        }else if(windowHeight > maxViewPortHeight){
+            windowHeight = maxViewPortHeight;
+            windowGap = (windowMaxHeight - maxViewPortHeight) * 0.5;
         }
+
+        if(isReflection){
+            imageHeight = windowHeight / (colsLen + 0.7) - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
+        }else{
+            imageHeight = windowHeight / colsLen - (imageGap / (colsLen / (colsLen - 1))); // 이미지 높이
+        }
+
+        imageWidth = imageHeight;
+        viewPortHeight = windowHeight;
+        viewPortWidth = (rowsLen * imageWidth) + (imageGap * (rowsLen - 1));
 
         mainContainer.width(0).height(0).x(-viewPortBack);
         container.width(0).height(0).x(0).y(windowGap);
@@ -310,8 +333,9 @@
             }
         }
 
-        maxScrollX = innerWidth - viewPortWidth;
-        maxScrollY = innerHeight - viewPortHeight;
+        p.imageWidth = imageWidth;
+        p.imageHeight = imageHeight;
+        p.viewPortBack = viewPortBack;
 
         mainContainer.setStyle("perspective-origin-y", innerHeight/2, volcano._browserPrefix);
     };
@@ -320,8 +344,17 @@
         // systemManager 크기 조절
         sysMgr.width(innerWidth).height(innerHeight);
 
-        maxScrollX = innerWidth - viewPortWidth;
-        maxScrollY = innerHeight - viewPortHeight;
+        if(innerWidth - viewPortWidth > 0){
+            maxScrollX = 0;
+        }else{
+            maxScrollX = innerWidth - viewPortWidth;
+        }
+
+        if(innerHeight - viewPortHeight > 0){
+            maxScrollY = 0;
+        }else{
+            maxScrollY = innerHeight - viewPortHeight;
+        }
 
         if (isMove) {
             if(scrollMode === "auto"){
@@ -363,32 +396,34 @@
                 vY = (Math.abs(vY) < 0.9) ? 0 : vY * friction;
             }
 
-            //좌표가 스크롤 영역에서 벗어나 있을때
-            scrollerOutX = false;
-            if (sx > 0 || sx < maxScrollX) {
-                var tx = sx > 0 ? 0 : maxScrollX;
-                if (vX === 0 || isXBacking) {
-                    vX = (tx-sx) * backeasing;
-                    isXBacking = true;
-                    if(tx === 0){
-                        leftOutX = true;
-                    }else if(tx === maxScrollX){
-                        rightOutX = true;
+            if(p.isBounceBack){
+                //좌표가 스크롤 영역에서 벗어나 있을때
+                scrollerOutX = false;
+                if (sx > 0 || sx < maxScrollX) {
+                    var tx = sx > 0 ? 0 : maxScrollX;
+                    if (vX === 0 || isXBacking) {
+                        vX = (tx-sx) * backeasing;
+                        isXBacking = true;
+                        if(tx === 0){
+                            leftOutX = true;
+                        }else if(tx === maxScrollX){
+                            rightOutX = true;
+                        }
+
+                    } else {
+                        vX *= bounceback;
                     }
-
-                } else {
-                    vX *= bounceback;
+                    scrollerOutX = true;
                 }
-                scrollerOutX = true;
-            }
 
-            if (sy > 0 || sy < maxScrollY) {
-                var ty = sy > 0 ? 0 : maxScrollY;
-                if (vY === 0 || isYBacking) {
-                    vY = (ty-sy) * backeasing;
-                    isYBacking = true;
-                } else {
-                    vY *= bounceback;
+                if (sy > 0 || sy < maxScrollY) {
+                    var ty = sy > 0 ? 0 : maxScrollY;
+                    if (vY === 0 || isYBacking) {
+                        vY = (ty-sy) * backeasing;
+                        isYBacking = true;
+                    } else {
+                        vY *= bounceback;
+                    }
                 }
             }
 

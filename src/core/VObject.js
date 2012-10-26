@@ -652,6 +652,29 @@
     p.updateTransform = function() {
         var s = "";
         var cnt = 0;
+//        console.log("this._string[0] : " , this._string[0]);
+//        console.log("this._string[1] : " , this._string[1]);
+//        console.log("this._string[2] : " , this._string[2]);
+//        console.log("this._string[3] : " , this._string[3]);
+//        console.log("this._string[4] : " , this._string[4]);
+//        console.log("this._string[5] : " , this._string[5]);
+//        console.log("this._string[6] : " , this._string[6]);
+//        console.log("this._string[7] : " , this._string[7]);
+//        console.log("this._string[8] : " , this._string[8]);
+//        console.log("this._string[9] : " , this._string[9]);
+//        console.log("this._string[10] : ", this._string[10]);
+//        console.log("this._string[11] : ", this._string[11]);
+//        console.log("this._string[12]: " , this._string[12]);
+//        console.log("this._string[13] : ", this._string[13]);
+//        console.log("this._string[14]: " , this._string[14]);
+//        console.log("this._string[15]: " , this._string[15]);
+//        console.log("this._string[16]: " , this._string[16]);
+//        console.log("this._string[17]: " , this._string[17]);
+//        console.log("this._string[18]: " , this._string[18]);
+//        console.log("this._string[19]: " , this._string[19]);
+//        console.log("this._string[20]: " , this._string[20]);
+//        console.log("this._string[21]: " , this._string[21]);
+//        console.log("this._string[22]: " , this._string[22]);
         _.all(this._string, function(value){
             if(volcano.has3d == true){
                 s += value;
