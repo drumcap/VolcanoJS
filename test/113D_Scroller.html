@@ -4,18 +4,23 @@
     <title> 빵!!!!!!!!!(터지는) 톡!!!! </title>
     <link rel="stylesheet" type="text/css" href="jjy/css/main.css"/>
     <meta charset="utf-8" name="viewport" content="initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
-    <script src="http://underscorejs.org/underscore.js"></script>
-    <script src="http://backbonejs.org/backbone.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+    <script src="http://pangtalk.gstech.co.kr:3030/socket.io/socket.io.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
+    <!--<script src="http://underscorejs.org/underscore.js"></script>-->
+    <!--<script src="http://backbonejs.org/backbone.js"></script>-->
     <script src="../src/exlibs/Ticker.js"></script>
     <script src="../src/core/Core.js"></script>
     <script src="../src/core/VObject.js"></script>
     <script src="../src/core/VSprite.js"></script>
     <script src="../src/controls/Image.js"></script>
-    <script src="../src/controls/MessageImage.js"></script>
     <script src="../src/controls/LiImageForm.js"></script>
     <script src="../src/controls/ThreeDimensionsScroller.js"></script>
     <script src="../src/managers/SystemManager.js"></script>
     <script src="../src/managers/LayoutManager.js"></script>
+    <!--<script src="../lib/volcanojs-0.7.js"></script>-->
+    <script src="js/serviceNode.js"></script>
     <style>
 
         .reflection{
@@ -25,37 +30,33 @@
     </style>
     <script>
 
-        var objectData = new Array();
-
-        var sysMgr, tdScroller;
         function onLoadHandler(){
-            for(var i = 0 ; i < 42 ; i++){
-                // id(key), 이미지 파일 이름, 드라마 제목, 채널에 접속중인 인원 수, 방송시작시간, 방송종료시간, 방송 채널, 방송 요일, 출연진, 시놉시스, 트위터 검색어
-                var chat = "";
-                if(i%2 === 0){
-                    chat = "[인생극장] : 푸하하하하";
-                }
-                var obj = {id: "drama"+i, filepath:"img/art"+i+".png", titlename: "드라마"+i, userlink: Math.random() * 999, onstart: 2227, onend: 2251, chanel: "sbs", onday: [i%7], actor: "장동건", sinario: "내가그린기린친구", chat: chat, twitterquery: "#신의"};
-                objectData.push(obj);
-            }
-
-            sysMgr = new volcano.SystemManager().width(innerWidth).height(innerHeight).setStyle("overflow", "visible").x(0).y(0);
-            sysMgr.frameRate(60);
-            tdScroller = new volcano.ThreeDimensionsScroller(sysMgr);
-            sysMgr.addElement(tdScroller);
-
-            // data 넣기
-            tdScroller.dataProvider(objectData);
-            // 속성 변경하기
-            tdScroller.setConfig({cols: 2, imageGap: 15, isReflection: false});
-            tdScroller.imageArr
-            // 데이타 설정이 모두 끝났으면, 화면을 그려준다.
-            tdScroller.drawView();
+//            for(var i = 0 ; i < 42 ; i++){
+//                // id(key), 이미지 파일 이름, 드라마 제목, 채널에 접속중인 인원 수, 방송시작시간, 방송종료시간, 방송 채널, 방송 요일, 출연진, 시놉시스, 트위터 검색어
+//                var chat = "";
+//                if(i%2 === 0){
+//                    chat = "[인생극장] : 푸하하하하";
+//                }
+//                var obj = {id: "drama"+i, filepath:"img/art"+i+".png", titlename: "드라마"+i, userlink: Math.random() * 999, onstart: 2227, onend: 2251, chanel: "sbs", onday: [i%7], actor: "장동건", sinario: "내가그린기린친구", chat: chat, twitterquery: "#신의"};
+//                objectData.push(obj);
+//            }
+//
+//            sysMgr = new volcano.SystemManager().width(innerWidth).height(innerHeight).setStyle("overflow", "visible").x(0).y(0);
+//            sysMgr.frameRate(60);
+//            tdScroller = new volcano.ThreeDimensionsScroller(sysMgr);
+//            sysMgr.addElement(tdScroller);
+//
+//            // data 넣기
+//            tdScroller.dataProvider(objectData);
+//            // 속성 변경하기
+//            tdScroller.setConfig({cols: 2, imageGap: 15, isReflection: false});
+//            // 데이타 설정이 모두 끝났으면, 화면을 그려준다.
+//            tdScroller.drawView();
+            initCreateContainer();
         };
 
-
-
     </script>
+
 </head>
 <body onload="onLoadHandler()" id="bodyCon" bgcolor="0x000000" style="overflow: hidden; margin: 0;">
 

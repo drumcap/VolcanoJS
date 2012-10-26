@@ -164,7 +164,6 @@
         for(i = 0 ; i < imageLen ; i++){
             var imageX = (i%rowsLen) * (imageWidth + imageGap) + viewPortBack;
             var imageY = parseInt(i/(imageLen / colsLen)) * (imageHeight + imageGap);
-//            var img = new volcano.LiImageForm(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).imageUrl(_dataProvider[i].filepath).titleName(_dataProvider[i].titlename).userLink(_dataProvider[i].userlink).onStart(_dataProvider[i].onstart).onEnd(_dataProvider[i].onend).channel(_dataProvider[i].channel).onDays(_dataProvider[i].onday).actors(_dataProvider[i].actor).sinario(_dataProvider[i].sinario).twitterQuery(_dataProvider[i].twitterquery);
             var img = new volcano.LiImageForm(undefined, {defaultValue: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).dataProvider(_dataProvider[i]);
 
             if(isReflection){
@@ -612,6 +611,14 @@
      */
     p.dataProvider = function(value){
         _dataProvider = value;
+    };
+
+    /**
+     * 실시간 메세지 서비스 push 데이타
+     * @param value
+     */
+    p.dataRefresh = function(value){
+
     };
 
     /**
