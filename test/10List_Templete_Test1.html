@@ -51,7 +51,7 @@
 //            sysMgr.addElement(new volcano.VObject(stats.domElement));
 
             sysMgr.addEnterFrameListener(function(){stats.update()});
-            var options = {default: "off", browserScrollMode: "off"};
+            var options = {defaultValue: "off", browserScrollMode: "off"};
 
 //            list = new volcano.List(sysMgr).width(508).height(400).setStyle("overflow","hidden");
             list = new volcano.List(sysMgr, options).id("list").percentWidth(100).height(600);

@@ -100,7 +100,7 @@
         if(options !== undefined){
             this._option = options;
         }else{
-            this._option.default = "on";
+            this._option.defaultValue = "on";
         }
 
         var that = this;
@@ -121,7 +121,7 @@
                     //con.innerHTML = volcano.ColorUtil.getRandomColor();;
                     //con.style.opacity = 0.3;
                 }
-                if(that._option.default === "on"){
+                if(that._option.defaultValue === "on"){
                     con.style.position = "absolute";
             }
 
@@ -149,7 +149,7 @@
                 throw new Error("You are using multi selected jQuery/Zepto Object \n You MUST select only one DOM Object \n If you want to use multi selected jQuery/Zepto Object, you should use alternative class that is VobjectArray");
             }
             element = element.get(0);
-        }else if(this._option.default === "off"){ // 기본 스타일을 off로 설정
+        }else if(this._option.defaultValue === "off"){ // 기본 스타일을 off로 설정
 //            console.log("create Volcano Style Default Option =====> off");
         }else if (element.style.position == "static" ) {
             element.style.position = "relative";
@@ -157,7 +157,7 @@
             element.style.position = "absolute";
         }
 
-        if(this._option.default === "on" && volcano.has3d){ // 기본 스타일을 on으로 설정
+        if(this._option.defaultValue === "on" && volcano.has3d){ // 기본 스타일을 on으로 설정
             element.style[ volcano._browserPrefix + "TransformStyle" ] = "preserve-3d";
             element.style[ volcano._transformProperty ] = "translateZ(0px)";
         }
