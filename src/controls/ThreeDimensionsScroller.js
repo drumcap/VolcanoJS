@@ -92,10 +92,12 @@
     var browserIs3dFix = true;
     var minViewPortHeight = 200;
     var maxViewPortHeight = 500;
+    var that;
 
     p.VSprite_initialize = p.initialize;
     p.initialize = function(mgr){
         browserIs3dFix = volcano.has3d;
+        that = this;
         this.VSprite_initialize();
         sysMgr = mgr;
     };
@@ -216,7 +218,7 @@
     };
 
     function keyDownHandler(event){
-        if(!p.isKeyboardEvent){
+        if(!that.isKeyboardEvent){
             return;
         }else{
             var keyCode = event.keyCode;
@@ -256,7 +258,7 @@
     };
 
     function mouseWheelHandler(event){
-        if(!p.isMouseEvent){
+        if(!that.isMouseEvent){
             return;
         }else{
             var e = window.event || event;
@@ -406,7 +408,7 @@
                 vY = (Math.abs(vY) < 0.9) ? 0 : vY * friction;
             }
 
-            if(p.isBounceBack){
+            if(that.isBounceBack){
                 //좌표가 스크롤 영역에서 벗어나 있을때
                 scrollerOutX = false;
                 if (sx > 0 || sx < maxScrollX) {
@@ -542,7 +544,7 @@
     };
 
     function onMouseDownHandler(event) {
-        if(!p.isMouseEvent){
+        if(!that.isMouseEvent){
             return;
         }else{
             var point = volcano.hasTouch ? event.touches[0] : event;
@@ -564,7 +566,7 @@
     };
 
     function onMouseMoveHandler(event) {
-        if(!p.isMouseEvent){
+        if(!that.isMouseEvent){
             return;
         }else{
             var point = volcano.hasTouch ? event.touches[0] : event;
