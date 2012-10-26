@@ -165,7 +165,7 @@
             var imageX = (i%rowsLen) * (imageWidth + imageGap) + viewPortBack;
             var imageY = parseInt(i/(imageLen / colsLen)) * (imageHeight + imageGap);
 //            var img = new volcano.LiImageForm(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).imageUrl(_dataProvider[i].filepath).titleName(_dataProvider[i].titlename).userLink(_dataProvider[i].userlink).onStart(_dataProvider[i].onstart).onEnd(_dataProvider[i].onend).channel(_dataProvider[i].channel).onDays(_dataProvider[i].onday).actors(_dataProvider[i].actor).sinario(_dataProvider[i].sinario).twitterQuery(_dataProvider[i].twitterquery);
-            var img = new volcano.LiImageForm(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).dataProvider(_dataProvider[i]);
+            var img = new volcano.LiImageForm(undefined, {defaultValue: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY).dataProvider(_dataProvider[i]);
 
             if(isReflection){
                 if(parseInt(i/(imageLen / colsLen)) === colsLen - 1){
@@ -186,7 +186,7 @@
             for(i = reflectionStartIndex ; i < reflectionEndIndex ; i++){
                 var imageX = (i%rowsLen) * (imageWidth + imageGap) + viewPortBack;
                 var imageY = parseInt(colsLen) * (imageHeight + imageGap) - (imageGap) + reflectionGap;
-                var img = new volcano.LiImageForm(undefined, {default: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY);
+                var img = new volcano.LiImageForm(undefined, {defaultValue: "off"}).width(imageWidth).height(imageHeight).x(imageX).y(imageY);
                 transViewPort.addElement(img);
 //                img.imageClassName("reflection");
                 img.rotationX(180);

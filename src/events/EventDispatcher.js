@@ -60,13 +60,9 @@
     rp.removeEventListener = rp.off;
     rp.dispatchEvent = rp.trigger;
 
-    var p = EventDispatcher.prototype = new volcano.Core();
-    p.Core_initialize = p.initialize;
+    var p = EventDispatcher.prototype;
 
-    p.initialize = function() {
-        this.Core_initialize(); //call super
-    };
-
+    p.initialize = function() {};
     p.addEventListener = p.on = p.bind = vEvents.on;
     p.removeEventListener = p.off = p.unbind = vEvents.off;
     p.dispatchEvent = p.trigger = vEvents.trigger;

@@ -5,6 +5,8 @@ CONFIGURATION
 */
 // listing of all source files, with dependencies listed in order:
 var SOURCE_FILES = [
+    "../src/exlibs/Ticker.js",
+    "../src/exlibs/Stats.js",
 	"../src/core/Core.js",
     "../src/events/EventDispatcher.js",
     "../src/core/VObject.js",
