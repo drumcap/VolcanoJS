@@ -15,7 +15,9 @@ var SOURCE_FILES = [
     "../src/core/SkinnableComponent.js",
     "../src/skins/SkinBase.js",
     "../src/utils/ColorUtil.js",
-    "../src/utils/ObjectUtil.js"
+    "../src/controls/Image.js",
+    "../src/controls/LiImageForm.js",
+    "../src/controls/ThreeDimensionsScroller.js"
 ];
 
 // default name for lib output:
