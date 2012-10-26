@@ -63,7 +63,7 @@
             this.id(this._dataProvider.id); // id
             this.imageUrl(this._dataProvider.filepath); // 대표 이미지 경로
             this.title(this._dataProvider.title); // 제목
-            this.lastTalk(this._dataProvider.lastTalk); // 최근 채팅 내용
+            this.lastTalk({user: "", talk: ""}); // 최근 채팅 내용
             this.userCnt(this._dataProvider.userCnt); // 채널 유저 접속 수
             this.onair(this._dataProvider.onair); // 생방송 시간 확인
             this.company(this._dataProvider.company); // 드라마 채널 정보
@@ -158,10 +158,10 @@
      * @type {Array}
      * @private
      */
-    p._actors = [];
+    p._actors = "";
     p.actors = function(names){
         if(arguments.length){
-            this._actors = name;
+            this._actors = names;
             return this;
         }else{
             return this._actors;
@@ -176,6 +176,7 @@
     p._story = "";
     p.story = function(name){
         if(arguments.length){
+            this._story = name;
             return this;
         }else{
             return this._story;
