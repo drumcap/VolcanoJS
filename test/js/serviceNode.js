@@ -22,7 +22,7 @@ function log(msg){
 
 var objectData = new Array();
 
-var sysMgr, tdScroller;
+var sysMgr, tdScroller, detailManager;
 /**
  * 초기 컨테이너를 생성한다.
  */
@@ -34,6 +34,11 @@ initCreateContainer = function(){
 
     // 화면 구성 데이타를 호출한다.
     getChatRoomInfo();
+};
+
+onClosePopup = function(){
+    console.log("onClose()");
+    detailManager.closeDetail();
 };
 /**
  * COMMAND에 대한 응답 결과이다.
@@ -66,6 +71,11 @@ socket.on(REPLY, function (replyMsg) {
         tdScroller.setConfig({cols: 2, imageGap: 15, isReflection: false});
 
         tdScroller.drawView();
+
+        var targets = tdScroller._imageArr;
+
+        detailManager = new volcano.DetailManager(tdScroller);
+        detailManager.setImageArr(targets);
 
     }else if(replyMsg.cmd_id === 'get.chatroom.info.curr'){
         //메인페이지 마지막 대화, 사용자수, 방송여부 갱신해야한다.

@@ -1,20 +1,225 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-    <title></title>
-    <meta charset="utf-8" />
-    <script src="http://underscorejs.org/underscore.js" ></script>
-    <script src="http://backbonejs.org/backbone.js" ></script>
-    <script src="../../src/core/Core.js"></script>
+    <title> 빵!!!!!!!!!(터지는) 톡!!!! </title>
+    <meta charset="utf-8" name="viewport" content="initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+    <script src="http://pangtalk.gstech.co.kr:3030/socket.io/socket.io.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>
+    <script src="http://cdn.jsdelivr.net/gsap/12/TweenLite.min.js"></script>
+    <script src="js/volcanojs-0.7.js"></script>
+    <script src="js/DetailManager.js"></script>
+    <script src="js/serviceNode.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/main.css"/>
+    <style>
+
+        .reflection{
+            -webkit-mask-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.25, transparent), color-stop(1.0, rgba(255, 255, 255, 0.5)));
+        }
+
+    </style>
     <script>
 
         function onLoadHandler(){
-            console.log("transform = " + volcano.isCss3.isTransform);
-        }
+            initCreateContainer();
+        };
+
+        function onClose() {
+            onClosePopup();
+        };
 
     </script>
 </head>
-<body onload="onLoadHandler()">
+<body onload="onLoadHandler()"  id="bodyCon" bgcolor="0x000000" style="overflow: hidden; margin: 0;">
+<div class="detail" id="pangDetail">
+    <div class="header">
+        <button id="backBtn" class="prevbtn" onclick="onClose()">Prev</button>
+        <button class="usernamebtn">drumcap</button>
+    </div>
+    <div class="titleimg">
+        <img src="img/thumb_title01.jpg" class="poster" />
+        <span class="onair"></span>
+    </div>
+    <div class="info">
+        <div class="desc">
+            <p class="title">대풍수</p>
+            <p class="company">SBS <span class="time">| 매주 수,목 저녁 9:50</span></p>
 
+            <img src="img/info_hr.gif" />
+            <p class="strong txt">출연진</p>
+            <p class="txt">김소연, 송창의, 오현경, 이승연, 이윤지, 조민기, 지성,지진희 </p>
+            <p class="spacer"></p>
+            <p class="strong txt">줄거리</p>
+            <p class="txt">지상은 우연히 이인임의 방에 숨어들었다가 흥왕사
+                에 머무르는 중인 공민왕을 시해하려는 음모를 엿듣
+                게 된다. 이인임의 자객 무영에게 쫓기다 간신히 기
+                생집으로 숨은 지상은 술을 마시던 이성계에게...</p>
+        </div>
+        <button class="home">드라마 공식 Home</button>
+        <button class="article">드라마 관련 기사</button>
+    </div>
+    <div class="pangtalk">
+        <p class="title">Pang Talk</p>
+        <span class="chaton">363</span>
+        <div class="container">
+            <div class="other">
+                <p class="username">장근석</p>
+                <p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+
+            <div class="mine">
+                <p class="username">전재열</p>
+                <p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+
+            <div class="other">
+                <p class="username">장근석</p>
+                <p class="message">네</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+            <div class="other">
+                <p class="username">장근석</p>
+                <p class="message">네</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+
+            <div class="mine">
+                <p class="username">전재열</p>
+                <p class="message">김소연씨안녕하세요 하이요</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+
+            <div class="other">
+                <p class="username">장근석</p>
+                <p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+
+            <div class="mine">
+                <p class="username">전재열</p>
+                <p class="message">d</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+
+            <div class="other">
+                <p class="username">장근석</p>
+                <p class="message">네</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+            <div class="other">
+                <p class="username">장근석</p>
+                <p class="message">네</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+
+            <div class="mine">
+                <p class="username">전재열</p>
+                <p class="message">김소연씨안녕하세요 하이요</p>
+                <p class="time">09.20 11:20</p>
+            </div>
+            <!--<ul>-->
+            <!--<li class="other">-->
+            <!--<p class="username">장근석</p>-->
+            <!--<div class="bubble">-->
+            <!--<p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>-->
+            <!--<p class="time">09.20 11:20</p>-->
+            <!--</div>-->
+            <!--</li>-->
+            <!--<li class="mine">-->
+            <!--<p class="username">장근석</p>-->
+            <!--<p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>-->
+            <!--<p class="time">09.20 11:20</p>-->
+            <!--</li>-->
+            <!--<li class="other">-->
+            <!--<p class="username">장근석</p>-->
+            <!--<p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>-->
+            <!--<p class="time">09.20 11:20</p>-->
+            <!--</li>-->
+            <!--<li class="mine">-->
+            <!--<p class="username">장근석</p>-->
+            <!--<p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>-->
+            <!--<p class="time">09.20 11:20</p>-->
+            <!--</li>-->
+            <!--<li class="other">-->
+            <!--<p class="username">장근석</p>-->
+            <!--<p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>-->
+            <!--<p class="time">09.20 11:20</p>-->
+            <!--</li>-->
+            <!--<li class="mine">-->
+            <!--<p class="username">장근석</p>-->
+            <!--<p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>-->
+            <!--<p class="time">09.20 11:20</p>-->
+            <!--</li>-->
+            <!--<li class="other">-->
+            <!--<p class="username">장근석</p>-->
+            <!--<p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>-->
+            <!--<p class="time">09.20 11:20</p>-->
+            <!--</li>-->
+            <!--<li class="mine">-->
+            <!--<p class="username">장근석</p>-->
+            <!--<p class="message">김소연씨 오랜만에 TV에서 보네요. 자주자주 봐요~~</p>-->
+            <!--<p class="time">09.20 11:20</p>-->
+            <!--</li>-->
+            <!--</ul>-->
+        </div>
+    </div>
+    <div class="tweets">
+        <p class="title">Tweets</p>
+        <div class="container">
+            <ul>
+                <li>
+                    <img src="http://a0.twimg.com/profile_images/2608898242/btTCADIn_normal" alt="cute222" />
+                    <div><a href="http://twitter.com/cute222" title="cute222" target="_blank"><span class="strong">장근석</span> @cute222</a></div>
+                    <p>RT @Sinui_Cheon: [RT부탁드려요!] SBS월화드라마 #신의 천음자(성훈 분)패계입니다. 어렵지 않으니 많이 다가와 주세요.(싱크는 차차히 맞춰가겠습니다.) #self_intro #with_me</p>
+                </li>
+                <li>
+                    <img src="http://a0.twimg.com/profile_images/2608898242/btTCADIn_normal" alt="cute222" />
+                    <div><a href="http://twitter.com/cute222" title="cute222" target="_blank"><span class="strong">장근석</span> @cute222</a></div>
+                    <p>RT @Sinui_Cheon: [RT부탁드려요!] SBS월화드라마 #신의 천음자(성훈 분)패계입니다. </p>
+                </li>
+                <li>
+                    <img src="http://a0.twimg.com/profile_images/2608898242/btTCADIn_normal" alt="cute222" />
+                    <div><a href="http://twitter.com/cute222" title="cute222" target="_blank"><span class="strong">장근석</span> @cute222</a></div>
+                    <p>RT @Sinui_Cheon: [RT부탁드려요!] </p>
+                </li>
+                <li>
+                    <img src="http://a0.twimg.com/profile_images/2608898242/btTCADIn_normal" alt="cute222" />
+                    <div><a href="http://twitter.com/cute222" title="cute222" target="_blank"><span class="strong">장근석</span> @cute222</a></div>
+                    <p>RT @Sinui_Cheon: [RT부탁드려요!] SBS월화드라마 #신의 천음자(성훈 분)패계입니다. 어렵지 않으니 많이 다가와 주세요.(싱크는 차차히 맞춰가겠습니다.) #self_intro #with_me</p>
+                </li>
+                <li>
+                    <img src="http://a0.twimg.com/profile_images/2608898242/btTCADIn_normal" alt="cute222" />
+                    <div><a href="http://twitter.com/cute222" title="cute222" target="_blank"><span class="strong">장근석</span> @cute222</a></div>
+                    <p>RT @Sinui_Cheon: [RT부탁드려요!] SBS월화드라마 #신의 천음자(성훈 분)패계입니다. 어렵지 않으니 많이 다가와 주세요.(싱크는 차차히 맞춰가겠습니다.) #self_intro #with_me</p>
+                </li>
+                <li>
+                    <img src="http://a0.twimg.com/profile_images/2608898242/btTCADIn_normal" alt="cute222" />
+                    <div><a href="http://twitter.com/cute222" title="cute222" target="_blank"><span class="strong">장근석</span> @cute222</a></div>
+                    <p>RT @Sinui_Cheon: [RT부탁드려요!] SBS월화드라마 #신의 천음자(성훈 분)패계입니다. 어렵지 않으니 많이 다가와 주세요.(싱크는 차차히 맞춰가겠습니다.) #self_intro #with_me</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--하단 입력창-->
+    <div class="inputbox">
+        <!-- 탭바버튼 : 활성화 상태일 때만 on-->
+        <button class="tabbtn pangbtn on" >Pangtalk</button>
+        <button class="tabbtn twitbtn" >Twitter</button>
+        <ul>
+            <!-- 탭바아이템 : 활성화 상태일 때만 on-->
+            <li class="tabbar panginput on">
+                <input placeholder="메시지를 입력 하세요">
+            </li>
+            <li class="tabbar twitinput">
+                <textarea placeholder="클릭하면 트위터 계정 연결을 시작 합니다." ></textarea>
+                <button>보내기</button>
+            </li>
+        </ul>
+    </div>
+</div>
 </body>
 </html>
