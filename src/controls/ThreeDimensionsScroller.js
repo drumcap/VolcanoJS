@@ -62,6 +62,8 @@
     p.imageWidth;
     p.imageHeight;
     p.viewPortBack;
+    p.isMouseEvent = true;
+    p.isKeyboardEvent = true;
 
     var isMove = false;
     var bounceback = 0.7;
@@ -214,71 +216,79 @@
     };
 
     function keyDownHandler(event){
-        var keyCode = event.keyCode;
-        isMove = false;
-        isDown = false;
-        var keyAccel = 100;
-        var keyPos = 10;
-        var codeFlag = false;
+        if(!p.isKeyboardEvent){
+            return;
+        }else{
+            var keyCode = event.keyCode;
+            isMove = false;
+            isDown = false;
+            var keyAccel = 100;
+            var keyPos = 10;
+            var codeFlag = false;
 
-        if(keyCode == 38 || keyCode == 39){
-            // 키보드 up 방향키
-            keyAccel = -100;
-            keyPos = -10;
-            codeFlag = true;
-        }else if(keyCode == 40 || keyCode == 37){
-            // 키보드 down 방향키
-            keyAccel = 100;
-            keyPos = 10;
-            codeFlag = true;
+            if(keyCode == 38 || keyCode == 39){
+                // 키보드 up 방향키
+                keyAccel = -100;
+                keyPos = -10;
+                codeFlag = true;
+            }else if(keyCode == 40 || keyCode == 37){
+                // 키보드 down 방향키
+                keyAccel = 100;
+                keyPos = 10;
+                codeFlag = true;
+            }
+
+            if(codeFlag){
+                if(isFirstDown){
+                    oldX = targetX;
+                    oldY = targetY;
+                    isFirstDown = false;
+                }
+
+                transViewPort.x(transViewPort.x() + keyAccel);
+                targetX = targetX + keyPos;
+
+                vX = targetX - oldX + vX;
+
+                oldX = targetX;
+            }
         }
+    };
 
-        if(codeFlag){
+    function mouseWheelHandler(event){
+        if(!p.isMouseEvent){
+            return;
+        }else{
+            var e = window.event || event;
+            var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+
+            isMove = false;
+            isDown = false;
+            var wheelAccel = 100;
+            var wheelPos = 10;
+            if(delta > 0){
+                // 휠을 위로 올릴 때
+                wheelAccel = -100;
+                wheelPos = -10;
+            }else{
+                // 휠을 아래로 내릴 때
+                wheelAccel = 100;
+                wheelPos = 10;
+            }
+
             if(isFirstDown){
                 oldX = targetX;
                 oldY = targetY;
                 isFirstDown = false;
             }
 
-            transViewPort.x(transViewPort.x() + keyAccel);
-            targetX = targetX + keyPos;
+            transViewPort.x(transViewPort.x() + wheelAccel);
+            targetX = targetX + wheelPos;
 
             vX = targetX - oldX + vX;
 
             oldX = targetX;
         }
-    };
-
-    function mouseWheelHandler(event){
-        var e = window.event || event;
-        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-
-        isMove = false;
-        isDown = false;
-        var wheelAccel = 100;
-        var wheelPos = 10;
-        if(delta > 0){
-            // 휠을 위로 올릴 때
-            wheelAccel = -100;
-            wheelPos = -10;
-        }else{
-            // 휠을 아래로 내릴 때
-            wheelAccel = 100;
-            wheelPos = 10;
-        }
-
-        if(isFirstDown){
-            oldX = targetX;
-            oldY = targetY;
-            isFirstDown = false;
-        }
-
-        transViewPort.x(transViewPort.x() + wheelAccel);
-        targetX = targetX + wheelPos;
-
-        vX = targetX - oldX + vX;
-
-        oldX = targetX;
     }
 
     function onSystemManagerResize(){
@@ -532,42 +542,50 @@
     };
 
     function onMouseDownHandler(event) {
-        var point = volcano.hasTouch ? event.touches[0] : event;
-        downPoint = point;
-        event.preventDefault();
+        if(!p.isMouseEvent){
+            return;
+        }else{
+            var point = volcano.hasTouch ? event.touches[0] : event;
+            downPoint = point;
+            event.preventDefault();
 
-        sysMgr.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
-        sysMgr.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
-        sysMgr.addEventListener(volcano.e.CANCEL, onMouseUpHandler);
+            sysMgr.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
+            sysMgr.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
+            sysMgr.addEventListener(volcano.e.CANCEL, onMouseUpHandler);
 
-        isMove = false;
-        isDown = true;
+            isMove = false;
+            isDown = true;
 
-        regX = point.pageX - transViewPort.x();
-        regY = point.pageY - transViewPort.y();
+            regX = point.pageX - transViewPort.x();
+            regY = point.pageY - transViewPort.y();
 
-        isFirstDown = true;
+            isFirstDown = true;
+        }
     };
 
     function onMouseMoveHandler(event) {
-        var point = volcano.hasTouch ? event.touches[0] : event;
+        if(!p.isMouseEvent){
+            return;
+        }else{
+            var point = volcano.hasTouch ? event.touches[0] : event;
 
-        event.preventDefault();
+            event.preventDefault();
 
-        isMove = true;
-        isDown = false;
-        var pageX = point.pageX,
-            pageY = point.pageY;
+            isMove = true;
+            isDown = false;
+            var pageX = point.pageX,
+                pageY = point.pageY;
 
-        targetX = pageX - regX;
-        targetY = pageY - regY;
+            targetX = pageX - regX;
+            targetY = pageY - regY;
 
-        if(isFirstDown){
-            oldX = targetX;
-            oldY = targetY;
-            isFirstDown = false;
+            if(isFirstDown){
+                oldX = targetX;
+                oldY = targetY;
+                isFirstDown = false;
+            }
+            setAccelerate();
         }
-        setAccelerate();
     };
 
     function onMouseUpHandler(event) {
