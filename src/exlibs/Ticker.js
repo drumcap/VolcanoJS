@@ -213,7 +213,7 @@ var Ticker = function() {
 	Ticker.removeListener = function(o) {
 		var listeners = Ticker._listeners;
 		if (!listeners) { return; }
-		var index = listeners.indexOf(o);
+		var index = _.indexOf(listeners,o);
 		if (index != -1) {
 			listeners.splice(index, 1);
 			Ticker._pauseable.splice(index, 1);

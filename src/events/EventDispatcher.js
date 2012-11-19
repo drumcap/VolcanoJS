@@ -29,7 +29,8 @@
 
     /**
     * EventDispatcher는 이벤트를 송수신 할 수 있는 메커니즘을 제공하며 Flash와 동일하게 동작한다.
-    * Backbone.js 의 Events 클래스를 가져와 Event API 호환성을 유지한다.
+    * Backbone.js 의 Events 클래스를 가져와 Event API 호환성을 유지하고
+    * addEventListener, removeEventListener, dispatchEvent 등을 설정하여 완성한다.
     *
     * @class EventDispatcher
     * @constructor
@@ -42,8 +43,15 @@
         cp = volcano.Collection.prototype,
         vp = volcano.View.prototype,
         rp = volcano.Router.prototype,
-        vEvents = window.volcano.Events;
+        hp = volcano.History.prototype,
+        vEvents = volcano.Events;
 
+    // event api 추가
+    volcano.Events.addEventListener = volcano.Events.on;
+    volcano.Events.removeEventListener = volcano.Events.off;
+    volcano.Events.dispatchEvent = volcano.Events.trigger;
+
+    // Backbone에도 기능 추가
     mp.addEventListener = mp.on;
     mp.removeEventListener = mp.off;
     mp.dispatchEvent = mp.trigger;
@@ -60,8 +68,13 @@
     rp.removeEventListener = rp.off;
     rp.dispatchEvent = rp.trigger;
 
+    hp.addEventListener = hp.on;
+    hp.removeEventListener = hp.off;
+    hp.dispatchEvent = hp.trigger;
+
     var p = EventDispatcher.prototype;
 
+    // EventDispatcher API 기능 연결
     p.initialize = function() {};
     p.addEventListener = p.on = p.bind = vEvents.on;
     p.removeEventListener = p.off = p.unbind = vEvents.off;

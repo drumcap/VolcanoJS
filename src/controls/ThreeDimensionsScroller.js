@@ -84,7 +84,7 @@
     var maxAccelRotate = 1;
     var accelRotate = 0.1;
     var isFirstDown = false;
-    var sysMgr, transViewPort, container;
+    var transViewPort, container;
     var mainContainer;
     var onlyOneDrawFlag = false;
     var _dataProvider = [];
@@ -99,7 +99,7 @@
         browserIs3dFix = volcano.has3d;
         that = this;
         this.VSprite_initialize();
-        sysMgr = mgr;
+        this.sysMgr = mgr;
     };
 
     /**
@@ -195,7 +195,6 @@
             this._imageReflectionArr = imageReflectionArr;
         }
 
-        this.sysMgr = sysMgr;
         this.transViewPort = transViewPort;
         this.container = container;
         this.mainContainer = mainContainer;
@@ -204,7 +203,8 @@
         this.viewPortBack = viewPortBack;
 
         sysMgr.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
-        sysMgr.addEventListener("resize", onSystemManagerResize);
+        if (!volcano.isMobile.ipad)
+            sysMgr.addEventListener("resize", onSystemManagerResize);
         sysMgr.addEnterFrameListener(onEnterFrame);
 
         sysMgr.setStyle("Perspective", 0 + "px", volcano._browserPrefix);

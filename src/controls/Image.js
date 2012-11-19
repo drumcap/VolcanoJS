@@ -56,7 +56,6 @@
 
         if (this.errorImg() !== "" && this.errorImg() !== this._source) {
             this._domElement.src = this.errorImg();
-            console.log(this.errorImg() + this._source);
         }
     };
 

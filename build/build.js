@@ -18,8 +18,7 @@ var SOURCE_FILES = [
     "../src/skins/SkinBase.js",
     "../src/utils/ColorUtil.js",
     "../src/controls/Image.js",
-    "../src/controls/LiImageForm.js",
-    "../src/controls/ThreeDimensionsScroller.js"
+    "../src/controls/Scroller.js"
 ];
 
 // default name for lib output:
