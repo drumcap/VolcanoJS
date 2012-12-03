@@ -32,19 +32,10 @@
     };
 
     var p = Scroller.prototype = new volcano.VObject();
-    /**
-     * 실제 화면에 display 될 래퍼 Div
-     * @type {*}
-     * @private
-     */
-    p._domElement = null;
-
-    p._scroller = null;
 
     var _sysMgr;
     var maxScrollX;
     var maxScrollY;
-    var viewPort;
     var isMove = false;
     var isDown = false;
     var bounceback = 0.7;
@@ -59,9 +50,25 @@
     var bounce = -0.7; //튕길때는 음수로 힘이 약간 상쇄된다.
     var friction = .9; //마찰계수
     var downPoint;
-    var scrollOption;
+    // viewPort Parent Container
     var containerElement;
-//    var scrollMode = "auto";
+
+    // that == Scroller 의 this
+    var that;
+
+    /**
+     * 실제 화면에 display 될 래퍼 Div
+     * @type {*}
+     * @private
+     */
+    p._domElement = null;
+
+    p.scrollOption = {};
+
+    p._viewPort = {};
+    p.getViewPort = function(){
+        return that._viewPort;
+    };
 
     p.VObject_initialize = p.initialize;
     /**
@@ -72,47 +79,71 @@
     p.initialize = function (viewElement, sysMgr, option) {
         // 변수 초기화
         this._domElement = {};
-        this._scroller = {};
-        scrollOption = {
+        this._viewPort = {};
+        this.scrollOption = {
             scrollMode: "auto"
         };
 
+        that = this;
+
+        // volcano Component를 사용해야만 한다. VSprite
         containerElement = viewElement.parent;
-        for (i in option) scrollOption[i] = option[i];
-        containerElement.setStyle("overflow","hidden")
-;        viewPort = viewElement;
+        for (i in option) that.scrollOption[i] = option[i];
+        containerElement.setStyle("overflow","hidden");
+//        containerElement.setStyle("overflow","auto");
+        that._viewPort = viewElement;
+        console.log(that._viewPort);
         _sysMgr = sysMgr;
 
+        // domElement 지정
         this._domElement = viewElement._domElement;
         this._domElement.volcanoObj = this; //FIXME 향후 메모리 문제가 생길 소지 있으니 개선해야함.
-        this._scroller = this._domElement.children[0];
-
-        maxScrollX = containerElement.width() - viewPort.width();
-        maxScrollY = containerElement.height() - viewPort.height();
 
         _sysMgr.addEventListener(volcano.e.MOUSE_DOWN, onMouseDownHandler);
-
         _sysMgr.addEnterFrameListener(enterFrameHandler);
     };
 
     function enterFrameHandler() {
-//        stats.update();
+
+        // viewPort 의 width 값이 container width 값보다 같거나 작을 경우 maxScrollX 값을 0으로 설정한다.
+        if(containerElement.width() - that._viewPort.width() >= 0){
+            maxScrollX = 0;
+        }else{
+            maxScrollX = containerElement.width() - that._viewPort.width();
+        }
+
+        // viewPort 의 height 값이 container height 값보다 같거나 작을 경우 maxScrollY 값을 0으로 설정한다.
+        if(containerElement.height() - that._viewPort.height() >= 0){
+            maxScrollY = 0;
+        }else{
+            maxScrollY = containerElement.height() - that._viewPort.height();
+        }
+
+        // maxScrollX 값이 NaN 일 경우 0으로 설정한다.
+        if(isNaN(maxScrollX)){
+            maxScrollX = 0;
+        }
+
+        // maxScrollY 값이 NaN 일 경우 0으로 설정한다.
+        if(isNaN(maxScrollY)){
+            maxScrollY = 0;
+        }
 
         if (isMove) {
             // Scroll 모드에 따라서 좌표 설정
-            if(scrollOption.scrollMode === "auto"){
-                viewPort.move(targetX, targetY, 0);
-            }else if(scrollOption.scrollMode === "vertical"){
-                viewPort.move(0, targetY, 0);
-            }else if(scrollOption.scrollMode === "horizontal"){
-                viewPort.move(targetX, 0, 0);
+            if(that.scrollOption.scrollMode === "auto"){
+                that._viewPort.move(targetX, targetY, 0);
+            }else if(that.scrollOption.scrollMode === "vertical"){
+                that._viewPort.move(0, targetY, 0);
+            }else if(that.scrollOption.scrollMode === "horizontal"){
+                that._viewPort.move(targetX, 0, 0);
             }
         } else if(isDown){
             // TODO mouseDown 일 경우
         }else
          {
-            var sx = viewPort.x(),
-                sy = viewPort.y();
+             var sx = that._viewPort.x(),
+                sy = that._viewPort.y();
 
             if (Math.abs(vX)>0 || Math.abs(vY)>0) {
                 vX = (Math.abs(vX) < 0.9) ? 0 : vX * friction;
@@ -145,35 +176,32 @@
             if (Math.abs(vX)>0.01 || Math.abs(vY)>0.01)
             {
                 // scroll Mode 에 따라서 좌표값을 설정
-                if(scrollOption.scrollMode === "auto"){
+                if(that.scrollOption.scrollMode === "auto"){
                     rx = (sx > 0 && sx < 1) ? 0 : (sx > maxScrollX-1 && sx < maxScrollX) ? maxScrollX : sx + vX;
                     ry = (sy > 0 && sy < 1) ? 0 : (sy > maxScrollY-1 && sy < maxScrollY) ? maxScrollY : sy + vY;
 
                     if ((sx > 0 && sx < 1) || (sx > maxScrollX-1 && sx < maxScrollX)) isXBacking = false;
                     if ((sy > 0 && sy < 1) || (sy > maxScrollY-1 && sy < maxScrollY)) isYBacking = false;
-                }else if(scrollOption.scrollMode === "vertical"){
+                }else if(that.scrollOption.scrollMode === "vertical"){
                     rx = 0;
                     ry = (sy > 0 && sy < 1) ? 0 : (sy > maxScrollY-1 && sy < maxScrollY) ? maxScrollY : sy + vY;
                     if ((sy > 0 && sy < 1) || (sy > maxScrollY-1 && sy < maxScrollY)) isYBacking = false;
-                }else if(scrollOption.scrollMode === "horizontal"){
+                }else if(that.scrollOption.scrollMode === "horizontal"){
                     rx = (sx > 0 && sx < 1) ? 0 : (sx > maxScrollX-1 && sx < maxScrollX) ? maxScrollX : sx + vX;
                     if ((sx > 0 && sx < 1) || (sx > maxScrollX-1 && sx < maxScrollX)) isXBacking = false;
                     ry = 0;
                 }
 
-                viewPort.move(rx, ry, 0);
+                that._viewPort.move(rx, ry, 0);
             }
         }
-    }
+    };
 
     var isFirstDown = false;
     function onMouseDownHandler(event) {
         var point = volcano.hasTouch ? event.touches[0] : event;
         downPoint = point;
         event.preventDefault();
-
-        maxScrollX = containerElement.width() - viewPort.width();
-        maxScrollY = containerElement.height() - viewPort.height();
 
         _sysMgr.addEventListener(volcano.e.MOUSE_MOVE, onMouseMoveHandler);
         _sysMgr.addEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
@@ -182,13 +210,12 @@
         isMove = false;
         isDown = true;
 
-        regX = point.pageX - viewPort.x();
-        regY = point.pageY - viewPort.y();
+        regX = point.pageX - that._viewPort.x();
+        regY = point.pageY - that._viewPort.y();
 
 
         isFirstDown = true;
-//        _sysMgr.addEnterFrameListener(setAccelerate);
-    }
+    };
 
     function onMouseMoveHandler(event) {
         var point = volcano.hasTouch ? event.touches[0] : event;
@@ -211,8 +238,7 @@
         }
 
         setAccelerate();
-
-    }
+    };
 
     function onMouseUpHandler(event) {
         isMove = false;
@@ -221,7 +247,7 @@
         _sysMgr.removeEventListener(volcano.e.MOUSE_UP, onMouseUpHandler);
         _sysMgr.removeEventListener(volcano.e.CANCEL, onMouseUpHandler);
 //        _sysMgr.removeEnterFrameListener(setAccelerate);
-    }
+    };
 
     function setAccelerate() {
         vX = targetX - oldX;
@@ -229,7 +255,7 @@
 
         oldX = targetX;
         oldY = targetY;
-    }
+    };
 
 
     window.volcano.Scroller = Scroller;

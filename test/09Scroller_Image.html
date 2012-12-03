@@ -48,7 +48,7 @@
 //            document.body.appendChild(stats.domElement);
 
             sysMgr.addEnterFrameListener(function(){stats.update()});
-            var container = new volcano.VSprite().x(100).width(600).height(800).id("container").setStyle("overflow","hidden");
+            var container = new volcano.VSprite().x(100).width(600).height(800).id("container");
             var scroller = new volcano.VSprite().percentWidth(100).height(1400).id("scroller");
             sysMgr.addElement(container);
             container.addElement(scroller);
@@ -71,7 +71,8 @@
 //                zooming: false
 //            });
 
-            new volcano.Scroller(container, sysMgr, { scrollMode: "vertical" });
+            new volcano.Scroller(scroller, sysMgr, { scrollMode: "vertical" });
+//            new volcano.Scroller(scroller, sysMgr);
             volcano.Image.DEFAULT_ERR_IMGAGE = "img/noimg.jpg";
 
             for (var i=0; i<20; i++) {
@@ -84,7 +85,6 @@
                 var regY = regColCnt * height;
 
                 var img = new volcano.Image().id("img"+i).rotationY(180).z(0).scaleY(0.5).scaleX(0.5).width(width).height(height).x(300).y(768/2).visible(false).alpha(0).source("http://jindo.dev.naver.com/docs/jindo-mobile/archive/latest/sample/latest/im/movie_image("+i+").jpg");
-                if (i == 18) img.errorImg("img/noimg.gif");
                 scroller.addElement(img);
 
                 var clicked = false;
