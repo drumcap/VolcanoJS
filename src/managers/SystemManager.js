@@ -83,11 +83,15 @@
             that.dispatchEvent("resize");
         };
 
-        window.addEventListener("resize", resizeHandler);
+        if(window.addEventListener){
+            window.addEventListener("resize", resizeHandler);
+        }else{
+            window.onresize=resizeHandler;
+        }
     };
 
     p.setSize = function(w,h) {
-        this.width(_.isNumber(w) ? w : window.innerWidth).height(_.isNumber(h) ? h : window.innerHeight);
+        this.width(_.isNumber(w) ? w : window.innerWidth || document.documentElement.clientWidth).height(_.isNumber(h) ? h : window.innerHeight || document.documentElement.clientHeight);
         return this;
     }
 

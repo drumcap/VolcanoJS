@@ -93,6 +93,9 @@
         hashchange: "onhashchange" in window ? true : false
     };
 
+    volcano.innerWidth = window.innerWidth || document.documentElement.clientWidth;
+    volcano.innerHeight = window.innerHeight || document.documentElement.clientHeight;
+
     volcano._browserPrefix = "webkit";
     volcano._transformProperty = "webkitTransform";
 

@@ -119,14 +119,9 @@
         var host = this._domElement,
             elementDiv = element._domElement;
 
-        // fixme 향후 Canvas 가 아닌 다른 Element 가 올 수 있으므로, 그 때 수정해야 함.
-        var canvasNum = 0;
-        if(host.children.length > 0) canvasNum = host.children[0].localName === "canvas" ? 1 : 0;
-
-        if ((host.children.length - canvasNum) === index) {
+        if ((host.children.length) === index) {
             host.appendChild(elementDiv);
         } else {
-            console.log(this.getElementAt(index)._domElement);
             host.insertBefore(elementDiv, this.getElementAt(index)._domElement);
         }
 
@@ -201,9 +196,9 @@
             host.removeElement(element);
         }
 
-        this._elementsContent.splice(index, 0, element);
-
         this._elementAdded(element, index);
+
+        this._elementsContent.splice(index, 0, element);
 
         return element;
     };
